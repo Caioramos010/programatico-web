@@ -1,5 +1,5 @@
 /* ── Google Font: Fredoka ── */
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&family=Fredoka:wght@300;400;500;600;700&display=swap");
 
 @import "tailwindcss";
 
@@ -70,6 +70,7 @@
 @theme {
   /* Font families */
   --font-fredoka: "Fredoka", sans-serif;
+  --font-gloria: "Gloria Hallelujah", cursive;
 
   /* Colors */
   --color-bg-primary: #293046;
