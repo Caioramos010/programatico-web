@@ -1,0 +1,135 @@
+/* ── Google Font: Fredoka ── */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+/*
+ * ============================================
+ *  PROGRAMÁTICO - Design Tokens
+ *  Variáveis CSS + Tailwind CSS Theme
+ * ============================================
+ */
+
+/* ── Custom CSS Variables ── */
+:root {
+  /* — Tipografia — */
+  --font-primary: "Fredoka", sans-serif;
+
+  /* — Cores de texto — */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #ffffffcc; /* 80% opacidade */
+  --color-text-muted: #9ca3af;
+
+  /* — Fundos — */
+  --color-bg-primary: #293046;
+  --color-bg-card: #1e2538;
+  --color-bg-card-inner: #2a3349;
+  --color-bg-overlay: #00000080;
+
+  /* — Botões — */
+  --color-btn-light: #ffffff66; /* 40% opacidade */
+  --color-btn-hover: #ffffff80;
+
+  /* — Sombras — */
+  --color-shadow: #ffffff40; /* 25% opacidade */
+
+  /* — Sidebar / Detalhes — */
+  --color-accent: #11604d;
+  --color-accent-light: #178a6e;
+  --color-accent-dark: #0d4a3b;
+
+  /* — Cinza (Revisar) — */
+  --color-gray-review: #c9c9c94d;
+  --color-gray-border: #3b4a6b;
+
+  /* — Vermelho (Erros) — */
+  --color-error: #88181a;
+  --color-error-light: #7d4f4f66;
+  --color-error-heart: #ff6b6b;
+
+  /* — Verde (Acertos) — */
+  --color-success: #578f48;
+  --color-success-light: #578f4866;
+
+  /* — Premium / Root (Dourado) — */
+  --color-premium: #d4a843;
+  --color-premium-dark: #c17a2e;
+  --color-premium-bg: #f5e6c8;
+
+  /* — Quiz / Exercícios — */
+  --color-quiz-bg: #1a1032;
+  --color-quiz-btn: #2d1f4e;
+  --color-quiz-btn-hover: #3a2a66;
+
+  /* — Login — */
+  --color-login-glass: #ffffff1a;
+  --color-login-border: #ffffff33;
+}
+
+/* ── Tailwind v4 Theme ── */
+@theme {
+  /* Font families */
+  --font-fredoka: "Fredoka", sans-serif;
+
+  /* Colors */
+  --color-bg-primary: #293046;
+  --color-bg-card: #1e2538;
+  --color-bg-card-inner: #2a3349;
+  --color-bg-overlay: #00000080;
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #ffffffcc;
+  --color-text-muted: #9ca3af;
+
+  --color-btn-light: #ffffff66;
+  --color-btn-hover: #ffffff80;
+
+  --color-shadow-light: #ffffff40;
+
+  --color-accent: #11604d;
+  --color-accent-light: #178a6e;
+  --color-accent-dark: #0d4a3b;
+
+  --color-gray-review: #c9c9c94d;
+  --color-gray-border: #3b4a6b;
+
+  --color-error: #88181a;
+  --color-error-light: #7d4f4f66;
+  --color-error-heart: #ff6b6b;
+
+  --color-success: #578f48;
+  --color-success-light: #578f4866;
+
+  --color-premium: #d4a843;
+  --color-premium-dark: #c17a2e;
+  --color-premium-bg: #f5e6c8;
+
+  --color-quiz-bg: #1a1032;
+  --color-quiz-btn: #2d1f4e;
+  --color-quiz-btn-hover: #3a2a66;
+
+  --color-login-glass: #ffffff1a;
+  --color-login-border: #ffffff33;
+}
+
+/* ── Base Styles ── */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-primary);
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    min-height: 100vh;
+  }
+}
