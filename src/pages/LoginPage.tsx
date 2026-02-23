@@ -8,10 +8,9 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [aceiteTermos, setAceiteTermos] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative bg-gradient-to-b from-[#16a34a] via-[#15803d] to-[#166534]">
+    <div className="min-h-screen flex flex-col items-center justify-center relative bg-[#363C4E]">
       {/* Botão fechar - canto superior direito */}
       <button
         type="button"
@@ -65,41 +64,18 @@ export default function LoginPage() {
             </a>
           </div>
 
-          <label className="flex items-start gap-3 cursor-pointer text-xs text-white leading-relaxed">
-            <input
-              type="checkbox"
-              checked={aceiteTermos}
-              onChange={(e) => setAceiteTermos(e.target.checked)}
-              className="mt-0.5 rounded border-white/60 bg-white/10 text-white focus:ring-white/40 focus:ring-2"
-            />
-            <span>
-              Ao entrar ou se registrar no programático você concorda com todos os{" "}
-              <a
-                href="#termos"
-                className="underline hover:text-white/90 transition-colors"
-              >
-                termos do site
-              </a>
-              .
-            </span>
-          </label>
-
           <button
             type="submit"
-            disabled={!aceiteTermos}
-            className="w-full py-3 px-4 rounded-xl font-fredoka font-semibold text-sm uppercase tracking-wider bg-white text-gray-700 shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
+            className="w-full py-3 px-4 rounded-xl font-fredoka font-semibold text-sm uppercase tracking-wider bg-white text-gray-700 shadow-md hover:bg-gray-50 transition-colors"
           >
             Entrar
           </button>
         </form>
 
-        <div className="relative flex items-center justify-center my-6">
-          <span className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-white/50" />
-          </span>
-          <span className="relative px-3 text-sm font-medium text-white bg-transparent">
-            OU
-          </span>
+        <div className="flex items-center gap-3 mt-10 mb-10 w-full">
+          <span className="flex-1 border-t border-white/50" />
+          <span className="text-sm font-medium text-white shrink-0">OU</span>
+          <span className="flex-1 border-t border-white/50" />
         </div>
 
         <Button
