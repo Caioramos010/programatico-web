@@ -45,24 +45,14 @@ export default function LoginPage() {
             className="!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]"
           />
 
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <Input
-                darkBackground={false}
-                type="password"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]"
-              />
-            </div>
-            <a
-              href="#esqueci"
-              className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] whitespace-nowrap shrink-0"
-            >
-              Esqueceu?
-            </a>
-          </div>
+          <Input
+            darkBackground={false}
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]"
+          />
 
           <button
             type="submit"
@@ -70,9 +60,16 @@ export default function LoginPage() {
           >
             Entrar
           </button>
+
+          <a
+            href="#esqueci"
+            className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block"
+          >
+            Esqueceu a senha?
+          </a>
         </form>
 
-        <div className="flex items-center gap-3 mt-10 mb-10 w-full">
+        <div className="flex items-center gap-3 mt-5 mb-10 w-full">
           <span className="flex-1 border-t border-[var(--color-login-border)]" />
           <span className="text-sm font-medium text-[var(--color-text-primary)] shrink-0">OU</span>
           <span className="flex-1 border-t border-[var(--color-login-border)]" />
