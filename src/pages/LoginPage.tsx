@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative bg-[#363C4E]">
+    <div className="min-h-screen flex flex-col items-center justify-center relative bg-[var(--color-bg-primary)]">
       {/* Botão fechar - canto superior direito */}
       <button
         type="button"
@@ -25,13 +25,13 @@ export default function LoginPage() {
       <div
         className="w-full max-w-[400px] mx-4 rounded-2xl p-8 shadow-xl"
         style={{
-          background: "rgba(255, 255, 255, 0.12)",
+          background: "var(--color-login-glass)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
+          border: "1px solid var(--color-login-border)",
         }}
       >
-        <h1 className="text-2xl font-semibold text-center text-white mb-6">
+        <h1 className="text-2xl font-semibold text-center text-[var(--color-text-primary)] mb-6">
           Entrar
         </h1>
 
@@ -42,7 +42,7 @@ export default function LoginPage() {
             placeholder="E-mail ou nome de usuário"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="!bg-white/20 !text-white !placeholder:text-white/80 !border-white/40"
+            className="!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]"
           />
 
           <div className="flex items-center justify-between gap-2">
@@ -53,12 +53,12 @@ export default function LoginPage() {
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="!bg-white/20 !text-white !placeholder:text-white/80 !border-white/40"
+                className="!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]"
               />
             </div>
             <a
               href="#esqueci"
-              className="text-xs font-medium uppercase tracking-widest text-white/90 hover:text-white whitespace-nowrap shrink-0"
+              className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] whitespace-nowrap shrink-0"
             >
               Esqueceu?
             </a>
@@ -73,15 +73,15 @@ export default function LoginPage() {
         </form>
 
         <div className="flex items-center gap-3 mt-10 mb-10 w-full">
-          <span className="flex-1 border-t border-white/50" />
-          <span className="text-sm font-medium text-white shrink-0">OU</span>
-          <span className="flex-1 border-t border-white/50" />
+          <span className="flex-1 border-t border-[var(--color-login-border)]" />
+          <span className="text-sm font-medium text-[var(--color-text-primary)] shrink-0">OU</span>
+          <span className="flex-1 border-t border-[var(--color-login-border)]" />
         </div>
 
         <Button
           type="button"
           variant="neutral"
-          className="w-full !bg-transparent !border-2 !border-white/70 !border-b-white/70 text-white hover:!bg-white/10 hover:!border-white"
+          className="w-full !bg-transparent !border-2 !border-[var(--color-login-border)] !border-b-[var(--color-login-border)] text-[var(--color-text-primary)] hover:!bg-white/10 hover:!border-white"
           onClick={() => navigate("/registro")}
         >
           Registro

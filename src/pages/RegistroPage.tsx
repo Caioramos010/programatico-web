@@ -5,7 +5,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 
 const inputClass =
-  "!bg-white/20 !text-white !placeholder:text-white/80 !border-white/40";
+  "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
 export default function RegistroPage() {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function RegistroPage() {
   const [aceiteTermos, setAceiteTermos] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative bg-[#363C4E]">
+    <div className="min-h-screen flex flex-col items-center justify-center relative bg-[var(--color-bg-primary)]">
       <button
         type="button"
         onClick={() => navigate("/")}
@@ -29,13 +29,13 @@ export default function RegistroPage() {
       <div
         className="w-full max-w-[400px] mx-4 rounded-2xl p-8 shadow-xl"
         style={{
-          background: "rgba(255, 255, 255, 0.12)",
+          background: "var(--color-login-glass)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255, 255, 255, 0.18)",
+          border: "1px solid var(--color-login-border)",
         }}
       >
-        <h1 className="text-2xl font-semibold text-center text-white mb-6">
+        <h1 className="text-2xl font-semibold text-center text-[var(--color-text-primary)] mb-6">
           Crie o seu perfil
         </h1>
 
@@ -81,7 +81,7 @@ export default function RegistroPage() {
             max={120}
           />
 
-          <label className="flex items-start gap-3 cursor-pointer text-xs text-white leading-relaxed">
+          <label className="flex items-start gap-3 cursor-pointer text-xs text-[var(--color-text-primary)] leading-relaxed">
             <input
               type="checkbox"
               checked={aceiteTermos}
@@ -111,15 +111,15 @@ export default function RegistroPage() {
         </form>
 
         <div className="flex items-center gap-3 mt-10 mb-10 w-full">
-          <span className="flex-1 border-t border-white/50" />
-          <span className="text-sm font-medium text-white shrink-0">ou</span>
-          <span className="flex-1 border-t border-white/50" />
+          <span className="flex-1 border-t border-[var(--color-login-border)]" />
+          <span className="text-sm font-medium text-[var(--color-text-primary)] shrink-0">ou</span>
+          <span className="flex-1 border-t border-[var(--color-login-border)]" />
         </div>
 
         <Button
           type="button"
           variant="neutral"
-          className="w-full !bg-transparent !border-2 !border-white/70 !border-b-white/70 text-white hover:!bg-white/10 hover:!border-white"
+          className="w-full !bg-transparent !border-2 !border-[var(--color-login-border)] !border-b-[var(--color-login-border)] text-[var(--color-text-primary)] hover:!bg-white/10 hover:!border-white"
           onClick={() => navigate("/login")}
         >
           Login
