@@ -64,6 +64,10 @@
   /* — Login — */
   --color-login-glass: #ffffff1a;
   --color-login-border: #ffffff33;
+
+  /* — Admin — */
+  --color-admin-bg-start: #605911;
+  --color-admin-bg-end: #293046;
 }
 
 /* ── Tailwind v4 Theme ── */
@@ -111,6 +115,16 @@
 
   --color-login-glass: #ffffff1a;
   --color-login-border: #ffffff33;
+}
+
+/* ── Animations ── */
+@keyframes shine {
+  from { left: -75%; }
+  to   { left: 125%; }
+}
+
+@utility animate-shine {
+  animation: shine 0.9s ease forwards;
 }
 
 /* ── Base Styles ── */
