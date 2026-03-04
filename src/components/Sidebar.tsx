@@ -1,4 +1,5 @@
-import { type SVGProps, type ReactElement, useState } from "react";
+import { type SVGProps, type ReactElement } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   Home,
   Book,
@@ -34,16 +35,16 @@ const bottomNav: NavItem[] = [
 ];
 
 export default function Sidebar() {
-  const [active, setActive] = useState("/aprender");
+  const { pathname } = useLocation();
 
   const renderItem = ({ label, icon: Icon, path, premium }: NavItem) => {
-    const isActive = active === path;
+    const isActive = pathname.startsWith(path);
 
     if (premium) {
       return (
-        <button
+        <NavLink
           key={path}
-          onClick={() => setActive(path)}
+          to={path}
           className={[
             "relative overflow-hidden group",
             "flex items-center gap-3 w-full cursor-pointer",
@@ -60,14 +61,14 @@ export default function Sidebar() {
           />
           <Icon className="w-5 h-5 shrink-0" />
           <span>{label}</span>
-        </button>
+        </NavLink>
       );
     }
 
     return (
-      <button
+      <NavLink
         key={path}
-        onClick={() => setActive(path)}
+        to={path}
         className={[
           "flex items-center gap-3 w-full cursor-pointer",
           "px-3 py-2.5 rounded-xl",
@@ -80,7 +81,7 @@ export default function Sidebar() {
       >
         <Icon className="w-5 h-5 shrink-0" />
         <span>{label}</span>
-      </button>
+      </NavLink>
     );
   };
 
@@ -98,11 +99,11 @@ export default function Sidebar() {
       >
         {[...mainNav.filter((i) => !i.premium), ...bottomNav.slice(0, 1)].map(
           ({ label, icon: Icon, path }) => {
-            const isActive = active === path;
+            const isActive = pathname.startsWith(path);
             return (
-              <button
+              <NavLink
                 key={path}
-                onClick={() => setActive(path)}
+                to={path}
                 className={[
                   "flex flex-col items-center gap-0.5 px-2 py-1 cursor-pointer",
                   "transition-colors duration-200",
@@ -113,7 +114,7 @@ export default function Sidebar() {
               >
                 <Icon className="w-6 h-6 fill-current" />
                 <span className="text-[10px] font-medium">{label}</span>
-              </button>
+              </NavLink>
             );
           }
         )}
