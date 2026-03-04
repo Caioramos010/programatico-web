@@ -3,11 +3,13 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
+  darkBackground?: boolean;
 }
 
 export default function Input({
   type,
   error,
+  darkBackground: _dark,
   className = "",
   ...rest
 }: InputProps) {
