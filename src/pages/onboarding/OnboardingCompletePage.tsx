@@ -7,7 +7,7 @@ import {
 } from "../../hooks/useMascotAnimation";
 import { Excited } from "../../components/mascot";
 
-export default function OnboardingConclusaoPage() {
+export default function OnboardingCompletePage() {
   const navigate = useNavigate();
 
   return (

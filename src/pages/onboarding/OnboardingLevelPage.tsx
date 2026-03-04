@@ -17,7 +17,7 @@ const levels = [
 
 type Level = (typeof levels)[number]["id"];
 
-export default function OnboardingNivelPage() {
+export default function OnboardingLevelPage() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState<Level | null>(null);
 

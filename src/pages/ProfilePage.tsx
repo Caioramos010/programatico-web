@@ -47,7 +47,7 @@ function StatCard({
 }
 
 /* ── Componente principal ── */
-export default function PerfilPage() {
+export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
 
   /* Form state */

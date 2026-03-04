@@ -1,22 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../components/Input";
-import Button from "../components/Button";
-import AuthLayout from "../components/auth/AuthLayout";
-import OrDivider from "../components/auth/OrDivider";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import AuthLayout from "../../components/auth/AuthLayout";
+import OrDivider from "../../components/auth/OrDivider";
+
+const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+const basePath = isAdminSubdomain ? "" : "/admin";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
-export default function RedefinirSenhaPage() {
+export default function AdminResetPasswordPage() {
   const navigate = useNavigate();
-  const [codigo, setCodigo] = useState("");
+  const [code, setCode] = useState("");
 
   return (
     <AuthLayout
       title="Redefinir senha"
       subtitle="Para redefinir sua senha basta realizar a verificação com o código na plataforma."
-      onClose={() => navigate("/login")}
+      variant="admin"
+      adminBadge
+      onClose={() => navigate(`${basePath}/login`)}
       footer={
         <>
           <OrDivider />
@@ -35,15 +40,14 @@ export default function RedefinirSenhaPage() {
         className="flex flex-col gap-4"
         onSubmit={(e) => {
           e.preventDefault();
-          navigate("/redefinir-senha/nova");
+          navigate(`${basePath}/redefinir-senha/nova`);
         }}
       >
         <Input
-          darkBackground={false}
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           className={inputClass}
         />
 

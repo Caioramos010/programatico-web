@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
+import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import AuthLayout from "../../components/auth/AuthLayout";
 import OrDivider from "../../components/auth/OrDivider";
 
@@ -11,14 +12,21 @@ const basePath = isAdminSubdomain ? "" : "/admin";
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
-export default function AdminRedefinirSenhaPage() {
+export default function AdminLoginVerificationPage() {
   const navigate = useNavigate();
-  const [codigo, setCodigo] = useState("");
+  const login = useAdminAuthStore((s) => s.login);
+  const [code, setCode] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login();
+    navigate(`${basePath}/dashboard`);
+  };
 
   return (
     <AuthLayout
-      title="Redefinir senha"
-      subtitle="Para redefinir sua senha basta realizar a verificação com o código na plataforma."
+      title="Entrar"
+      subtitle="Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
       variant="admin"
       adminBadge
       onClose={() => navigate(`${basePath}/login`)}
@@ -36,23 +44,17 @@ export default function AdminRedefinirSenhaPage() {
         </>
       }
     >
-      <form
-        className="flex flex-col gap-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          navigate(`${basePath}/redefinir-senha/nova`);
-        }}
-      >
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <Input
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           className={inputClass}
         />
 
         <Button type="submit" variant="white" className="w-full">
-          Redefinir
+          Entrar
         </Button>
       </form>
     </AuthLayout>

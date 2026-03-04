@@ -8,15 +8,15 @@ import OrDivider from "../components/auth/OrDivider";
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
-export default function AtivacaoPage() {
+export default function LoginVerificationPage() {
   const navigate = useNavigate();
-  const [codigo, setCodigo] = useState("");
+  const [code, setCode] = useState("");
 
   return (
     <AuthLayout
-      title="Ativação"
-      subtitle="Ao ativar sua conta você receberá um código no endereço de e-mail cadastrado."
-      onClose={() => navigate("/")}
+      title="Entrar"
+      subtitle="Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
+      onClose={() => navigate("/login")}
       footer={
         <>
           <OrDivider />
@@ -50,8 +50,8 @@ export default function AtivacaoPage() {
           darkBackground={false}
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           className={inputClass}
         />
 

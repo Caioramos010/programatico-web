@@ -8,13 +8,13 @@ import OrDivider from "../components/auth/OrDivider";
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
-export default function RegistroPage() {
+export default function SignUpPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [idade, setIdade] = useState("");
-  const [aceiteTermos, setAceiteTermos] = useState(false);
+  const [age, setAge] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   return (
     <AuthLayout
@@ -69,8 +69,8 @@ export default function RegistroPage() {
           darkBackground={false}
           type="number"
           placeholder="Idade"
-          value={idade}
-          onChange={(e) => setIdade(e.target.value)}
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
           className={inputClass}
           min={1}
           max={120}
@@ -79,8 +79,8 @@ export default function RegistroPage() {
         <label className="flex items-start gap-3 cursor-pointer text-xs text-[var(--color-text-primary)] leading-relaxed">
           <input
             type="checkbox"
-            checked={aceiteTermos}
-            onChange={(e) => setAceiteTermos(e.target.checked)}
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
             className="mt-0.5 rounded border-white/60 bg-white/10 text-white focus:ring-white/40 focus:ring-2"
           />
           <span>
@@ -96,7 +96,7 @@ export default function RegistroPage() {
           </span>
         </label>
 
-        <Button type="submit" variant="white" disabled={!aceiteTermos} className="w-full">
+        <Button type="submit" variant="white" disabled={!acceptTerms} className="w-full">
           Criar conta
         </Button>
       </form>

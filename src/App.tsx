@@ -3,12 +3,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import MainLayout from "./components/MainLayout";
 import LoginPage from "./pages/LoginPage";
-import RegistroPage from "./pages/RegistroPage";
-import AtivacaoPage from "./pages/AtivacaoPage";
-import LoginVerificacaoPage from "./pages/LoginVerificacaoPage";
-import RedefinirSenhaPage from "./pages/RedefinirSenhaPage";
-import NovaSenhaPage from "./pages/NovaSenhaPage";
-import PerfilPage from "./pages/PerfilPage";
+import SignUpPage from "./pages/SignUpPage";
+import ActivationPage from "./pages/ActivationPage";
+import LoginVerificationPage from "./pages/LoginVerificationPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import NewPasswordPage from "./pages/NewPasswordPage";
+import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 
@@ -16,16 +16,16 @@ import NotFoundPage from "./pages/NotFoundPage";
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const AdminProtectedRoute = lazy(() => import("./components/admin/AdminProtectedRoute"));
 const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
-const AdminLoginVerificacaoPage = lazy(() => import("./pages/admin/AdminLoginVerificacaoPage"));
-const AdminRedefinirSenhaPage = lazy(() => import("./pages/admin/AdminRedefinirSenhaPage"));
-const AdminNovaSenhaPage = lazy(() => import("./pages/admin/AdminNovaSenhaPage"));
+const AdminLoginVerificationPage = lazy(() => import("./pages/admin/AdminLoginVerificationPage"));
+const AdminResetPasswordPage = lazy(() => import("./pages/admin/AdminResetPasswordPage"));
+const AdminNewPasswordPage = lazy(() => import("./pages/admin/AdminNewPasswordPage"));
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
 
 // Onboarding — lazy-loaded (only fetched during onboarding flow)
 const OnboardingLayout = lazy(() => import("./components/onboarding/OnboardingLayout"));
 const OnboardingWelcomePage = lazy(() => import("./pages/onboarding/OnboardingWelcomePage"));
-const OnboardingNivelPage = lazy(() => import("./pages/onboarding/OnboardingNivelPage"));
-const OnboardingConclusaoPage = lazy(() => import("./pages/onboarding/OnboardingConclusaoPage"));
+const OnboardingLevelPage = lazy(() => import("./pages/onboarding/OnboardingLevelPage"));
+const OnboardingCompletePage = lazy(() => import("./pages/onboarding/OnboardingCompletePage"));
 
 const isAdmin = window.location.hostname.startsWith("admin.");
 
@@ -36,9 +36,9 @@ function App() {
         <Suspense>
           <Routes>
             <Route path="/login" element={<AdminLoginPage />} />
-            <Route path="/login/verificacao" element={<AdminLoginVerificacaoPage />} />
-            <Route path="/redefinir-senha" element={<AdminRedefinirSenhaPage />} />
-            <Route path="/redefinir-senha/nova" element={<AdminNovaSenhaPage />} />
+            <Route path="/login/verificacao" element={<AdminLoginVerificationPage />} />
+            <Route path="/redefinir-senha" element={<AdminResetPasswordPage />} />
+            <Route path="/redefinir-senha/nova" element={<AdminNewPasswordPage />} />
             <Route
               path="/"
               element={
@@ -63,21 +63,21 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/login/verificacao" element={<LoginVerificacaoPage />} />
-          <Route path="/redefinir-senha" element={<RedefinirSenhaPage />} />
-          <Route path="/redefinir-senha/nova" element={<NovaSenhaPage />} />
-          <Route path="/registro" element={<RegistroPage />} />
-          <Route path="/ativacao" element={<AtivacaoPage />} />
+          <Route path="/login/verificacao" element={<LoginVerificationPage />} />
+          <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+          <Route path="/redefinir-senha/nova" element={<NewPasswordPage />} />
+          <Route path="/registro" element={<SignUpPage />} />
+          <Route path="/ativacao" element={<ActivationPage />} />
           {/* Main app (sidebar + content) */}
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/perfil" replace />} />
-            <Route path="perfil" element={<PerfilPage />} />
+            <Route path="perfil" element={<ProfilePage />} />
           </Route>
           {/* Onboarding */}
           <Route path="/onboarding" element={<OnboardingLayout />}>
             <Route index element={<OnboardingWelcomePage />} />
-            <Route path="nivel" element={<OnboardingNivelPage />} />
-            <Route path="conclusao" element={<OnboardingConclusaoPage />} />
+            <Route path="nivel" element={<OnboardingLevelPage />} />
+            <Route path="conclusao" element={<OnboardingCompletePage />} />
           </Route>
           {/*
            * Admin routes — dev fallback for when not on admin.* subdomain.
@@ -85,9 +85,9 @@ function App() {
            */}
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin/login/verificacao" element={<AdminLoginVerificacaoPage />} />
-          <Route path="/admin/redefinir-senha" element={<AdminRedefinirSenhaPage />} />
-          <Route path="/admin/redefinir-senha/nova" element={<AdminNovaSenhaPage />} />
+          <Route path="/admin/login/verificacao" element={<AdminLoginVerificationPage />} />
+          <Route path="/admin/redefinir-senha" element={<AdminResetPasswordPage />} />
+          <Route path="/admin/redefinir-senha/nova" element={<AdminNewPasswordPage />} />
           <Route
             path="/admin"
             element={
