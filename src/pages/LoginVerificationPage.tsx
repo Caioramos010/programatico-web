@@ -4,13 +4,28 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
 import OrDivider from "../components/auth/OrDivider";
+import { useFormValidation, rules } from "../hooks/useFormValidation";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
+const schema = {
+  code: [rules.required("Código"), rules.code(6)],
+};
+
 export default function LoginVerificationPage() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+
+  const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
+
+  const values = () => ({ code });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate(values())) return;
+    // TODO: call API
+  };
 
   return (
     <AuthLayout
@@ -44,14 +59,20 @@ export default function LoginVerificationPage() {
     >
       <form
         className="flex flex-col gap-4"
-        onSubmit={(e) => e.preventDefault()}
+        noValidate
+        onSubmit={handleSubmit}
       >
         <Input
           darkBackground={false}
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => {
+            setCode(e.target.value);
+            onChange("code", e.target.value, values());
+          }}
+          onBlur={() => onBlur("code", code, values())}
+          error={fieldError("code")}
           className={inputClass}
         />
 

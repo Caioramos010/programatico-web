@@ -4,6 +4,7 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import AuthLayout from "../../components/auth/AuthLayout";
 import OrDivider from "../../components/auth/OrDivider";
+import { useFormValidation, rules } from "../../hooks/useFormValidation";
 
 const isAdminSubdomain = window.location.hostname.startsWith("admin.");
 const basePath = isAdminSubdomain ? "" : "/admin";
@@ -11,9 +12,16 @@ const basePath = isAdminSubdomain ? "" : "/admin";
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
+const schema = {
+  code: [rules.required("Código"), rules.code(6)],
+};
+
 export default function AdminResetPasswordPage() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+  const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
+
+  const values = { code };
 
   return (
     <AuthLayout
@@ -38,8 +46,10 @@ export default function AdminResetPasswordPage() {
     >
       <form
         className="flex flex-col gap-4"
+        noValidate
         onSubmit={(e) => {
           e.preventDefault();
+          if (!validate(values)) return;
           navigate(`${basePath}/redefinir-senha/nova`);
         }}
       >
@@ -47,7 +57,9 @@ export default function AdminResetPasswordPage() {
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => { setCode(e.target.value); onChange("code", e.target.value, { code: e.target.value }); }}
+          onBlur={() => onBlur("code", code, values)}
+          error={fieldError("code")}
           className={inputClass}
         />
 

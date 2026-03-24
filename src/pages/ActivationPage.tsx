@@ -4,13 +4,38 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
 import OrDivider from "../components/auth/OrDivider";
+import { useFormValidation, rules } from "../hooks/useFormValidation";
+import { authService } from "../services/authService";
+import { parseApiError } from "../utils/parseApiError";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
+const schema = {
+  code: [rules.required("Código"), rules.code(6)],
+};
+
 export default function ActivationPage() {
   const navigate = useNavigate();
   const [code, setCode] = useState("");
+
+  const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
+
+  const values = () => ({ code });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate(values())) return;
+
+    try {
+      await authService.ativar(code);
+      navigate("/login");
+    } catch (err) {
+      const { fieldErrors, formError: msg } = parseApiError(err);
+      if (fieldErrors) setServerErrors(fieldErrors);
+      if (msg) setFormError(msg);
+    }
+  };
 
   return (
     <AuthLayout
@@ -44,20 +69,30 @@ export default function ActivationPage() {
     >
       <form
         className="flex flex-col gap-4"
-        onSubmit={(e) => e.preventDefault()}
+        noValidate
+        onSubmit={handleSubmit}
       >
         <Input
           darkBackground={false}
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => {
+            setCode(e.target.value);
+            onChange("code", e.target.value, values());
+          }}
+          onBlur={() => onBlur("code", code, values())}
+          error={fieldError("code")}
           className={inputClass}
         />
 
         <Button type="submit" variant="white" className="w-full">
           Entrar
         </Button>
+
+        {formError && (
+          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+        )}
       </form>
     </AuthLayout>
   );

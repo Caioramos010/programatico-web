@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import AuthLayout from "../../components/auth/AuthLayout";
 import OrDivider from "../../components/auth/OrDivider";
+import { useFormValidation, rules } from "../../hooks/useFormValidation";
 
 const isAdminSubdomain = window.location.hostname.startsWith("admin.");
 const basePath = isAdminSubdomain ? "" : "/admin";
@@ -12,13 +13,21 @@ const basePath = isAdminSubdomain ? "" : "/admin";
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
+const schema = {
+  code: [rules.required("Código"), rules.code(6)],
+};
+
 export default function AdminLoginVerificationPage() {
   const navigate = useNavigate();
   const login = useAdminAuthStore((s) => s.login);
   const [code, setCode] = useState("");
+  const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
+
+  const values = { code };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate(values)) return;
     login();
     navigate(`${basePath}/dashboard`);
   };
@@ -44,12 +53,14 @@ export default function AdminLoginVerificationPage() {
         </>
       }
     >
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
         <Input
           type="text"
           placeholder="Insira o código que chegou no seu e-mail"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
+          onChange={(e) => { setCode(e.target.value); onChange("code", e.target.value, { code: e.target.value }); }}
+          onBlur={() => onBlur("code", code, values)}
+          error={fieldError("code")}
           className={inputClass}
         />
 

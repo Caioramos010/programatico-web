@@ -4,9 +4,19 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
 import OrDivider from "../components/auth/OrDivider";
+import { useFormValidation, rules } from "../hooks/useFormValidation";
+import { authService } from "../services/authService";
+import { parseApiError } from "../utils/parseApiError";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
+
+const schema = {
+  username: [rules.required("Nome de usuário"), rules.username()],
+  email: [rules.required("E-mail"), rules.email()],
+  password: [rules.required("Senha"), rules.minLength(6, "Senha"), rules.noSpaces("Senha")],
+  age: [rules.required("Idade"), rules.minAge(5), rules.maxAge(120)],
+};
 
 export default function SignUpPage() {
   const navigate = useNavigate();
@@ -15,6 +25,29 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
+
+  const values = () => ({ username, email, password, age });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate(values())) return;
+
+    try {
+      await authService.registro({
+        username,
+        email,
+        senha: password,
+        idade: Number(age),
+      });
+      navigate("/ativacao");
+    } catch (err) {
+      const { fieldErrors, formError: msg } = parseApiError(err);
+      if (fieldErrors) setServerErrors(fieldErrors);
+      if (msg) setFormError(msg);
+    }
+  };
 
   return (
     <AuthLayout
@@ -36,23 +69,34 @@ export default function SignUpPage() {
     >
       <form
         className="flex flex-col gap-4"
-        onSubmit={(e) => e.preventDefault()}
+        noValidate
+        onSubmit={handleSubmit}
       >
         <Input
           darkBackground={false}
           type="text"
           placeholder="Nome de usuário"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={(e) => {
+            setUsername(e.target.value);
+            onChange("username", e.target.value, values());
+          }}
+          onBlur={() => onBlur("username", username, values())}
+          error={fieldError("username")}
           className={inputClass}
         />
 
         <Input
           darkBackground={false}
-          type="email"
+          type="text"
           placeholder="E-mail"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            onChange("email", e.target.value, values());
+          }}
+          onBlur={() => onBlur("email", email, values())}
+          error={fieldError("email")}
           className={inputClass}
         />
 
@@ -61,7 +105,12 @@ export default function SignUpPage() {
           type="password"
           placeholder="Senha"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            onChange("password", e.target.value, values());
+          }}
+          onBlur={() => onBlur("password", password, values())}
+          error={fieldError("password")}
           className={inputClass}
         />
 
@@ -70,10 +119,13 @@ export default function SignUpPage() {
           type="number"
           placeholder="Idade"
           value={age}
-          onChange={(e) => setAge(e.target.value)}
+          onChange={(e) => {
+            setAge(e.target.value);
+            onChange("age", e.target.value, values());
+          }}
+          onBlur={() => onBlur("age", age, values())}
+          error={fieldError("age")}
           className={inputClass}
-          min={1}
-          max={120}
         />
 
         <label className="flex items-start gap-3 cursor-pointer text-xs text-[var(--color-text-primary)] leading-relaxed">
@@ -99,6 +151,10 @@ export default function SignUpPage() {
         <Button type="submit" variant="white" disabled={!acceptTerms} className="w-full">
           Criar conta
         </Button>
+
+        {formError && (
+          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+        )}
       </form>
     </AuthLayout>
   );

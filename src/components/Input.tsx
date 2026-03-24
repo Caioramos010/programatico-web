@@ -1,5 +1,6 @@
 import { type InputHTMLAttributes, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
@@ -24,12 +25,14 @@ export default function Input({
           className={[
             "w-full px-4 py-3 rounded-xl",
             "bg-[var(--color-login-glass)] text-white",
-            "border border-white/40",
+            "border",
             "placeholder:uppercase placeholder:text-xs placeholder:tracking-widest placeholder:text-white/50",
-            "outline-none focus:border-white/80 focus:bg-white/15",
+            "outline-none focus:bg-white/15",
             "transition-all duration-200",
             isPassword ? "pr-12" : "",
-            error ? "border-[var(--color-error-heart)]" : "",
+            error
+              ? "border-[var(--color-error-heart)] focus:border-[var(--color-error-heart)]"
+              : "border-white/40 focus:border-white/80",
             className,
           ].join(" ")}
           {...rest}
@@ -48,11 +51,20 @@ export default function Input({
         )}
       </div>
 
-      {error && (
-        <span className="text-xs text-[var(--color-error-heart)] pl-1">
-          {error}
-        </span>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.span
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-xs text-[var(--color-error-heart)] pl-1 overflow-hidden"
+            role="alert"
+          >
+            {error}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
