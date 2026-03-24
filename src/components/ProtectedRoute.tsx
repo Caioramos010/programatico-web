@@ -7,9 +7,14 @@ export default function ProtectedRoute({
   children?: React.ReactNode;
 }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const onboardingCompleted = useAuthStore((s) => s.onboardingCompleted);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (!onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return children ?? <Outlet />;

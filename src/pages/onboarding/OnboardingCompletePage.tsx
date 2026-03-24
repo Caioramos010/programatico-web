@@ -6,9 +6,16 @@ import {
   mascotEnterVariants,
 } from "../../hooks/useMascotAnimation";
 import { Excited } from "../../components/mascot";
+import { useAuthStore } from "../../stores/authStore";
 
 export default function OnboardingCompletePage() {
   const navigate = useNavigate();
+  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
+
+  const handleStart = () => {
+    completeOnboarding();
+    navigate("/app");
+  };
 
   return (
     <motion.div
@@ -41,7 +48,7 @@ export default function OnboardingCompletePage() {
       {/* CTA */}
       <Button
         variant="neutral"
-        onClick={() => navigate("/")}
+        onClick={handleStart}
       >
         Comece agora
       </Button>
