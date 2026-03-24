@@ -7,10 +7,13 @@ import SignUpPage from "./pages/SignUpPage";
 import ActivationPage from "./pages/ActivationPage";
 import LoginVerificationPage from "./pages/LoginVerificationPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ResetPasswordCodePage from "./pages/ResetPasswordCodePage";
 import NewPasswordPage from "./pages/NewPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import GuestRoute from "./components/GuestRoute";
 import NotFoundPage from "./pages/NotFoundPage";
+import LandingPage from "./pages/LandingPage";
 
 // Admin — lazy-loaded (only fetched on admin subdomain or /admin/* dev fallback)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -62,15 +65,17 @@ function App() {
       <Suspense>
         <Routes>
           {/* Public routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/login/verificacao" element={<LoginVerificationPage />} />
-          <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
-          <Route path="/redefinir-senha/nova" element={<NewPasswordPage />} />
-          <Route path="/registro" element={<SignUpPage />} />
-          <Route path="/ativacao" element={<ActivationPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+          <Route path="/login/verificacao" element={<GuestRoute><LoginVerificationPage /></GuestRoute>} />
+          <Route path="/redefinir-senha" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
+          <Route path="/redefinir-senha/codigo" element={<GuestRoute><ResetPasswordCodePage /></GuestRoute>} />
+          <Route path="/redefinir-senha/nova" element={<GuestRoute><NewPasswordPage /></GuestRoute>} />
+          <Route path="/registro" element={<GuestRoute><SignUpPage /></GuestRoute>} />
+          <Route path="/ativacao" element={<GuestRoute><ActivationPage /></GuestRoute>} />
           {/* Main app (sidebar + content) */}
-          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/perfil" replace />} />
+          <Route path="/app" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            <Route index element={<Navigate to="/app/perfil" replace />} />
             <Route path="perfil" element={<ProfilePage />} />
           </Route>
           {/* Onboarding */}
