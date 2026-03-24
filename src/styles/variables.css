@@ -59,6 +59,18 @@
 
   --color-admin-bg-start: #605911;
   --color-admin-bg-end: #293046;
+
+  /* Typography — Landing / Section sizes */
+  --text-hero: clamp(2.25rem, 5vw, 3.75rem);       /* 36px → 60px */
+  --text-section-title: clamp(1.5rem, 3vw, 1.875rem); /* 24px → 30px */
+  --text-section-body: 1rem;                         /* 16px */
+  --text-card-title: 1.125rem;                       /* 18px */
+  --text-card-body: 0.875rem;                        /* 14px */
+  --text-stat-value: clamp(1.5rem, 3vw, 1.875rem);  /* 24px → 30px */
+  --text-stat-label: 0.75rem;                        /* 12px */
+
+  --leading-hero: 1.15;
+  --leading-section: 1.6;
 }
 
 /* ── Animations ── */
