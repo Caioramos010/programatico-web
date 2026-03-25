@@ -1,5 +1,5 @@
 import { type SVGProps, type ReactElement } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Book,
@@ -9,7 +9,9 @@ import {
   User,
   Settings,
   Notification,
+  Cancel,
 } from "./icons";
+import { useAuthStore } from "../stores/authStore";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
 
@@ -36,6 +38,13 @@ const bottomNav: NavItem[] = [
 
 export default function Sidebar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((s) => s.logout);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const renderItem = ({ label, icon: Icon, path, premium }: NavItem) => {
     const isActive = pathname.startsWith(path);
@@ -143,6 +152,19 @@ export default function Sidebar() {
         {/* Navegação inferior */}
         <nav className="px-3 py-4 border-t border-[var(--color-gray-border)] flex flex-col gap-1">
           {bottomNav.map(renderItem)}
+          <button
+            onClick={handleLogout}
+            className={[
+              "flex items-center gap-3 w-full cursor-pointer",
+              "px-3 py-2.5 rounded-xl",
+              "font-fredoka font-medium text-sm",
+              "transition-all duration-200",
+              "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]",
+            ].join(" ")}
+          >
+            <Cancel className="w-5 h-5 shrink-0" />
+            <span>ENCERRAR SESSÃO</span>
+          </button>
         </nav>
       </aside>
     </>
