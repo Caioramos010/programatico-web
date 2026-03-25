@@ -12,7 +12,7 @@ const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
 const schema = {
-  password: [rules.required("Senha"), rules.minLength(6, "Senha"), rules.noSpaces("Senha")],
+  password: [rules.required("Senha"), rules.minLength(8, "Senha"), rules.noSpaces("Senha"), rules.strongPassword()],
   confirmPassword: [rules.required("Confirmação"), rules.matches("password", "Senhas")],
 };
 
