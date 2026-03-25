@@ -14,6 +14,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
 import NotFoundPage from "./pages/NotFoundPage";
 import LandingPage from "./pages/LandingPage";
+import AboutPage from "./pages/AboutPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 
 // Admin — lazy-loaded (only fetched on admin subdomain or /admin/* dev fallback)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -66,6 +69,9 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/sobre" element={<AboutPage />} />
+          <Route path="/termos" element={<TermsPage />} />
+          <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
           <Route path="/login/verificacao" element={<GuestRoute><LoginVerificationPage /></GuestRoute>} />
           <Route path="/redefinir-senha" element={<GuestRoute><ResetPasswordPage /></GuestRoute>} />
