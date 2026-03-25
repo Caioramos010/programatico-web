@@ -1,5 +1,5 @@
 import api from "./api";
-import type { User } from "../stores/authStore";
+import type { User, NivelHabilidade } from "../stores/authStore";
 
 export interface LoginResponse {
   token: string;
@@ -35,4 +35,18 @@ export const authService = {
     api
       .post<MessageResponse>("/api/auth/redefinir-senha/nova", { codigo, novaSenha })
       .then((r) => r.data),
+
+  buscarPerfil: (id: number) =>
+    api.get<User>(`/api/usuarios/${id}`).then((r) => r.data),
+
+  atualizarPerfil: (
+    id: number,
+    data: { username?: string; email?: string; senha?: string; idade?: number; nivelHabilidade?: NivelHabilidade }
+  ) => api.put<User>(`/api/usuarios/${id}`, data).then((r) => r.data),
+
+  solicitarExclusaoConta: (id: number) =>
+    api.post<MessageResponse>(`/api/usuarios/${id}/solicitar-exclusao`).then((r) => r.data),
+
+  confirmarExclusaoConta: (id: number, codigo: string) =>
+    api.post<void>(`/api/usuarios/${id}/confirmar-exclusao`, { codigo }),
 };

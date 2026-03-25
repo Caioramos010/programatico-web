@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
@@ -7,14 +8,38 @@ import {
 } from "../../hooks/useMascotAnimation";
 import { Excited } from "../../components/mascot";
 import { useAuthStore } from "../../stores/authStore";
+import { useOnboardingStore } from "../../stores/onboardingStore";
+import { authService } from "../../services/authService";
+import type { NivelHabilidade } from "../../stores/authStore";
+
+const LEVEL_MAP: Record<string, NivelHabilidade> = {
+  beginner: "BEGINNER",
+  intermediate: "INTERMEDIATE",
+  advanced: "ADVANCED",
+};
 
 export default function OnboardingCompletePage() {
   const navigate = useNavigate();
-  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
+  const { user, updateUser } = useAuthStore();
+  const { level, reset } = useOnboardingStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleStart = () => {
-    completeOnboarding();
-    navigate("/app");
+  const handleStart = async () => {
+    if (!user || !level) return;
+    setLoading(true);
+    setError("");
+    try {
+      const updated = await authService.atualizarPerfil(user.id, {
+        nivelHabilidade: LEVEL_MAP[level],
+      });
+      updateUser(updated);
+      reset();
+      navigate("/aprender");
+    } catch {
+      setError("Erro ao salvar. Tente novamente.");
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,15 +67,16 @@ export default function OnboardingCompletePage() {
         animate="animate"
         className="w-48 sm:w-56 relative"
       >
-          <Excited className="w-full h-auto" />
+        <Excited className="w-full h-auto" />
       </motion.div>
 
+      {error && (
+        <p className="text-sm text-[var(--color-error-heart)]">{error}</p>
+      )}
+
       {/* CTA */}
-      <Button
-        variant="neutral"
-        onClick={handleStart}
-      >
-        Comece agora
+      <Button variant="neutral" onClick={handleStart} disabled={loading}>
+        {loading ? "Salvando..." : "Comece agora"}
       </Button>
     </motion.div>
   );
