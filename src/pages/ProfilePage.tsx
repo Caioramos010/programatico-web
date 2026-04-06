@@ -1,20 +1,11 @@
-import { useState, type FormEvent } from "react";
-import { Pencil, Camera, ShieldCheck } from "lucide-react";
+﻿import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Camera, ShieldCheck, X } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
 import Button from "../components/Button";
-
-/* ── Dados mock ── */
-const mockUser = {
-  name: "Caio de souza Ramos",
-  username: "user_teste",
-  email: "",
-  xp: 12320,
-  streak: 0,
-  maxStreak: 0,
-  verified: true,
-  avatarUrl: "",
-  coverUrl: "",
-};
+import { useAuthStore } from "../stores/authStore";
+import { learnService, type UserStatsResponse } from "../services/learnService";
+import { usuarioService } from "../services/usuarioService";
+import { parseApiError } from "../utils/parseApiError";
 
 /* ── Stat card ── */
 function StatCard({
@@ -48,208 +39,171 @@ function StatCard({
 
 /* ── Componente principal ── */
 export default function ProfilePage() {
+  const { user, login, token } = useAuthStore();
   const [editing, setEditing] = useState(false);
+  const [stats, setStats] = useState<UserStatsResponse | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   /* Form state */
-  const [name, setName] = useState(mockUser.name);
-  const [username, setUsername] = useState(mockUser.username);
-  const [email, setEmail] = useState(mockUser.email);
+  const [username, setUsername] = useState(user?.username ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [avatarData, setAvatarData] = useState<string>(user?.icon ?? "");
 
-  const handleSave = (e: FormEvent) => {
+  useEffect(() => {
+    learnService.getStats().then(setStats).catch(() => {});
+  }, []);
+
+  const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-    // TODO: call API
-    setEditing(false);
+    if (!user) return;
+    setFormError(null);
+    setIsSaving(true);
+    try {
+      const payload: Record<string, string> = {};
+      if (username !== user.username) payload.username = username;
+      if (email !== user.email) payload.email = email;
+      if (newPassword) payload.senha = newPassword;
+      if (avatarData !== (user.icon ?? "")) payload.icon = avatarData;
+
+      const updated = await usuarioService.atualizar(user.id, payload);
+      login(token!, updated);
+      setEditing(false);
+    } catch (err) {
+      const { formError: msg, fieldErrors } = parseApiError(err);
+      setFormError(msg ?? (fieldErrors ? Object.values(fieldErrors)[0] : "Erro ao salvar alterações."));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleCancel = () => {
-    setName(mockUser.name);
-    setUsername(mockUser.username);
-    setEmail(mockUser.email);
+    setUsername(user?.username ?? "");
+    setEmail(user?.email ?? "");
     setCurrentPassword("");
     setNewPassword("");
+    setAvatarData(user?.icon ?? "");
+    setFormError(null);
     setEditing(false);
   };
 
-  /* ── Campo de formulário simplificado ── */
-  const Field = ({
-    label,
-    value,
-    onChange,
-    type = "text",
-    prefix,
-  }: {
-    label: string;
-    value: string;
-    onChange: (v: string) => void;
-    type?: string;
-    prefix?: string;
-  }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
-        {label}
-      </label>
-      <div className="relative">
-        {prefix && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">
-            {prefix}
-          </span>
-        )}
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className={[
-            "w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent",
-            "px-4 py-3 text-sm text-white outline-none",
-            "focus:border-white/60 transition-colors",
-            prefix ? "pl-10" : "",
-          ].join(" ")}
-        />
-      </div>
-    </div>
-  );
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatarData(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const displayAvatar = editing ? avatarData : (user?.icon ?? "");
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 font-fredoka flex flex-col gap-6">
-      {/* ── Cover + Avatar ── */}
+      {/* Cover + Avatar */}
       <div className="relative">
-        {/* Cover */}
-        <div className="relative h-36 rounded-xl bg-gradient-to-br from-[var(--color-gray-border)] to-[var(--color-bg-card)] overflow-hidden">
-          {mockUser.coverUrl && (
-            <img
-              src={mockUser.coverUrl}
-              alt="Capa"
-              className="w-full h-full object-cover"
-            />
-          )}
-          {editing && (
-            <button
-              type="button"
-              className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/50 text-white/80 hover:text-white transition-colors cursor-pointer"
-              aria-label="Editar capa"
-            >
-              <Pencil size={16} />
-            </button>
-          )}
-        </div>
-
-        {/* Avatar */}
+        <div className="h-36 rounded-xl bg-gradient-to-br from-[var(--color-gray-border)] to-[var(--color-bg-card)] overflow-hidden" />
         <div className="absolute -bottom-8 left-6">
           <div className="relative">
             <div className="w-20 h-20 rounded-full bg-[var(--color-text-muted)] border-4 border-[var(--color-bg-primary)] overflow-hidden">
-              {mockUser.avatarUrl ? (
-                <img
-                  src={mockUser.avatarUrl}
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
+              {displayAvatar ? (
+                <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gray-400" />
               )}
             </div>
             {editing && (
-              <button
-                type="button"
-                className="absolute -top-1 -right-1 p-1 rounded-full bg-black/60 text-white/80 hover:text-white transition-colors cursor-pointer"
-                aria-label="Editar avatar"
-              >
-                <Camera size={14} />
-              </button>
+              <div className="absolute -top-1 -right-1 flex flex-col gap-1">
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="p-1 rounded-full bg-black/60 text-white/80 hover:text-white transition-colors cursor-pointer"
+                  aria-label="Editar avatar"
+                >
+                  <Camera size={14} />
+                </button>
+                {displayAvatar && (
+                  <button
+                    type="button"
+                    onClick={() => { setAvatarData(""); if (avatarInputRef.current) avatarInputRef.current.value = ""; }}
+                    className="p-1 rounded-full bg-black/60 text-white/80 hover:text-[var(--color-error-heart)] transition-colors cursor-pointer"
+                    aria-label="Remover avatar"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarFile} />
+              </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Spacer for avatar overlap ── */}
       <div className="h-4" />
 
       {editing ? (
-        /* ══════ EDIT MODE ══════ */
         <form onSubmit={handleSave} className="flex flex-col gap-5">
-          <Field label="Nome" value={name} onChange={setName} />
-          <Field
-            label="Usuário"
-            value={username}
-            onChange={setUsername}
-            prefix="@"
-          />
-          <Field label="E-mail" value={email} onChange={setEmail} type="email" />
-          <Field
-            label="Senha atual"
-            value={currentPassword}
-            onChange={setCurrentPassword}
-            type="password"
-          />
-          <Field
-            label="Nova senha"
-            value={newPassword}
-            onChange={setNewPassword}
-            type="password"
-          />
+          {/* Usuário */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Usuário</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">@</span>
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+            </div>
+          </div>
+          {/* E-mail */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">E-mail</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
+          {/* Senha atual */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Senha atual</label>
+            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
+          {/* Nova senha */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Nova senha</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
 
-          <Button type="submit" variant="neutral" className="mt-2">
-            Salvar alterações
+          {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+
+          <Button type="submit" variant="neutral" className="mt-2" disabled={isSaving}>
+            {isSaving ? "Salvando..." : "Salvar alterações"}
           </Button>
-
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold"
-          >
+          <button type="button" onClick={handleCancel}
+            className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Cancelar edição
           </button>
-
-          <button
-            type="button"
-            className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold"
-          >
+          <button type="button"
+            className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Excluir a minha conta
           </button>
         </form>
       ) : (
-        /* ══════ VIEW MODE ══════ */
         <>
-          {/* Name + Username + Badge */}
           <div className="flex flex-col gap-0.5">
-            <h2 className="text-xl font-semibold text-white">{mockUser.name}</h2>
-            <span className="text-sm text-[var(--color-text-muted)]">
-              @{mockUser.username}
-            </span>
-            {mockUser.verified && (
-              <ShieldCheck
-                size={20}
-                className="text-[var(--color-accent-light)] mt-1"
-              />
-            )}
+            <h2 className="text-xl font-semibold text-white">@{user?.username}</h2>
+            <span className="text-sm text-[var(--color-text-muted)]">{user?.email}</span>
+            {user?.ativo && <ShieldCheck size={20} className="text-[var(--color-accent-light)] mt-1" />}
           </div>
 
-          {/* Stats */}
           <section className="flex flex-col gap-3">
             <h3 className="text-lg font-semibold text-white">Estatísticas</h3>
-
             <div className="grid grid-cols-2 gap-3">
-              <StatCard
-                label="Experiência"
-                value={`${mockUser.xp.toLocaleString("pt-BR")} XP`}
-                icon={<Xp className="w-5 h-5" />}
-                full
-              />
-              <StatCard
-                label="Dias seguidos"
-                value={mockUser.streak}
-                icon={<FireOn className="w-5 h-5" />}
-              />
-              <StatCard
-                label="Máximo de dias seguidos"
-                value={mockUser.maxStreak}
-                icon={<FireOff className="w-5 h-5" />}
-              />
+              <StatCard label="Experiência" value={`${(stats?.totalXp ?? 0).toLocaleString("pt-BR")} XP`} icon={<Xp className="w-5 h-5" />} full />
+              <StatCard label="Dias seguidos" value={stats?.sequenciaAtual ?? 0} icon={<FireOn className="w-5 h-5" />} />
+              <StatCard label="Máximo de dias seguidos" value={stats?.maxSequencia ?? 0} icon={<FireOff className="w-5 h-5" />} />
             </div>
           </section>
 
-          {/* Edit button */}
           <Button variant="neutral" onClick={() => setEditing(true)}>
             Editar perfil
           </Button>
