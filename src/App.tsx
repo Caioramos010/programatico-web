@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import MainLayout from "./components/MainLayout";
+import LearnPage from "./pages/LearnPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ActivationPage from "./pages/ActivationPage";
@@ -23,6 +24,13 @@ const AdminLoginVerificationPage = lazy(() => import("./pages/admin/AdminLoginVe
 const AdminResetPasswordPage = lazy(() => import("./pages/admin/AdminResetPasswordPage"));
 const AdminNewPasswordPage = lazy(() => import("./pages/admin/AdminNewPasswordPage"));
 const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage"));
+const AdminTrilhasPage = lazy(() => import("./pages/admin/AdminTrilhasPage"));
+const AdminUsuariosPage = lazy(() => import("./pages/admin/AdminUsuariosPage"));
+const AdminMissoesPage = lazy(() => import("./pages/admin/AdminMissoesPage"));
+const AdminModulosPage = lazy(() => import("./pages/admin/AdminModulosPage"));
+const AdminAtividadesPage = lazy(() => import("./pages/admin/AdminAtividadesPage"));
+const AdminTeoricaPaginasPage = lazy(() => import("./pages/admin/AdminTeoricaPaginasPage"));
+const AdminTeoricaPage = lazy(() => import("./pages/admin/AdminTeoricaPage"));
 
 // Onboarding — lazy-loaded (only fetched during onboarding flow)
 const OnboardingLayout = lazy(() => import("./components/onboarding/OnboardingLayout"));
@@ -52,6 +60,13 @@ function App() {
             >
               <Route index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route path="trilhas" element={<AdminTrilhasPage />} />
+              <Route path="trilhas/:trilhaId/modulos" element={<AdminModulosPage />} />
+              <Route path="modulos/:moduloId/atividades" element={<AdminAtividadesPage />} />
+              <Route path="modulos/:moduloId/conteudo" element={<AdminTeoricaPaginasPage />} />
+              <Route path="paginas/:paginaId/conteudo" element={<AdminTeoricaPage />} />
+              <Route path="usuarios" element={<AdminUsuariosPage />} />
+              <Route path="missoes" element={<AdminMissoesPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
@@ -74,9 +89,9 @@ function App() {
           <Route path="/registro" element={<GuestRoute><SignUpPage /></GuestRoute>} />
           <Route path="/ativacao" element={<GuestRoute><ActivationPage /></GuestRoute>} />
           {/* Main app (sidebar + content) */}
-          <Route path="/app" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/app/perfil" replace />} />
-            <Route path="perfil" element={<ProfilePage />} />
+          <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            <Route path="/aprender" element={<LearnPage />} />
+            <Route path="/perfil" element={<ProfilePage />} />
           </Route>
           {/* Onboarding */}
           <Route path="/onboarding" element={<OnboardingLayout />}>
@@ -102,6 +117,9 @@ function App() {
             }
           >
             <Route path="dashboard" element={<AdminDashboardPage />} />
+            <Route path="trilhas" element={<AdminTrilhasPage />} />
+            <Route path="usuarios" element={<AdminUsuariosPage />} />
+            <Route path="missoes" element={<AdminMissoesPage />} />
           </Route>
           {/* Catch-all */}
           <Route path="*" element={<NotFoundPage />} />
