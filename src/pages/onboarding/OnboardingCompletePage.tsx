@@ -14,7 +14,7 @@ export default function OnboardingCompletePage() {
 
   const handleStart = () => {
     completeOnboarding();
-    navigate("/app");
+    navigate("/aprender");
   };
 
   return (
