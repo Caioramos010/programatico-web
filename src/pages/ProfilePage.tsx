@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Camera, ShieldCheck, X } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
 import Button from "../components/Button";
@@ -36,6 +36,8 @@ function StatCard({
     </div>
   );
 }
+
+type DeleteStep = "idle" | "confirm" | "code";
 
 /* ── Componente principal ── */
 export default function ProfilePage() {
@@ -208,6 +210,73 @@ export default function ProfilePage() {
             Editar perfil
           </Button>
         </>
+      )}
+
+      {/* ══════ DELETE MODAL ══════ */}
+      {deleteStep !== "idle" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-gray-border)] p-6 flex flex-col gap-4 font-fredoka">
+            {deleteStep === "confirm" ? (
+              <>
+                <h3 className="text-lg font-semibold text-white">Excluir conta</h3>
+                <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                  Esta ação é <strong className="text-white">irreversível</strong>. Vamos enviar
+                  um código de confirmação para{" "}
+                  <strong className="text-white">{user?.email}</strong>.
+                </p>
+                {deleteError && (
+                  <p className="text-sm text-[var(--color-error-heart)]">{deleteError}</p>
+                )}
+                <Button
+                  variant="neutral"
+                  onClick={handleRequestDelete}
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? "Enviando..." : "Enviar código de confirmação"}
+                </Button>
+                <button
+                  onClick={() => { setDeleteStep("idle"); setDeleteError(""); }}
+                  className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
+                >
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-semibold text-white">Digite o código</h3>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  Enviamos um código para <strong className="text-white">{user?.email}</strong>.
+                  Digite abaixo para confirmar a exclusão.
+                </p>
+                <input
+                  type="text"
+                  value={deleteCode}
+                  onChange={(e) => setDeleteCode(e.target.value)}
+                  placeholder="000000"
+                  maxLength={6}
+                  className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-white/60 transition-colors"
+                />
+                {deleteError && (
+                  <p className="text-sm text-[var(--color-error-heart)]">{deleteError}</p>
+                )}
+                <Button
+                  variant="neutral"
+                  onClick={handleConfirmDelete}
+                  disabled={deleteLoading || deleteCode.length < 6}
+                  className="bg-red-600 hover:bg-red-500 border-red-600"
+                >
+                  {deleteLoading ? "Excluindo..." : "Confirmar exclusão"}
+                </Button>
+                <button
+                  onClick={() => { setDeleteStep("idle"); setDeleteCode(""); setDeleteError(""); }}
+                  className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
+                >
+                  Cancelar
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

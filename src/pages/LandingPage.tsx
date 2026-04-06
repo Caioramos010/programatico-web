@@ -281,15 +281,15 @@ export default function LandingPage() {
           PROGRAMÁTICO
         </span>
         <div className="flex gap-6 text-sm text-text-muted">
-          <a href="#" className="hover:text-white transition-colors">
+          <Link to="/sobre" className="hover:text-white transition-colors">
             Sobre
-          </a>
-          <a href="#" className="hover:text-white transition-colors">
+          </Link>
+          <Link to="/termos" className="hover:text-white transition-colors">
             Termos
-          </a>
-          <a href="#" className="hover:text-white transition-colors">
+          </Link>
+          <Link to="/privacidade" className="hover:text-white transition-colors">
             Privacidade
-          </a>
+          </Link>
         </div>
         <p className="text-xs text-text-muted">
           © 2026 Programático. Aprenda programação de forma divertida.

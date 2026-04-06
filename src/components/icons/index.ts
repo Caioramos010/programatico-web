@@ -1,4 +1,5 @@
 export { default as Book } from "./Book";
+export { default as Cancel } from "./Cancel";
 export { default as Calendar } from "./Calendar";
 export { default as Crown } from "./Crown";
 export { default as FireOff } from "./FireOff";

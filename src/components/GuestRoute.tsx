@@ -7,7 +7,7 @@ import { useAuthStore } from "../stores/authStore";
  */
 export default function GuestRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const onboardingCompleted = useAuthStore((s) => s.onboardingCompleted);
+  const user = useAuthStore((s) => s.user);
 
   if (isAuthenticated) {
     return <Navigate to={onboardingCompleted ? "/aprender" : "/onboarding"} replace />;

@@ -13,8 +13,9 @@ const inputClass =
 const schema = {
   password: [
     rules.required("Senha"),
-    rules.minLength(6, "Senha"),
+    rules.minLength(8, "Senha"),
     rules.noSpaces("Senha"),
+    rules.strongPassword(),
   ],
   confirmPassword: [
     rules.required("Confirmação"),

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -138,12 +138,14 @@ export default function SignUpPage() {
           <span>
             Ao entrar ou se registrar no programático você concorda com todos
             os{" "}
-            <a
-              href="#termos"
+            <Link
+              to="/termos"
+              target="_blank"
+              rel="noopener noreferrer"
               className="underline hover:text-white/90 transition-colors"
             >
               termos do site
-            </a>
+            </Link>
             .
           </span>
         </label>

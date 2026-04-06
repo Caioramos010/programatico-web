@@ -43,6 +43,15 @@ export const rules = {
     message: `${label} não pode conter espaços.`,
   }),
 
+  strongPassword: (): ValidationRule => ({
+    test: (v) =>
+      /[a-z]/.test(v) &&
+      /[A-Z]/.test(v) &&
+      /[0-9]/.test(v) &&
+      /[^a-zA-Z0-9]/.test(v),
+    message: "Senha deve conter letra maiúscula, minúscula, número e caractere especial.",
+  }),
+
   username: (): ValidationRule => ({
     test: (v) => /^[a-zA-Z0-9_]{3,20}$/.test(v),
     message: "Use 3-20 caracteres: letras, números e _",

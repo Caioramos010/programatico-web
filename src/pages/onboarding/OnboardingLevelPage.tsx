@@ -8,6 +8,7 @@ import {
   mascotEnterVariants,
 } from "../../hooks/useMascotAnimation";
 import { Thinking } from "../../components/mascot";
+import { useOnboardingStore } from "../../stores/onboardingStore";
 
 const levels = [
   { id: "beginner",     label: "Iniciante",    Icon: Leaf  },
@@ -19,6 +20,7 @@ type Level = (typeof levels)[number]["id"];
 
 export default function OnboardingLevelPage() {
   const navigate = useNavigate();
+  const setLevel = useOnboardingStore((s) => s.setLevel);
   const [selected, setSelected] = useState<Level | null>(null);
 
   return (
@@ -83,7 +85,12 @@ export default function OnboardingLevelPage() {
         <Button
           variant="neutral"
           disabled={!selected}
-          onClick={() => selected && navigate("/onboarding/conclusao")}
+          onClick={() => {
+            if (selected) {
+              setLevel(selected);
+              navigate("/onboarding/conclusao");
+            }
+          }}
         >
           Continuar
         </Button>
