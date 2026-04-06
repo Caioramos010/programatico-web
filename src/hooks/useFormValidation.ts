@@ -77,6 +77,11 @@ export const rules = {
     test: (v) => v.trim().length === length,
     message: `O código deve ter ${length} caracteres.`,
   }),
+
+  strongPassword: (): ValidationRule => ({
+    test: (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).+$/.test(v),
+    message: "Senha deve conter letra maiúscula, minúscula, número e caractere especial.",
+  }),
 };
 
 /* ── Hook ── */

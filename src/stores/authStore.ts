@@ -10,7 +10,8 @@ export interface User {
   idade: number;
   ativo: boolean;
   dataCriacao: string;
-  nivelHabilidade: NivelHabilidade | null;
+  role?: string;
+  icon?: string | null;
 }
 
 interface AuthState {

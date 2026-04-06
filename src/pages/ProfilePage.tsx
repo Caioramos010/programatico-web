@@ -1,10 +1,10 @@
-import { useState, useEffect, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { Pencil, ShieldCheck } from "lucide-react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Camera, ShieldCheck, X } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
 import Button from "../components/Button";
 import { useAuthStore } from "../stores/authStore";
-import { authService } from "../services/authService";
+import { learnService, type UserStatsResponse } from "../services/learnService";
+import { usuarioService } from "../services/usuarioService";
 import { parseApiError } from "../utils/parseApiError";
 
 /* ── Stat card ── */
@@ -41,285 +41,174 @@ type DeleteStep = "idle" | "confirm" | "code";
 
 /* ── Componente principal ── */
 export default function ProfilePage() {
-  const navigate = useNavigate();
-  const { user, updateUser, logout } = useAuthStore();
-
+  const { user, login, token } = useAuthStore();
   const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
+  const [stats, setStats] = useState<UserStatsResponse | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   /* Form state */
   const [username, setUsername] = useState(user?.username ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
-  const [idade, setIdade] = useState(String(user?.idade ?? ""));
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [avatarData, setAvatarData] = useState<string>(user?.icon ?? "");
 
-  /* Delete flow */
-  const [deleteStep, setDeleteStep] = useState<DeleteStep>("idle");
-  const [deleteCode, setDeleteCode] = useState("");
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteError, setDeleteError] = useState("");
-
-  /* Refresh profile from API on mount */
   useEffect(() => {
-    if (!user) return;
-    authService.buscarPerfil(user.id).then(updateUser).catch(() => {/* silent — use cached */});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    learnService.getStats().then(setStats).catch(() => {});
   }, []);
-
-  /* Sync form when user changes */
-  useEffect(() => {
-    if (!editing) {
-      setUsername(user?.username ?? "");
-      setEmail(user?.email ?? "");
-      setIdade(String(user?.idade ?? ""));
-    }
-  }, [user, editing]);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-    if (newPassword) {
-      if (newPassword !== confirmPassword) {
-        setSaveError("As senhas não coincidem");
-        return;
-      }
-      const strong = /[a-z]/.test(newPassword) && /[A-Z]/.test(newPassword) && /[0-9]/.test(newPassword) && /[^a-zA-Z0-9]/.test(newPassword);
-      if (!strong) {
-        setSaveError("Senha deve conter letra maiúscula, minúscula, número e caractere especial.");
-        return;
-      }
-      if (newPassword.length < 8) {
-        setSaveError("Senha deve ter no mínimo 8 caracteres.");
-        return;
-      }
-    }
     if (!user) return;
-    setSaving(true);
-    setSaveError("");
+    setFormError(null);
+    setIsSaving(true);
     try {
-      const updated = await authService.atualizarPerfil(user.id, {
-        username: username !== user.username ? username : undefined,
-        email: email !== user.email ? email : undefined,
-        senha: newPassword || undefined,
-      });
-      updateUser(updated);
+      const payload: Record<string, string> = {};
+      if (username !== user.username) payload.username = username;
+      if (email !== user.email) payload.email = email;
+      if (newPassword) payload.senha = newPassword;
+      if (avatarData !== (user.icon ?? "")) payload.icon = avatarData;
+
+      const updated = await usuarioService.atualizar(user.id, payload);
+      login(token!, updated);
       setEditing(false);
-      setNewPassword("");
-      setConfirmPassword("");
     } catch (err) {
-      const parsed = parseApiError(err);
-      setSaveError(parsed.formError ?? "Erro ao salvar. Tente novamente.");
+      const { formError: msg, fieldErrors } = parseApiError(err);
+      setFormError(msg ?? (fieldErrors ? Object.values(fieldErrors)[0] : "Erro ao salvar alterações."));
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
   const handleCancel = () => {
     setUsername(user?.username ?? "");
     setEmail(user?.email ?? "");
-    setIdade(String(user?.idade ?? ""));
+    setCurrentPassword("");
     setNewPassword("");
-    setConfirmPassword("");
-    setSaveError("");
+    setAvatarData(user?.icon ?? "");
+    setFormError(null);
     setEditing(false);
   };
 
-  const handleRequestDelete = async () => {
-    if (!user) return;
-    setDeleteLoading(true);
-    setDeleteError("");
-    try {
-      await authService.solicitarExclusaoConta(user.id);
-      setDeleteStep("code");
-    } catch (err) {
-      const parsed = parseApiError(err);
-      setDeleteError(parsed.formError ?? "Erro ao solicitar exclusão.");
-    } finally {
-      setDeleteLoading(false);
-    }
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setAvatarData(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
-  const handleConfirmDelete = async () => {
-    if (!user) return;
-    setDeleteLoading(true);
-    setDeleteError("");
-    try {
-      await authService.confirmarExclusaoConta(user.id, deleteCode);
-      logout();
-      navigate("/");
-    } catch (err) {
-      const parsed = parseApiError(err);
-      setDeleteError(parsed.formError ?? "Código inválido. Tente novamente.");
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
-
-  const memberSince = user?.dataCriacao
-    ? new Date(user.dataCriacao).toLocaleDateString("pt-BR", {
-        month: "long",
-        year: "numeric",
-      })
-    : "—";
-
-  /* ── Campo de formulário simplificado ── */
-  const Field = ({
-    label,
-    value,
-    onChange,
-    type = "text",
-    prefix,
-    placeholder,
-  }: {
-    label: string;
-    value: string;
-    onChange: (v: string) => void;
-    type?: string;
-    prefix?: string;
-    placeholder?: string;
-  }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
-        {label}
-      </label>
-      <div className="relative">
-        {prefix && (
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">
-            {prefix}
-          </span>
-        )}
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className={[
-            "w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent",
-            "px-4 py-3 text-sm text-white outline-none placeholder:text-[var(--color-text-muted)]",
-            "focus:border-white/60 transition-colors",
-            prefix ? "pl-10" : "",
-          ].join(" ")}
-        />
-      </div>
-    </div>
-  );
+  const displayAvatar = editing ? avatarData : (user?.icon ?? "");
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 font-fredoka flex flex-col gap-6">
-      {/* ── Cover + Avatar ── */}
+      {/* Cover + Avatar */}
       <div className="relative">
-        <div className="relative h-36 rounded-xl bg-gradient-to-br from-[var(--color-gray-border)] to-[var(--color-bg-card)] overflow-hidden" />
-
-        {/* Avatar */}
+        <div className="h-36 rounded-xl bg-gradient-to-br from-[var(--color-gray-border)] to-[var(--color-bg-card)] overflow-hidden" />
         <div className="absolute -bottom-8 left-6">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-[var(--color-text-muted)] border-4 border-[var(--color-bg-primary)] overflow-hidden flex items-center justify-center">
-              <span className="text-3xl font-bold text-white uppercase select-none">
-                {user?.username?.[0] ?? "?"}
-              </span>
+            <div className="w-20 h-20 rounded-full bg-[var(--color-text-muted)] border-4 border-[var(--color-bg-primary)] overflow-hidden">
+              {displayAvatar ? (
+                <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full bg-gray-400" />
+              )}
             </div>
+            {editing && (
+              <div className="absolute -top-1 -right-1 flex flex-col gap-1">
+                <button
+                  type="button"
+                  onClick={() => avatarInputRef.current?.click()}
+                  className="p-1 rounded-full bg-black/60 text-white/80 hover:text-white transition-colors cursor-pointer"
+                  aria-label="Editar avatar"
+                >
+                  <Camera size={14} />
+                </button>
+                {displayAvatar && (
+                  <button
+                    type="button"
+                    onClick={() => { setAvatarData(""); if (avatarInputRef.current) avatarInputRef.current.value = ""; }}
+                    className="p-1 rounded-full bg-black/60 text-white/80 hover:text-[var(--color-error-heart)] transition-colors cursor-pointer"
+                    aria-label="Remover avatar"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarFile} />
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* ── Spacer for avatar overlap ── */}
       <div className="h-4" />
 
       {editing ? (
-        /* ══════ EDIT MODE ══════ */
         <form onSubmit={handleSave} className="flex flex-col gap-5">
-          <Field label="Usuário" value={username} onChange={setUsername} prefix="@" />
-          <Field label="E-mail" value={email} onChange={setEmail} type="email" />
-          <Field
-            label="Nova senha (opcional)"
-            value={newPassword}
-            onChange={setNewPassword}
-            type="password"
-            placeholder="Deixe em branco para não alterar"
-          />
-          {newPassword && (
-            <Field
-              label="Confirmar nova senha"
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-              type="password"
-            />
-          )}
+          {/* Usuário */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Usuário</label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">@</span>
+              <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+                className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+            </div>
+          </div>
+          {/* E-mail */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">E-mail</label>
+            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
+          {/* Senha atual */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Senha atual</label>
+            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
+          {/* Nova senha */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Nova senha</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+          </div>
 
-          {saveError && (
-            <p className="text-sm text-[var(--color-error-heart)]">{saveError}</p>
-          )}
+          {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
 
-          <Button type="submit" variant="neutral" className="mt-2" disabled={saving}>
-            {saving ? "Salvando..." : "Salvar alterações"}
+          <Button type="submit" variant="neutral" className="mt-2" disabled={isSaving}>
+            {isSaving ? "Salvando..." : "Salvar alterações"}
           </Button>
-
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold"
-          >
+          <button type="button" onClick={handleCancel}
+            className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Cancelar edição
           </button>
-
-          <button
-            type="button"
-            onClick={() => setDeleteStep("confirm")}
-            className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold"
-          >
+          <button type="button"
+            className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Excluir a minha conta
           </button>
         </form>
       ) : (
-        /* ══════ VIEW MODE ══════ */
         <>
-          {/* Name + Username + Badge */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex flex-col gap-0.5">
-              <h2 className="text-xl font-semibold text-white">@{user?.username}</h2>
-              <span className="text-sm text-[var(--color-text-muted)]">{user?.email}</span>
-              {user?.ativo && (
-                <span className="flex items-center gap-1 text-xs text-[var(--color-accent-light)] mt-0.5">
-                  <ShieldCheck size={14} />
-                  Conta verificada
-                </span>
-              )}
-              <span className="text-xs text-[var(--color-text-muted)] mt-1">
-                Membro desde {memberSince}
-              </span>
-            </div>
-            <button
-              onClick={() => setEditing(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-gray-border)] text-sm text-[var(--color-text-secondary)] hover:text-white hover:border-white/40 transition-colors cursor-pointer"
-            >
-              <Pencil size={14} />
-              Editar perfil
-            </button>
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-xl font-semibold text-white">@{user?.username}</h2>
+            <span className="text-sm text-[var(--color-text-muted)]">{user?.email}</span>
+            {user?.ativo && <ShieldCheck size={20} className="text-[var(--color-accent-light)] mt-1" />}
           </div>
 
-          {/* Stats */}
           <section className="flex flex-col gap-3">
             <h3 className="text-lg font-semibold text-white">Estatísticas</h3>
             <div className="grid grid-cols-2 gap-3">
-              <StatCard
-                label="Experiência"
-                value="0 XP"
-                icon={<Xp className="w-5 h-5" />}
-                full
-              />
-              <StatCard
-                label="Dias seguidos"
-                value={0}
-                icon={<FireOn className="w-5 h-5" />}
-              />
-              <StatCard
-                label="Máximo de dias seguidos"
-                value={0}
-                icon={<FireOff className="w-5 h-5" />}
-              />
+              <StatCard label="Experiência" value={`${(stats?.totalXp ?? 0).toLocaleString("pt-BR")} XP`} icon={<Xp className="w-5 h-5" />} full />
+              <StatCard label="Dias seguidos" value={stats?.sequenciaAtual ?? 0} icon={<FireOn className="w-5 h-5" />} />
+              <StatCard label="Máximo de dias seguidos" value={stats?.maxSequencia ?? 0} icon={<FireOff className="w-5 h-5" />} />
             </div>
           </section>
+
+          <Button variant="neutral" onClick={() => setEditing(true)}>
+            Editar perfil
+          </Button>
         </>
       )}
 

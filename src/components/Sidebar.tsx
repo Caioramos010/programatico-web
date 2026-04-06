@@ -4,7 +4,6 @@ import {
   Home,
   Book,
   Pin,
-  Calendar,
   Crown,
   User,
   Settings,
@@ -26,7 +25,6 @@ const mainNav: NavItem[] = [
   { label: "APRENDER", icon: Home, path: "/aprender" },
   { label: "PRATICAR", icon: Book, path: "/praticar" },
   { label: "REVISAR", icon: Pin, path: "/revisar" },
-  { label: "MISSÕES", icon: Calendar, path: "/missoes" },
   { label: "SEJA ROOT", icon: Crown, path: "/seja-root", premium: true },
 ];
 

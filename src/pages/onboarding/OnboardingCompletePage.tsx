@@ -25,21 +25,9 @@ export default function OnboardingCompletePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleStart = async () => {
-    if (!user || !level) return;
-    setLoading(true);
-    setError("");
-    try {
-      const updated = await authService.atualizarPerfil(user.id, {
-        nivelHabilidade: LEVEL_MAP[level],
-      });
-      updateUser(updated);
-      reset();
-      navigate("/aprender");
-    } catch {
-      setError("Erro ao salvar. Tente novamente.");
-      setLoading(false);
-    }
+  const handleStart = () => {
+    completeOnboarding();
+    navigate("/aprender");
   };
 
   return (
