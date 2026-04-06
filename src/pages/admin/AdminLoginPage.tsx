@@ -4,6 +4,9 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import AuthLayout from "../../components/auth/AuthLayout";
 import { useFormValidation, rules } from "../../hooks/useFormValidation";
+import { useAdminAuthStore } from "../../stores/adminAuthStore";
+import { authService } from "../../services/authService";
+import { parseApiError } from "../../utils/parseApiError";
 
 const isAdminSubdomain = window.location.hostname.startsWith("admin.");
 const basePath = isAdminSubdomain ? "" : "/admin";
@@ -18,16 +21,39 @@ const schema = {
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
+  const login = useAdminAuthStore((s) => s.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
 
   const values = { email, password };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(values)) return;
-    navigate(`${basePath}/login/verificacao`);
+    setFormError(null);
+    setIsLoading(true);
+    try {
+      const data = await authService.login(email, password);
+      if (data.usuario.role !== "ADMIN") {
+        setFormError("Acesso restrito a administradores.");
+        return;
+      }
+      login(data.token, {
+        id: data.usuario.id,
+        username: data.usuario.username,
+        email: data.usuario.email,
+        role: data.usuario.role as string,
+      });
+      navigate(`${basePath}/dashboard`);
+    } catch (err) {
+      const { formError: msg } = parseApiError(err);
+      setFormError(msg ?? "Erro ao entrar. Tente novamente.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -58,8 +84,12 @@ export default function AdminLoginPage() {
           className={inputClass}
         />
 
-        <Button type="submit" variant="white" className="w-full">
-          Entrar
+        {formError && (
+          <p className="text-sm text-[var(--color-error-heart)] text-center">{formError}</p>
+        )}
+
+        <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
+          {isLoading ? "Entrando..." : "Entrar"}
         </Button>
 
         <button

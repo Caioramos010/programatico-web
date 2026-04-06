@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import AuthLayout from "../../components/auth/AuthLayout";
 import OrDivider from "../../components/auth/OrDivider";
 import { useFormValidation, rules } from "../../hooks/useFormValidation";
@@ -19,7 +18,6 @@ const schema = {
 
 export default function AdminLoginVerificationPage() {
   const navigate = useNavigate();
-  const login = useAdminAuthStore((s) => s.login);
   const [code, setCode] = useState("");
   const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
 
@@ -28,7 +26,6 @@ export default function AdminLoginVerificationPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(values)) return;
-    login();
     navigate(`${basePath}/dashboard`);
   };
 

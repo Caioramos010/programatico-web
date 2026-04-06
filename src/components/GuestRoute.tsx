@@ -10,7 +10,7 @@ export default function GuestRoute({ children }: { children: React.ReactNode }) 
   const onboardingCompleted = useAuthStore((s) => s.onboardingCompleted);
 
   if (isAuthenticated) {
-    return <Navigate to={onboardingCompleted ? "/app" : "/onboarding"} replace />;
+    return <Navigate to={onboardingCompleted ? "/aprender" : "/onboarding"} replace />;
   }
 
   return <>{children}</>;

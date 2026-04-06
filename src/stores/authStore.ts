@@ -8,6 +8,8 @@ export interface User {
   idade: number;
   ativo: boolean;
   dataCriacao: string;
+  role?: string;
+  icon?: string | null;
 }
 
 interface AuthState {
