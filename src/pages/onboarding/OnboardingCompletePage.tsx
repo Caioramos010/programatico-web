@@ -25,9 +25,24 @@ export default function OnboardingCompletePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleStart = () => {
-    completeOnboarding();
-    navigate("/aprender");
+  const handleStart = async () => {
+    if (!user || !level) {
+      navigate("/aprender");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const nivelHabilidade = LEVEL_MAP[level];
+      const updated = await authService.atualizarPerfil(user.id, { nivelHabilidade });
+      updateUser(updated);
+      reset();
+      navigate("/aprender");
+    } catch {
+      setError("Erro ao salvar preferências. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

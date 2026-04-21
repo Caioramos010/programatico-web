@@ -12,6 +12,7 @@ export interface User {
   dataCriacao: string;
   role?: string;
   icon?: string | null;
+  nivelHabilidade?: NivelHabilidade | null;
 }
 
 interface AuthState {

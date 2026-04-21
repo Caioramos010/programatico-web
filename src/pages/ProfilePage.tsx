@@ -41,12 +41,16 @@ type DeleteStep = "idle" | "confirm" | "code";
 
 /* ── Componente principal ── */
 export default function ProfilePage() {
-  const { user, login, token } = useAuthStore();
+  const { user, login, token, logout } = useAuthStore();
   const [editing, setEditing] = useState(false);
   const [stats, setStats] = useState<UserStatsResponse | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [deleteStep, setDeleteStep] = useState<DeleteStep>("idle");
+  const [deleteCode, setDeleteCode] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   /* Form state */
   const [username, setUsername] = useState(user?.username ?? "");
@@ -98,6 +102,36 @@ export default function ProfilePage() {
     const reader = new FileReader();
     reader.onload = () => setAvatarData(reader.result as string);
     reader.readAsDataURL(file);
+  };
+
+  const handleRequestDelete = async () => {
+    if (!user) return;
+    setDeleteLoading(true);
+    setDeleteError("");
+    try {
+      await usuarioService.solicitarExclusao(user.id);
+      setDeleteStep("code");
+    } catch (err) {
+      const { formError: msg } = parseApiError(err);
+      setDeleteError(msg ?? "Erro ao solicitar exclusão.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!user) return;
+    setDeleteLoading(true);
+    setDeleteError("");
+    try {
+      await usuarioService.confirmarExclusao(user.id, deleteCode);
+      logout();
+    } catch (err) {
+      const { formError: msg } = parseApiError(err);
+      setDeleteError(msg ?? "Código inválido ou expirado.");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const displayAvatar = editing ? avatarData : (user?.icon ?? "");
@@ -185,6 +219,7 @@ export default function ProfilePage() {
             Cancelar edição
           </button>
           <button type="button"
+            onClick={() => setDeleteStep("confirm")}
             className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Excluir a minha conta
           </button>
