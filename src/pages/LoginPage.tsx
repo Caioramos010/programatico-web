@@ -34,7 +34,7 @@ export default function LoginPage() {
     try {
       const data = await authService.login(email, password);
       storeLogin(data.token, data.usuario);
-      navigate("/aprender");
+      navigate(data.usuario.nivelHabilidade ? "/aprender" : "/onboarding");
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
