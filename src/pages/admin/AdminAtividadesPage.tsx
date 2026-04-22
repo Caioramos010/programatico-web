@@ -41,9 +41,16 @@ const defaultDragItems = (): string[] => ["", "", ""];
 const defaultMcOptions = (): McOption[] => Array.from({ length: 4 }, () => ({ image: "", description: "", correct: false }));
 
 function buildExerciseData(type: ExType, step2: FormStep2): string {
-  if (type === "PAIRS") return JSON.stringify({ pairs: step2.pairs });
-  if (type === "DRAG_DROP") return JSON.stringify({ items: step2.dragItems });
-  return JSON.stringify({ options: step2.mcOptions });
+  if (type === "PAIRS") {
+    const pairs = step2.pairs.filter((p) => p.left.trim() && p.right.trim());
+    return JSON.stringify({ pairs });
+  }
+  if (type === "DRAG_DROP") {
+    const items = step2.dragItems.filter((it) => it.trim());
+    return JSON.stringify({ items });
+  }
+  const options = step2.mcOptions.filter((o) => o.description.trim());
+  return JSON.stringify({ options });
 }
 
 function parseExerciseData(exercise: Exercise): { pairs: Pair[]; dragItems: string[]; mcOptions: McOption[] } {
@@ -152,6 +159,30 @@ export default function AdminAtividadesPage() {
   const salvar = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+
+    // Validações de conteúdo por tipo
+    if (step1.exerciseType === "PAIRS") {
+      const paresFiltrados = step2.pairs.filter((p) => p.left.trim() || p.right.trim());
+      if (paresFiltrados.length < 2) { setFormError("Adicione pelo menos 2 pares."); return; }
+      const parIncompleto = paresFiltrados.find((p) => !p.left.trim() || !p.right.trim());
+      if (parIncompleto) { setFormError("Todos os pares devem ter os dois lados preenchidos."); return; }
+    }
+
+    if (step1.exerciseType === "DRAG_DROP") {
+      const itensFiltrados = step2.dragItems.filter((it) => it.trim());
+      if (itensFiltrados.length < 2) { setFormError("Adicione pelo menos 2 passos."); return; }
+      const itemVazio = step2.dragItems.some((it) => !it.trim());
+      if (itemVazio) { setFormError("Todos os passos devem ser preenchidos ou remova os vazios."); return; }
+    }
+
+    if (step1.exerciseType === "MULTIPLE_CHOICE") {
+      const opcoesFiltradas = step2.mcOptions.filter((o) => o.description.trim());
+      if (opcoesFiltradas.length < 2) { setFormError("Adicione pelo menos 2 alternativas com descrição."); return; }
+      const correta = step2.mcOptions.find((o) => o.correct);
+      if (!correta) { setFormError("Marque uma alternativa correta (duplo clique na alternativa)."); return; }
+      if (!correta.description.trim()) { setFormError("A alternativa correta deve ter uma descrição."); return; }
+    }
+
     const payload: ExerciseRequest = {
       statement: step1.statement,
       exerciseType: step1.exerciseType,

@@ -74,13 +74,13 @@ export default function LandingPage() {
       className="min-h-screen flex flex-col font-fredoka"
     >
       {/* ── Navbar ── */}
-      <header className="flex items-center justify-between px-6 py-4 md:px-12 max-w-7xl mx-auto w-full">
+      <header className="flex items-center justify-between px-6 py-4 md:px-24 lg:px-40 max-w-7xl mx-auto w-full">
         <span className="text-2xl font-gloria text-white tracking-wide">
           PROGRAMÁTICO
         </span>
         <div className="flex items-center gap-3">
           <Link to="/login">
-            <Button variant="white" className="py-2! px-5! text-xs!">
+            <Button variant="white" className="py-2.5! px-8! text-sm!">
               LOGIN
             </Button>
           </Link>

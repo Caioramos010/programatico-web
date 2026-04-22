@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { learnService } from "../services/learnService";
 import type { TrilhaResponse, UserStatsResponse, MissaoResponse, ModuloComProgresso } from "../services/learnService";
 import { parseApiError } from "../utils/parseApiError";
@@ -8,6 +9,7 @@ import DailyMissions from "../components/DailyMissions";
 import UserStatsBar from "../components/UserStatsBar";
 
 export default function LearnPage() {
+  const navigate = useNavigate();
   const [trilha, setTrilha] = useState<TrilhaResponse | null>(null);
   const [stats, setStats] = useState<UserStatsResponse | null>(null);
   const [missoes, setMissoes] = useState<MissaoResponse[]>([]);
@@ -68,8 +70,9 @@ export default function LearnPage() {
   }, []);
 
   function handleModuloClick(modulo: ModuloComProgresso) {
-    // TODO: navegar para a página do módulo quando implementado
-    console.log("Iniciar módulo:", modulo);
+    if (modulo.tipo === "ACTIVITY") {
+      navigate(`/modulos/${modulo.id}/exercicio`);
+    }
   }
 
   return (

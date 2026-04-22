@@ -93,77 +93,72 @@ export default function AdminUsuariosPage() {
         <p className="text-sm text-[var(--color-error-heart)] mb-4">{formError}</p>
       )}
 
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ border: "1px solid var(--color-gray-border)", background: "var(--color-bg-card)" }}
-      >
-        <table className="w-full text-sm">
-          <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-gray-border)" }}>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Nome</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Email</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Tipo</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
-                  Carregando...
-                </td>
-              </tr>
-            ) : usuarios.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
-                  Nenhum usuário encontrado.
-                </td>
-              </tr>
-            ) : (
-              usuarios.map((usuario) => (
-                <tr
-                  key={usuario.id}
-                  style={{ borderBottom: "1px solid var(--color-gray-border)" }}
-                  className="hover:bg-white/5 transition-colors"
+      {isLoading ? (
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-20 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
+          ))}
+        </div>
+      ) : usuarios.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
+          <p className="text-sm font-medium">Nenhum usuário encontrado</p>
+          <p className="text-xs mt-1 opacity-70">Tente uma busca diferente</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {usuarios.map((usuario, idx) => (
+            <div
+              key={usuario.id}
+              className="group flex items-center gap-4 px-5 py-4 rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent-light)]/50 hover:bg-white/[0.03] transition-all"
+            >
+              <span className="text-2xl font-bold text-[var(--color-text-muted)]/25 w-8 shrink-0 select-none tabular-nums">
+                {String(idx + 1).padStart(2, "0")}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-[var(--color-text-primary)] truncate">{usuario.username}</p>
+                <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{usuario.email}</p>
+              </div>
+              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${
+                usuario.role === "ADMIN"
+                  ? "bg-purple-500/15 text-purple-400"
+                  : "bg-blue-500/15 text-blue-400"
+              }`}>
+                {usuario.role === "ADMIN" ? "Administrador" : "Usuário"}
+              </span>
+              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${
+                usuario.ativo ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400"
+              }`}>
+                {usuario.ativo ? "Ativo" : "Inativo"}
+              </span>
+              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                <button
+                  onClick={() => abrirEditar(usuario)}
+                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors"
+                  title="Editar"
                 >
-                  <td className="px-4 py-3 text-[var(--color-text-primary)]">{usuario.username}</td>
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{usuario.email}</td>
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">
-                    {usuario.role === "ADMIN" ? "Administrador" : "Usuário"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => abrirEditar(usuario)}
-                        className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-                        title="Editar"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(usuario.id)}
-                        className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors"
-                        title="Deletar"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => setDeleteId(usuario.id)}
+                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] hover:bg-white/10 transition-colors"
+                  title="Deletar"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal de edição */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div
             className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Editar Usuário</h2>
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Editar Usuário</h2>
             <form onSubmit={salvar} className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs text-[var(--color-text-muted)]">Tipo</label>
@@ -214,12 +209,12 @@ export default function AdminUsuariosPage() {
 
       {/* Modal de confirmação de delete */}
       {deleteId !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div
             className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Confirmar exclusão</h2>
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir usuário?</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
               Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.
             </p>

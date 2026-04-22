@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pencil, Trash2, Upload, X } from "lucide-react";
+import { Pencil, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { adminService, type Trilha, type TrilhaRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
 
@@ -116,91 +116,87 @@ export default function AdminTrilhasPage() {
         <h1 className="text-3xl font-semibold text-[var(--color-text-primary)]">Trilhas</h1>
         <button
           onClick={abrirCriar}
-          className="px-5 py-2 rounded-xl text-sm font-semibold uppercase tracking-widest bg-[var(--color-gray-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-accent)] hover:text-white transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
         >
-          Nova Trilha
+          + Nova Trilha
         </button>
       </div>
 
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ border: "1px solid var(--color-gray-border)", background: "var(--color-bg-card)" }}
-      >
-        <table className="w-full text-sm">
-          <thead>
-            <tr style={{ borderBottom: "1px solid var(--color-gray-border)" }}>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Trilha</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Módulos</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Ícone</th>
-              <th className="px-4 py-3 text-left font-medium text-[var(--color-text-secondary)]">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
-                  Carregando...
-                </td>
-              </tr>
-            ) : trilhas.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-[var(--color-text-muted)]">
-                  Nenhuma trilha cadastrada.
-                </td>
-              </tr>
-            ) : (
-              trilhas.map((trilha) => (
-                <tr
-                  key={trilha.id}
-                  style={{ borderBottom: "1px solid var(--color-gray-border)" }}
-                  className="hover:bg-white/5 transition-colors cursor-pointer"
-                  onClick={() => navigate(`/trilhas/${trilha.id}/modulos`, { state: { trackTitle: trilha.title } })}
+      {isLoading ? (
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-20 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
+          ))}
+        </div>
+      ) : trilhas.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
+          <p className="text-sm font-medium">Nenhuma trilha cadastrada</p>
+          <p className="text-xs mt-1 opacity-70">Crie a primeira trilha da plataforma</p>
+          <button
+            onClick={abrirCriar}
+            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
+          >
+            Nova Trilha
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {trilhas.map((trilha, idx) => (
+            <div
+              key={trilha.id}
+              onClick={() => navigate(`/trilhas/${trilha.id}/modulos`, { state: { trackTitle: trilha.title } })}
+              className="group flex items-center gap-4 px-5 py-4 rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent-light)]/50 hover:bg-white/[0.03] transition-all cursor-pointer"
+            >
+              <span className="text-2xl font-bold text-[var(--color-text-muted)]/25 w-8 shrink-0 select-none tabular-nums">
+                {String(idx + 1).padStart(2, "0")}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-[var(--color-text-primary)] truncate">{trilha.title}</p>
+                {trilha.description && (
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{trilha.description}</p>
+                )}
+              </div>
+              <span className="hidden sm:block text-xs text-[var(--color-text-muted)] shrink-0">
+                {trilha.totalModulos} {trilha.totalModulos === 1 ? "módulo" : "módulos"}
+              </span>
+              {trilha.icon?.startsWith("data:") ? (
+                <img src={trilha.icon} alt="ícone" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+              ) : (
+                <span className="text-xl shrink-0" title={trilha.icon ?? "Sem ícone"}>{trilha.icon || "⊘"}</span>
+              )}
+              <div
+                className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => abrirEditar(trilha)}
+                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-white/10 transition-colors"
+                  title="Editar"
                 >
-
-                  <td className="px-4 py-3 text-[var(--color-text-primary)]">{trilha.title}</td>
-                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{trilha.totalModulos}</td>
-                  <td className="px-4 py-3">
-                    {trilha.icon?.startsWith("data:") ? (
-                      <img src={trilha.icon} alt="ícone" className="w-7 h-7 rounded object-cover" />
-                    ) : (
-                      <span className="text-xl" title={trilha.icon ?? "Sem ícone"}>
-                        {trilha.icon || "⊘"}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => abrirEditar(trilha)}
-                        className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-                        title="Editar"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteId(trilha.id)}
-                        className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors"
-                        title="Deletar"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+                  <Pencil size={14} />
+                </button>
+                <button
+                  onClick={() => setDeleteId(trilha.id)}
+                  className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] hover:bg-white/10 transition-colors"
+                  title="Deletar"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <ChevronRight size={16} className="text-[var(--color-text-muted)]/30 group-hover:text-[var(--color-text-muted)] shrink-0 transition-colors" />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal de criação/edição */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div
             className="w-full max-w-md rounded-2xl p-6 flex flex-col gap-4"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
               {editingId !== null ? "Editar Trilha" : "Nova Trilha"}
             </h2>
             <form onSubmit={salvar} className="flex flex-col gap-3">
@@ -271,12 +267,12 @@ export default function AdminTrilhasPage() {
 
       {/* Modal de confirmação de delete */}
       {deleteId !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div
             className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
-            <h2 className="text-lg font-semibold text-[var(--color-text-primary)]">Confirmar exclusão</h2>
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir trilha?</h2>
             <p className="text-sm text-[var(--color-text-secondary)]">
               Tem certeza que deseja deletar esta trilha? Todos os módulos associados serão removidos.
             </p>

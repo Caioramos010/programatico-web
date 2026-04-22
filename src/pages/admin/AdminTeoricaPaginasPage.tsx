@@ -69,11 +69,15 @@ export default function AdminTeoricaPaginasPage() {
     e.preventDefault();
     if (!moduloId) return;
     setFormError(null);
+
+    if (!form.title.trim()) { setFormError("Título da página é obrigatório."); return; }
+    if (form.title.trim().length > 100) { setFormError("Título deve ter no máximo 100 caracteres."); return; }
+
     setIsSaving(true);
     try {
       const payload: TeoriaPaginaRequest = {
-        title: form.title,
-        description: form.description || undefined,
+        title: form.title.trim(),
+        description: form.description.trim() || undefined,
       };
       if (editingId !== null) {
         const updated = await adminService.atualizarPagina(editingId, payload);

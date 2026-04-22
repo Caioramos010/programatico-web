@@ -1,4 +1,5 @@
 import { useMemo, useEffect, useRef, useState } from "react";
+import { Zap, BookOpen } from "lucide-react";
 import type { ModuloComProgresso } from "../services/learnService";
 import ModuleNode from "./ModuleNode";
 import ConnectorLine from "./ConnectorLine";
@@ -138,13 +139,10 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
                 className="absolute"
                 style={{ left: cx - nodeR, top: cy - nodeR, width: nodeR * 2, zIndex: 2 }}
               >
-                <ModuleNode
+<ModuleNode
                   modulo={modulo}
                   nodeSize={nodeR * 2}
-                  onClick={() => {
-                    setSelectedIndex(isSelected ? null : i);
-                    onModuloClick?.(modulo);
-                  }}
+                  onClick={() => setSelectedIndex(isSelected ? null : i)}
                 />
               </div>
 
@@ -157,24 +155,38 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
                       : { right: popoverRight, top: cy - nodeR }
                   }
                 >
-                  <p className="text-sm font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight mb-1">
-                    {modulo.titulo}
-                  </p>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="text-sm font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight">
+                      {modulo.titulo}
+                    </p>
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 ${
+                        modulo.tipo === "ACTIVITY"
+                          ? "bg-yellow-500/15 text-yellow-400"
+                          : "bg-blue-500/15 text-blue-400"
+                      }`}
+                    >
+                      {modulo.tipo === "ACTIVITY" ? <Zap size={10} /> : <BookOpen size={10} />}
+                      {modulo.tipo === "ACTIVITY" ? "Atividade" : "Teórico"}
+                    </span>
+                  </div>
                   {modulo.descricao && (
                     <p className="text-xs text-[var(--color-text-muted)] leading-snug mb-3">
                       {modulo.descricao}
                     </p>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedIndex(null);
-                      onModuloClick?.(modulo);
-                    }}
-                    className="w-full rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors py-1.5 text-xs font-semibold font-fredoka text-[var(--color-text-secondary)]"
-                  >
-                    COMEÇAR{modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}
-                  </button>
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedIndex(null);
+                        onModuloClick?.(modulo);
+                      }}
+                      className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-xs font-semibold font-fredoka text-[var(--color-text-secondary)]"
+                    >
+                      {modulo.status === "COMPLETED" ? "REVER" : `COMEÇAR${modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}`}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

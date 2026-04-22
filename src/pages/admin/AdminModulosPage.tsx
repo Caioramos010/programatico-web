@@ -68,8 +68,9 @@ export default function AdminModulosPage() {
   const salvar = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
-    if (!form.title.trim()) { setFormError("Nome é obrigatório."); return; }
-    const payload: ModuloRequest = { title: form.title, moduleType: form.moduleType, description: form.description || undefined };
+    if (!form.title.trim()) { setFormError("Nome do módulo é obrigatório."); return; }
+    if (form.title.trim().length > 100) { setFormError("Nome do módulo deve ter no máximo 100 caracteres."); return; }
+    const payload: ModuloRequest = { title: form.title.trim(), moduleType: form.moduleType, description: form.description.trim() || undefined };
     setIsSaving(true);
     try {
       if (editingId !== null) {
