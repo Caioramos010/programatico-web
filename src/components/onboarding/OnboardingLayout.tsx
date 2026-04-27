@@ -12,7 +12,7 @@ export default function OnboardingLayout() {
   }
 
   if (user?.nivelHabilidade) {
-    return <Navigate to="/app" replace />;
+    return <Navigate to="/aprender" replace />;
   }
 
   return (
