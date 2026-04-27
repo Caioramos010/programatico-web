@@ -15,7 +15,7 @@ const schema = {
   username: [rules.required("Nome de usuário"), rules.username()],
   email: [rules.required("E-mail"), rules.email()],
   password: [rules.required("Senha"), rules.minLength(8, "Senha"), rules.strongPassword()],
-  age: [rules.required("Idade"), rules.minAge(5), rules.maxAge(120)],
+  age: [rules.required("Idade"), rules.minAge(12), rules.maxAge(120)],
 };
 
 export default function SignUpPage() {
@@ -41,7 +41,8 @@ export default function SignUpPage() {
         senha: password,
         idade: Number(age),
       });
-      navigate("/ativacao");
+      sessionStorage.setItem("pendingActivationEmail", email.trim());
+      navigate("/ativacao", { state: { email: email.trim() } });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);

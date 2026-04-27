@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -17,7 +17,22 @@ const schema = {
 
 export default function ActivationPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [code, setCode] = useState("");
+  const [resendMessage, setResendMessage] = useState("");
+  const [isResending, setIsResending] = useState(false);
+
+  const activationEmail = useMemo(() => {
+    const stateEmail = (location.state as { email?: string } | null)?.email?.trim();
+    const storedEmail = sessionStorage.getItem("pendingActivationEmail")?.trim();
+    return stateEmail || storedEmail || "";
+  }, [location.state]);
+
+  useEffect(() => {
+    if (activationEmail) {
+      sessionStorage.setItem("pendingActivationEmail", activationEmail);
+    }
+  }, [activationEmail]);
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
 
@@ -29,11 +44,34 @@ export default function ActivationPage() {
 
     try {
       await authService.ativar(code);
+      sessionStorage.removeItem("pendingActivationEmail");
       navigate("/login");
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
       if (msg) setFormError(msg);
+    }
+  };
+
+  const handleResend = async () => {
+    const normalizedEmail = activationEmail;
+    setResendMessage("");
+    setFormError("");
+
+    if (!normalizedEmail) {
+      setFormError("Não encontramos o e-mail do cadastro. Volte e faça o cadastro novamente.");
+      return;
+    }
+
+    try {
+      setIsResending(true);
+      const response = await authService.solicitarAtivacao(normalizedEmail);
+      setResendMessage(response.mensagem);
+    } catch (err) {
+      const { formError: msg } = parseApiError(err);
+      setFormError(msg ?? "Não foi possível reenviar o código.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -49,19 +87,22 @@ export default function ActivationPage() {
             type="button"
             variant="neutral"
             className="w-full !bg-transparent !border-2 !border-[var(--color-login-border)] !border-b-[var(--color-login-border)] text-[var(--color-text-primary)] hover:!bg-white/10 hover:!border-white"
-            onClick={() => {}}
+            onClick={handleResend}
+            disabled={isResending}
           >
-            Reenviar
+            {isResending ? "Reenviando..." : "Reenviar"}
           </Button>
 
           <p className="mt-6 text-xs text-[var(--color-text-secondary)] text-center leading-relaxed">
             Ao entrar ou se registrar no programático você concorda com todos os{" "}
-            <a
-              href="#termos"
+            <Link
+              to="/termos"
+              target="_blank"
+              rel="noopener noreferrer"
               className="underline text-[var(--color-text-primary)] hover:text-white/90 transition-colors"
             >
               termos do site
-            </a>
+            </Link>
             .
           </p>
         </>
@@ -72,6 +113,12 @@ export default function ActivationPage() {
         noValidate
         onSubmit={handleSubmit}
       >
+        {activationEmail && (
+          <p className="text-xs text-[var(--color-text-secondary)] text-center">
+            Código enviado para: <span className="text-[var(--color-text-primary)]">{activationEmail}</span>
+          </p>
+        )}
+
         <Input
           darkBackground={false}
           type="text"
@@ -92,6 +139,10 @@ export default function ActivationPage() {
 
         {formError && (
           <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+        )}
+
+        {resendMessage && (
+          <p className="text-xs text-[var(--color-text-secondary)] text-center -mt-1">{resendMessage}</p>
         )}
       </form>
     </AuthLayout>

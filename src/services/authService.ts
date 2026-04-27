@@ -26,6 +26,9 @@ export const authService = {
   ativar: (codigo: string) =>
     api.post<MessageResponse>("/api/auth/ativar", { codigo }).then((r) => r.data),
 
+  solicitarAtivacao: (email: string) =>
+    api.post<MessageResponse>("/api/auth/ativar/solicitar", { email }).then((r) => r.data),
+
   solicitarRedefinicao: (email: string) =>
     api
       .post<MessageResponse>("/api/auth/redefinir-senha/solicitar", { email })
