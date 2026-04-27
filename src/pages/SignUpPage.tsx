@@ -41,7 +41,8 @@ export default function SignUpPage() {
         senha: password,
         idade: Number(age),
       });
-      navigate("/ativacao");
+      sessionStorage.setItem("pendingActivationEmail", email.trim());
+      navigate("/ativacao", { state: { email: email.trim() } });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
