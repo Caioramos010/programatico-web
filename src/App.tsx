@@ -18,6 +18,7 @@ import LandingPage from "./pages/LandingPage";
 import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import SuccessPage from "./pages/SuccessPage";
 
 // Admin — lazy-loaded (only fetched on admin subdomain or /admin/* dev fallback)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -97,6 +98,7 @@ function App() {
           <Route path="/redefinir-senha/nova" element={<GuestRoute><NewPasswordPage /></GuestRoute>} />
           <Route path="/registro" element={<GuestRoute><SignUpPage /></GuestRoute>} />
           <Route path="/ativacao" element={<GuestRoute><ActivationPage /></GuestRoute>} />
+          <Route path="/sucesso" element={<SuccessPage />} />
           {/* Main app (sidebar + content) */}
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/aprender" element={<LearnPage />} />
@@ -117,7 +119,6 @@ function App() {
            * Admin routes — dev fallback for when not on admin.* subdomain.
            * In production, admin pages are served via admin.* only.
            */}
-          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin/login/verificacao" element={<AdminLoginVerificationPage />} />
           <Route path="/admin/redefinir-senha" element={<AdminResetPasswordPage />} />
@@ -130,8 +131,13 @@ function App() {
               </AdminProtectedRoute>
             }
           >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route path="trilhas" element={<AdminTrilhasPage />} />
+            <Route path="trilhas/:trilhaId/modulos" element={<AdminModulosPage />} />
+            <Route path="modulos/:moduloId/atividades" element={<AdminAtividadesPage />} />
+            <Route path="modulos/:moduloId/conteudo" element={<AdminTeoricaPaginasPage />} />
+            <Route path="paginas/:paginaId/conteudo" element={<AdminTeoricaPage />} />
             <Route path="usuarios" element={<AdminUsuariosPage />} />
             <Route path="missoes" element={<AdminMissoesPage />} />
           </Route>

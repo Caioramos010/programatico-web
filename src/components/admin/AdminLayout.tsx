@@ -2,9 +2,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import { LayoutDashboard, LogOut, Zap, Users, Target } from "lucide-react";
 import ToastContainer from "../Toast";
-
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
-const basePath = isAdminSubdomain ? "" : "/admin";
+import { adminBasePath as basePath } from "../../lib/adminBasePath";
 
 const navLinks = [
   { to: `${basePath}/dashboard`, label: "Dashboard", icon: LayoutDashboard },

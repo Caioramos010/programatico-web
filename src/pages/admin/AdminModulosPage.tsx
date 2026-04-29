@@ -4,6 +4,7 @@ import { Pencil, Trash2, ChevronLeft, BookOpen, Zap, ChevronRight, GripVertical 
 import { adminService, type Modulo, type ModuloRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
 import { toast } from "../../components/toast/toastBus";
+import { adminBasePath } from "../../lib/adminBasePath";
 
 type ModuleType = "ACTIVITY" | "STUDY";
 
@@ -97,8 +98,8 @@ export default function AdminModulosPage() {
   const abrirConteudo = (modulo: Modulo) => {
     const path =
       modulo.moduleType === "ACTIVITY"
-        ? `/modulos/${modulo.id}/atividades`
-        : `/modulos/${modulo.id}/conteudo`;
+        ? `${adminBasePath}/modulos/${modulo.id}/atividades`
+        : `${adminBasePath}/modulos/${modulo.id}/conteudo`;
     navigate(path, { state: { moduloTitle: modulo.title, trackTitle } });
   };
 
@@ -164,7 +165,7 @@ export default function AdminModulosPage() {
 
   return (
     <div>
-      <button onClick={() => navigate("/trilhas")}
+      <button onClick={() => navigate(`${adminBasePath}/trilhas`)}
         className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         {trackTitle}
