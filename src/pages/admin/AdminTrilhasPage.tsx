@@ -4,6 +4,7 @@ import { Pencil, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { adminService, type Trilha, type TrilhaRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
 import { toast } from "../../components/toast/toastBus";
+import { adminBasePath } from "../../lib/adminBasePath";
 
 interface FormState {
   title: string;
@@ -148,7 +149,7 @@ export default function AdminTrilhasPage() {
           {trilhas.map((trilha, idx) => (
             <div
               key={trilha.id}
-              onClick={() => navigate(`/trilhas/${trilha.id}/modulos`, { state: { trackTitle: trilha.title } })}
+              onClick={() => navigate(`${adminBasePath}/trilhas/${trilha.id}/modulos`, { state: { trackTitle: trilha.title } })}
               className="group flex items-center gap-4 px-5 py-4 rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] hover:border-[var(--color-accent-light)]/50 hover:bg-white/[0.03] transition-all cursor-pointer"
             >
               <span className="text-2xl font-bold text-[var(--color-text-muted)]/25 w-8 shrink-0 select-none tabular-nums">

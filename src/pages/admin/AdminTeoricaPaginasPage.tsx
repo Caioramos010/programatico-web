@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight, BookOpen, Plus, Pencil, Trash2, FileText } from "lucide-react";
 import { adminService, type TeoriaPagina, type TeoriaPaginaRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
+import { adminBasePath } from "../../lib/adminBasePath";
 
 interface FormState {
   title: string;
@@ -111,7 +112,7 @@ export default function AdminTeoricaPaginasPage() {
   };
 
   const abrirPagina = (pagina: TeoriaPagina) => {
-    navigate(`/paginas/${pagina.id}/conteudo`, {
+    navigate(`${adminBasePath}/paginas/${pagina.id}/conteudo`, {
       state: { paginaTitle: pagina.title, moduloTitle, trackTitle },
     });
   };
