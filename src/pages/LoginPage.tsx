@@ -21,6 +21,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
   const storeLogin = useAuthStore((s) => s.login);
@@ -29,16 +30,31 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!validate(values())) return;
 
+    setSubmitting(true);
     try {
       const data = await authService.login(email, password);
       storeLogin(data.token, data.usuario);
       navigate(data.usuario.nivelHabilidade ? "/aprender" : "/onboarding");
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
+      if (msg && /n[aã]o ativad/i.test(msg)) {
+        const trimmed = email.trim();
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
+        if (isEmail) {
+          sessionStorage.setItem("pendingActivationEmail", trimmed);
+        }
+        navigate("/ativacao", {
+          state: isEmail ? { email: trimmed } : undefined,
+        });
+        return;
+      }
       if (fieldErrors) setServerErrors(fieldErrors);
       if (msg) setFormError(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -89,8 +105,8 @@ export default function LoginPage() {
           className={inputClass}
         />
 
-        <Button type="submit" variant="white" className="w-full">
-          Entrar
+        <Button type="submit" variant="white" className="w-full" disabled={submitting}>
+          {submitting ? "Entrando..." : "Entrar"}
         </Button>
 
         {formError && (

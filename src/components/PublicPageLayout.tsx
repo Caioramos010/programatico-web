@@ -1,4 +1,5 @@
-﻿import { Link } from "react-router-dom";
+﻿import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 export default function PublicPageLayout({
@@ -6,6 +7,20 @@ export default function PublicPageLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleBack = () => {
+    if (window.history.state && window.history.state.idx > 0) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-fredoka bg-bg-primary">
       {/* ── Navbar ── */}
@@ -16,13 +31,14 @@ export default function PublicPageLayout({
         >
           PROGRAMÁTICO
         </Link>
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-sm text-text-muted hover:text-white transition-colors"
+        <button
+          type="button"
+          onClick={handleBack}
+          className="flex items-center gap-2 text-sm text-text-muted hover:text-white transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
-          Início
-        </Link>
+          Voltar
+        </button>
       </header>
 
       {/* ── Content ── */}
