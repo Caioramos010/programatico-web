@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Camera, ShieldCheck, X } from "lucide-react";
+import { Camera, CheckCircle2, ShieldCheck, X } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
 import Button from "../components/Button";
 import { useAuthStore } from "../stores/authStore";
@@ -37,7 +37,7 @@ function StatCard({
   );
 }
 
-type DeleteStep = "idle" | "confirm" | "code";
+type DeleteStep = "idle" | "confirm" | "code" | "success";
 
 /* ── Componente principal ── */
 export default function ProfilePage() {
@@ -125,7 +125,7 @@ export default function ProfilePage() {
     setDeleteError("");
     try {
       await usuarioService.confirmarExclusao(user.id, deleteCode);
-      logout();
+      setDeleteStep("success");
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       setDeleteError(msg ?? "Código inválido ou expirado.");
@@ -251,7 +251,25 @@ export default function ProfilePage() {
       {deleteStep !== "idle" && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
           <div className="w-full max-w-sm rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-gray-border)] p-6 flex flex-col gap-4 font-fredoka">
-            {deleteStep === "confirm" ? (
+            {deleteStep === "success" ? (
+              <>
+                <div className="flex flex-col items-center gap-3 pt-2">
+                  <CheckCircle2
+                    className="w-14 h-14 text-[var(--color-accent-light)]"
+                    strokeWidth={1.8}
+                  />
+                  <h3 className="text-lg font-semibold text-white text-center">
+                    Conta excluída
+                  </h3>
+                  <p className="text-sm text-[var(--color-text-muted)] text-center leading-relaxed">
+                    Sua conta foi excluída com sucesso. Sentiremos sua falta!
+                  </p>
+                </div>
+                <Button variant="neutral" onClick={() => logout()}>
+                  Voltar à página inicial
+                </Button>
+              </>
+            ) : deleteStep === "confirm" ? (
               <>
                 <h3 className="text-lg font-semibold text-white">Excluir conta</h3>
                 <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
