@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Upload, X, ChevronRight } from "lucide-react";
 import { adminService, type Trilha, type TrilhaRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
+import { toast } from "../../components/toast/toastBus";
 
 interface FormState {
   title: string;
@@ -85,9 +86,11 @@ export default function AdminTrilhasPage() {
       if (editingId !== null) {
         const atualizada = await adminService.atualizarTrilha(editingId, payload);
         setTrilhas((prev) => prev.map((t) => (t.id === editingId ? atualizada : t)));
+        toast.success("Trilha atualizada com sucesso.");
       } else {
         const nova = await adminService.criarTrilha(payload);
         setTrilhas((prev) => [...prev, nova]);
+        toast.success("Trilha criada com sucesso.");
       }
       fecharModal();
     } catch (err) {
@@ -103,8 +106,9 @@ export default function AdminTrilhasPage() {
     try {
       await adminService.deletarTrilha(deleteId);
       setTrilhas((prev) => prev.filter((t) => t.id !== deleteId));
+      toast.success("Trilha excluída.");
     } catch {
-      setFormError("Erro ao deletar trilha.");
+      toast.error("Erro ao deletar trilha.");
     } finally {
       setDeleteId(null);
     }

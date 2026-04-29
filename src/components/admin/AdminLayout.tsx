@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import { LayoutDashboard, LogOut, Zap, Users, Target } from "lucide-react";
+import ToastContainer from "../Toast";
 
 const isAdminSubdomain = window.location.hostname.startsWith("admin.");
 const basePath = isAdminSubdomain ? "" : "/admin";
@@ -65,6 +66,7 @@ export default function AdminLayout() {
       <main className="flex-1 p-8 overflow-auto">
         <Outlet />
       </main>
+      <ToastContainer />
     </div>
   );
 }
