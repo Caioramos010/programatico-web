@@ -7,7 +7,6 @@ import OrDivider from "../components/auth/OrDivider";
 import { useFormValidation, rules } from "../hooks/useFormValidation";
 import { parseApiError } from "../utils/parseApiError";
 import { authService } from "../services/authService";
-import { useAuthStore } from "../stores/authStore";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -23,7 +22,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
-  const storeLogin = useAuthStore((s) => s.login);
+  const [isLoading, setIsLoading] = useState(false);
 
   const values = () => ({ email, password });
 
@@ -31,14 +30,17 @@ export default function LoginPage() {
     e.preventDefault();
     if (!validate(values())) return;
 
+    setIsLoading(true);
+    setFormError("");
     try {
-      const data = await authService.login(email, password);
-      storeLogin(data.token, data.usuario);
-      navigate(data.usuario.nivelHabilidade ? "/aprender" : "/onboarding");
+      await authService.iniciarLogin(email, password);
+      navigate("/login/verificacao", { state: { emailOuUsername: email, senha: password } });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
       if (msg) setFormError(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -89,8 +91,8 @@ export default function LoginPage() {
           className={inputClass}
         />
 
-        <Button type="submit" variant="white" className="w-full">
-          Entrar
+        <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
+          {isLoading ? "Enviando código..." : "Continuar"}
         </Button>
 
         {formError && (
