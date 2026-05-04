@@ -23,10 +23,10 @@ export default function Input({
         <input
           type={isPassword && showPassword ? "text" : type}
           className={[
-            "w-full px-4 py-3 rounded-xl",
+            "w-full px-4 py-3 rounded-xl text-base",
             "bg-[var(--color-login-glass)] text-white",
             "border",
-            "placeholder:uppercase placeholder:text-xs placeholder:tracking-widest placeholder:text-white/50",
+            "placeholder:uppercase placeholder:text-base placeholder:tracking-widest placeholder:text-white/50",
             "outline-none focus:bg-white/15",
             "transition-all duration-200",
             isPassword ? "pr-12" : "",
@@ -58,7 +58,7 @@ export default function Input({
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -4, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="text-xs text-[var(--color-error-heart)] pl-1 overflow-hidden"
+            className="text-base text-[var(--color-error-heart)] pl-1 overflow-hidden"
             role="alert"
           >
             {error}

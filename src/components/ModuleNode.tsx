@@ -85,7 +85,7 @@ export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
       </div>
 
       {isCompleted && (
-        <span className="font-fredoka text-[10px] font-semibold tracking-wide text-[var(--color-accent-light)] uppercase">
+        <span className="font-fredoka text-base font-semibold tracking-wide text-[var(--color-accent-light)] uppercase">
           Completo
         </span>
       )}

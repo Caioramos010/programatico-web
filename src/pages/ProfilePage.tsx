@@ -26,7 +26,7 @@ function StatCard({
         full ? "col-span-full" : "",
       ].join(" ")}
     >
-      <span className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wide">
+      <span className="text-base text-[var(--color-text-muted)] font-medium uppercase tracking-wide">
         {label}
       </span>
       <span className="flex items-center gap-2 text-lg font-semibold text-white">
@@ -183,44 +183,44 @@ export default function ProfilePage() {
         <form onSubmit={handleSave} className="flex flex-col gap-5">
           {/* Usuário */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Usuário</label>
+            <label className="text-base font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Usuário</label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-sm">@</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] text-base">@</span>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
-                className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent pl-10 pr-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+                className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent pl-10 pr-4 py-3 text-base text-white outline-none focus:border-white/60 transition-colors" />
             </div>
           </div>
           {/* E-mail */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">E-mail</label>
+            <label className="text-base font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">E-mail</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60 transition-colors" />
           </div>
           {/* Senha atual */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Senha atual</label>
+            <label className="text-base font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Senha atual</label>
             <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60 transition-colors" />
           </div>
           {/* Nova senha */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Nova senha</label>
+            <label className="text-base font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">Nova senha</label>
             <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-sm text-white outline-none focus:border-white/60 transition-colors" />
+              className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-base text-white outline-none focus:border-white/60 transition-colors" />
           </div>
 
-          {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+          {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
 
           <Button type="submit" variant="neutral" className="mt-2" disabled={isSaving}>
             {isSaving ? "Salvando..." : "Salvar alterações"}
           </Button>
           <button type="button" onClick={handleCancel}
-            className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
+            className="text-base text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Cancelar edição
           </button>
           <button type="button"
             onClick={() => setDeleteStep("confirm")}
-            className="text-sm text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
+            className="text-base text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Excluir a minha conta
           </button>
         </form>
@@ -228,7 +228,7 @@ export default function ProfilePage() {
         <>
           <div className="flex flex-col gap-0.5">
             <h2 className="text-xl font-semibold text-white">@{user?.username}</h2>
-            <span className="text-sm text-[var(--color-text-muted)]">{user?.email}</span>
+            <span className="text-base text-[var(--color-text-muted)]">{user?.email}</span>
             {user?.ativo && <ShieldCheck size={20} className="text-[var(--color-accent-light)] mt-1" />}
           </div>
 
@@ -272,13 +272,13 @@ export default function ProfilePage() {
             ) : deleteStep === "confirm" ? (
               <>
                 <h3 className="text-lg font-semibold text-white">Excluir conta</h3>
-                <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed">
                   Esta ação é <strong className="text-white">irreversível</strong>. Vamos enviar
                   um código de confirmação para{" "}
                   <strong className="text-white">{user?.email}</strong>.
                 </p>
                 {deleteError && (
-                  <p className="text-sm text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
@@ -289,7 +289,7 @@ export default function ProfilePage() {
                 </Button>
                 <button
                   onClick={() => { setDeleteStep("idle"); setDeleteError(""); }}
-                  className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
+                  className="text-base text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
                 >
                   Cancelar
                 </button>
@@ -297,7 +297,7 @@ export default function ProfilePage() {
             ) : (
               <>
                 <h3 className="text-lg font-semibold text-white">Digite o código</h3>
-                <p className="text-sm text-[var(--color-text-muted)]">
+                <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed">
                   Enviamos um código para <strong className="text-white">{user?.email}</strong>.
                   Digite abaixo para confirmar a exclusão.
                 </p>
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                   className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-white/60 transition-colors"
                 />
                 {deleteError && (
-                  <p className="text-sm text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
@@ -322,7 +322,7 @@ export default function ProfilePage() {
                 </Button>
                 <button
                   onClick={() => { setDeleteStep("idle"); setDeleteCode(""); setDeleteError(""); }}
-                  className="text-sm text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
+                  className="text-base text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer font-semibold"
                 >
                   Cancelar
                 </button>

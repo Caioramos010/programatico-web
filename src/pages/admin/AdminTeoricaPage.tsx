@@ -25,7 +25,7 @@ function CardEditor({ cards, onChange }: { cards: string[]; onChange: (c: string
       {cards.map((card, i) => (
         <div key={i} className="flex gap-2">
           <input
-            className="flex-1 rounded-lg px-3 py-2 text-sm bg-[var(--color-bg-card)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]"
+            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]"
             placeholder={`Card ${i + 1}`}
             value={card}
             onChange={(e) => { const c = [...cards]; c[i] = e.target.value; onChange(c); }}
@@ -39,7 +39,7 @@ function CardEditor({ cards, onChange }: { cards: string[]; onChange: (c: string
         </div>
       ))}
       <button type="button" onClick={() => onChange([...cards, ""])}
-        className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">
+        className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors">
         <Plus size={12} /> Adicionar card
       </button>
     </div>
@@ -66,7 +66,7 @@ function BlockEditor({
   return (
     <div className="rounded-2xl p-5 flex flex-col gap-4 border border-[var(--color-gray-border)] bg-[var(--color-bg-card)]">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+        <span className="text-base font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
           {block.layoutType === "TEXT" ? "Texto" : block.layoutType === "IMAGE" ? "Imagem" : "Cards"}
         </span>
         <button type="button" onClick={onDelete}
@@ -77,7 +77,7 @@ function BlockEditor({
 
       {block.layoutType === "TEXT" && (
         <textarea
-          className="w-full rounded-xl px-4 py-3 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
+          className="w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
           rows={4}
           placeholder="Escreva o texto aqui..."
           value={block.textContent}
@@ -97,7 +97,7 @@ function BlockEditor({
               </button>
             </div>
           ) : (
-            <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
+            <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
               <Upload size={14} />
               Selecionar imagem (500×500)
               <input ref={fileRef} type="file" accept="image/*" className="hidden"
@@ -226,10 +226,10 @@ export default function AdminTeoricaPage() {
 
   return (
     <div>
-      {/* Breadcrumb */}
       <button
+        type="button"
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group"
+        className="flex items-center gap-1.5 text-base text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group"
       >
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         {breadcrumb}
@@ -239,14 +239,14 @@ export default function AdminTeoricaPage() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Teórica</h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">
+          <p className="text-base text-[var(--color-text-muted)] mt-1">
             {blocks.length} {blocks.length === 1 ? "bloco" : "blocos"}
           </p>
         </div>
       </div>
 
       {pageError && (
-        <p className="mb-4 text-sm text-[var(--color-error-heart)]">{pageError}</p>
+        <p className="mb-4 text-base text-[var(--color-error-heart)]">{pageError}</p>
       )}
 
       {isLoading ? (
@@ -260,8 +260,8 @@ export default function AdminTeoricaPage() {
           {blocks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
               <Layers size={40} strokeWidth={1.5} className="mb-3 opacity-40" />
-              <p className="text-sm font-medium">Nenhum bloco ainda</p>
-              <p className="text-xs mt-1 opacity-60">Adicione blocos de texto, imagem ou cards</p>
+              <p className="text-base font-medium">Nenhum bloco ainda</p>
+              <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Adicione blocos de texto, imagem ou cards</p>
             </div>
           )}
 
@@ -279,7 +279,7 @@ export default function AdminTeoricaPage() {
             <button
               type="button"
               onClick={() => setShowAddMenu((v) => !v)}
-              className="w-full py-3 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors flex items-center justify-center gap-2 text-sm"
+              className="w-full py-3 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] transition-colors flex items-center justify-center gap-2 text-base"
             >
               <Plus size={16} /> Adicionar bloco
             </button>
@@ -294,7 +294,7 @@ export default function AdminTeoricaPage() {
                     key={type}
                     type="button"
                     onClick={() => addBlock(type)}
-                    className="flex items-center gap-3 w-full px-4 py-3 text-sm text-[var(--color-text-primary)] hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 w-full px-4 py-3 text-base text-[var(--color-text-primary)] hover:bg-white/5 transition-colors"
                   >
                     <Icon size={16} />
                     {label}
@@ -308,14 +308,14 @@ export default function AdminTeoricaPage() {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+              className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
+              className="px-6 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
             >
               {isSaving ? "Salvando..." : "Salvar"}
             </button>

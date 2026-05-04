@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
       <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-2">
         Dashboard
       </h1>
-      <p className="text-sm text-[var(--color-text-muted)] mb-8">
+      <p className="text-lg md:text-xl text-[var(--color-text-secondary)] mb-8 leading-relaxed">
         Visão geral da plataforma Programático.
       </p>
 
@@ -57,7 +57,7 @@ export default function AdminDashboardPage() {
               <p className="text-2xl font-semibold text-[var(--color-text-primary)]">
                 {value}
               </p>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+              <p className="text-base text-[var(--color-text-muted)] mt-0.5">
                 {label}
               </p>
             </div>

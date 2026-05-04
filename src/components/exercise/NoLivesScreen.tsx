@@ -17,7 +17,7 @@ export default function NoLivesScreen({ onSubscribe, onBack }: Props) {
           <h1 className="font-fredoka font-semibold text-3xl leading-tight text-[var(--color-text-primary)]">
             Suas vidas acabaram
           </h1>
-          <p className="font-fredoka text-[var(--color-text-muted)] text-sm leading-snug">
+          <p className="font-fredoka text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
             Seja root e tenha vidas ilimitadas, foque em seu aprendizado!
           </p>
         </div>
@@ -39,7 +39,7 @@ export default function NoLivesScreen({ onSubscribe, onBack }: Props) {
         <button
           type="button"
           onClick={onBack}
-          className="font-fredoka text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] transition-colors cursor-pointer"
+          className="font-fredoka text-lg text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
         >
           Talvez depois...
         </button>

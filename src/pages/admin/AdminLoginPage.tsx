@@ -4,7 +4,6 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import AuthLayout from "../../components/auth/AuthLayout";
 import { useFormValidation, rules } from "../../hooks/useFormValidation";
-import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import { authService } from "../../services/authService";
 import { parseApiError } from "../../utils/parseApiError";
 
@@ -21,7 +20,6 @@ const schema = {
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
-  const login = useAdminAuthStore((s) => s.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
@@ -36,18 +34,8 @@ export default function AdminLoginPage() {
     setFormError(null);
     setIsLoading(true);
     try {
-      const data = await authService.login(email, password);
-      if (data.usuario.role !== "ADMIN") {
-        setFormError("Acesso restrito a administradores.");
-        return;
-      }
-      login(data.token, {
-        id: data.usuario.id,
-        username: data.usuario.username,
-        email: data.usuario.email,
-        role: data.usuario.role as string,
-      });
-      navigate(`${basePath}/dashboard`);
+      await authService.iniciarLogin(email, password);
+      navigate(`${basePath}/login/verificacao`, { state: { emailOuUsername: email, senha: password } });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       setFormError(msg ?? "Erro ao entrar. Tente novamente.");
@@ -85,17 +73,17 @@ export default function AdminLoginPage() {
         />
 
         {formError && (
-          <p className="text-sm text-[var(--color-error-heart)] text-center">{formError}</p>
+          <p className="text-base text-[var(--color-error-heart)] text-center">{formError}</p>
         )}
 
         <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
-          {isLoading ? "Entrando..." : "Entrar"}
+          {isLoading ? "Enviando código..." : "Continuar"}
         </Button>
 
         <button
           type="button"
           onClick={() => navigate(`${basePath}/redefinir-senha`)}
-          className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
+          className="text-base font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
         >
           Esqueceu a senha?
         </button>

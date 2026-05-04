@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { pageVariants } from "../hooks/useMascotAnimation";
 import PublicPageLayout from "../components/PublicPageLayout";
 
@@ -67,17 +67,17 @@ export default function TermsPage() {
       >
         {/* ── Header ── */}
         <div className="mb-10">
-          <span className="inline-block text-xs font-semibold tracking-widest text-accent-light bg-accent/20 border border-accent/40 rounded-full px-4 py-1 uppercase mb-4">
+          <span className="inline-block text-base font-semibold tracking-widest text-accent-light bg-accent/20 border border-accent/40 rounded-full px-4 py-1 uppercase mb-4">
             Legal
           </span>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
             Termos de Uso
           </h1>
-          <p className="text-sm text-text-muted">
+          <p className="text-lg text-[var(--color-text-secondary)]">
             Última atualização: Janeiro de 2026
           </p>
           <div className="mt-5 p-4 bg-bg-card-inner border border-gray-border rounded-xl">
-            <p className="text-sm text-text-secondary leading-relaxed">
+            <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
               Leia atentamente estes Termos antes de usar o Programático. Eles
               definem os direitos e responsabilidades de todos os usuários da
               plataforma.
@@ -87,7 +87,7 @@ export default function TermsPage() {
 
         {/* ── Índice ── */}
         <nav className="mb-10 p-5 bg-bg-card border border-gray-border rounded-2xl">
-          <p className="text-xs font-semibold text-text-muted uppercase tracking-widest mb-3">
+          <p className="text-base font-semibold text-text-muted uppercase tracking-widest mb-3">
             Índice
           </p>
           <ol className="flex flex-col gap-1">
@@ -95,7 +95,7 @@ export default function TermsPage() {
               <li key={s.id}>
                 <a
                   href={`#${s.id}`}
-                  className="text-sm text-text-secondary hover:text-white transition-colors"
+                  className="text-lg text-text-secondary hover:text-white transition-colors"
                 >
                   {s.title}
                 </a>
@@ -115,9 +115,9 @@ export default function TermsPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.35, delay: i * 0.04 }}
             >
-              <h2 className="text-lg font-bold text-white mb-3">{s.title}</h2>
+              <h2 className="text-xl font-bold text-white mb-3">{s.title}</h2>
               <div className="w-8 h-0.5 bg-accent rounded-full mb-4" />
-              <p className="text-text-secondary text-sm leading-relaxed">
+              <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
                 {s.content}
               </p>
             </motion.section>

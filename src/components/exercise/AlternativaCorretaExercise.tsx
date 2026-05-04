@@ -57,7 +57,7 @@ export default function MultipleChoiceExercise({
               disabled={disabled}
               onClick={() => handleSelect(opt.description)}
               className={[
-                "flex flex-col items-center justify-center gap-2 rounded-xl border-2 p-4 min-h-[100px] transition-all duration-150 font-fredoka text-sm text-center",
+                "flex flex-col items-center justify-center gap-2 rounded-xl border-2 p-4 min-h-[100px] transition-all duration-150 font-fredoka text-base text-center",
                 isSelected
                   ? "border-[var(--color-accent-light)] bg-[var(--color-accent-light)]/20 text-[var(--color-text-primary)]"
                   : "border-[var(--color-gray-border)] bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] hover:border-white/40 hover:bg-[var(--color-bg-card-inner)]/80",

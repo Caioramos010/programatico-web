@@ -13,7 +13,7 @@ interface FormState {
 const emptyForm: FormState = { title: "", description: "" };
 
 const inputCls =
-  "w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
+  "w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
 
 export default function AdminTeoricaPaginasPage() {
   const { moduloId } = useParams<{ moduloId: string }>();
@@ -122,7 +122,7 @@ export default function AdminTeoricaPaginasPage() {
       {/* Breadcrumb */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
+        className="flex items-center gap-1.5 text-base text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         {trackTitle ? `${trackTitle} / ${moduloTitle}` : moduloTitle}
       </button>
@@ -131,19 +131,19 @@ export default function AdminTeoricaPaginasPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Páginas</h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">
+          <p className="text-base text-[var(--color-text-muted)] mt-1">
             {paginas.length} {paginas.length === 1 ? "página" : "páginas"}
           </p>
         </div>
         <button
           onClick={abrirCriar}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
           <Plus size={16} /> Nova Página
         </button>
       </div>
 
       {formError && !showModal && (
-        <p className="mb-4 text-sm text-[var(--color-error-heart)]">{formError}</p>
+        <p className="mb-4 text-base text-[var(--color-error-heart)]">{formError}</p>
       )}
 
       {/* List */}
@@ -156,11 +156,11 @@ export default function AdminTeoricaPaginasPage() {
       ) : paginas.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <BookOpen size={40} strokeWidth={1.5} className="mb-3 opacity-40" />
-          <p className="text-sm font-medium">Nenhuma página ainda</p>
-          <p className="text-xs mt-1 opacity-60">Crie a primeira página de conteúdo</p>
+          <p className="text-base font-medium">Nenhuma página ainda</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Crie a primeira página de conteúdo</p>
           <button
             onClick={abrirCriar}
-            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+            className="mt-5 px-4 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
             Nova Página
           </button>
         </div>
@@ -180,12 +180,12 @@ export default function AdminTeoricaPaginasPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{pagina.title}</p>
                 {pagina.description && (
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{pagina.description}</p>
+                  <p className="text-base text-[var(--color-text-muted)] mt-0.5 truncate">{pagina.description}</p>
                 )}
               </div>
 
               {/* Stats */}
-              <div className="hidden sm:flex items-center gap-4 text-xs text-[var(--color-text-muted)] shrink-0">
+              <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
                 <span className="flex items-center gap-1">
                   <FileText size={12} />
                   {pagina.totalBlocos} {pagina.totalBlocos === 1 ? "bloco" : "blocos"}
@@ -223,14 +223,14 @@ export default function AdminTeoricaPaginasPage() {
               <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
                 {editingId !== null ? "Editar Página" : "Nova Página"}
               </h2>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+              <p className="text-base text-[var(--color-text-muted)] mt-0.5">
                 {editingId !== null ? "Atualize as informações da página" : "Adicione uma nova página ao módulo"}
               </p>
             </div>
 
             <form onSubmit={salvar} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Título *</label>
+                <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Título *</label>
                 <input
                   className={inputCls}
                   placeholder="Ex: Introdução a Variáveis"
@@ -242,7 +242,7 @@ export default function AdminTeoricaPaginasPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Descrição</label>
+                <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Descrição</label>
                 <textarea
                   className={inputCls + " resize-none"}
                   rows={3}
@@ -252,19 +252,19 @@ export default function AdminTeoricaPaginasPage() {
                 />
               </div>
 
-              {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+              {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
 
               <div className="flex items-center justify-end gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                  className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-6 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
+                  className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
                   {isSaving ? "Salvando..." : editingId !== null ? "Salvar" : "Criar"}
                 </button>
               </div>
@@ -279,19 +279,19 @@ export default function AdminTeoricaPaginasPage() {
           <div className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4 my-auto"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}>
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir página?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base text-[var(--color-text-secondary)]">
               Todo o conteúdo da página será removido permanentemente.
             </p>
             <div className="flex items-center justify-end gap-2">
               <button
                 onClick={() => setDeletingId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 Cancelar
               </button>
               <button
                 onClick={confirmarDeletar}
                 disabled={isDeleting}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors">
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors">
                 {isDeleting ? "Excluindo..." : "Excluir"}
               </button>
             </div>

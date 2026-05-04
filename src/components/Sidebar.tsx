@@ -56,7 +56,7 @@ export default function Sidebar() {
             "relative overflow-hidden group",
             "flex items-center gap-3 w-full cursor-pointer",
             "px-3 py-2.5 rounded-xl",
-            "font-fredoka font-medium text-sm",
+            "font-fredoka font-medium text-base",
             "bg-gradient-to-r from-[var(--color-premium-dark)] to-[var(--color-premium)]",
             "text-white transition-all duration-200 hover:brightness-110",
           ].join(" ")}
@@ -79,7 +79,7 @@ export default function Sidebar() {
         className={[
           "flex items-center gap-3 w-full cursor-pointer",
           "px-3 py-2.5 rounded-xl",
-          "font-fredoka font-medium text-sm",
+          "font-fredoka font-medium text-base",
           "transition-all duration-200",
           isActive
             ? "bg-[var(--color-accent)] text-white"
@@ -120,7 +120,7 @@ export default function Sidebar() {
                 ].join(" ")}
               >
                 <Icon className="w-6 h-6 fill-current" />
-                <span className="text-[10px] font-medium">{label}</span>
+                <span className="text-base font-medium">{label}</span>
               </NavLink>
             );
           }
@@ -155,7 +155,7 @@ export default function Sidebar() {
             className={[
               "flex items-center gap-3 w-full cursor-pointer",
               "px-3 py-2.5 rounded-xl",
-              "font-fredoka font-medium text-sm",
+              "font-fredoka font-medium text-base",
               "transition-all duration-200",
               "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]",
             ].join(" ")}

@@ -106,7 +106,7 @@ export default function ActivationPage() {
             {isResending ? "Reenviando..." : "Reenviar"}
           </Button>
 
-          <p className="mt-6 text-xs text-[var(--color-text-secondary)] text-center leading-relaxed">
+          <p className="mt-6 text-base text-[var(--color-text-secondary)] text-center leading-relaxed">
             Ao entrar ou se registrar no programático você concorda com todos os{" "}
             <Link
               to="/termos"
@@ -125,7 +125,7 @@ export default function ActivationPage() {
         onSubmit={handleSubmit}
       >
         {activationEmail && (
-          <p className="text-xs text-[var(--color-text-secondary)] text-center">
+          <p className="text-base text-[var(--color-text-secondary)] text-center">
             Código enviado para: <span className="text-[var(--color-text-primary)]">{activationEmail}</span>
           </p>
         )}
@@ -149,11 +149,11 @@ export default function ActivationPage() {
         </Button>
 
         {formError && (
-          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+          <p className="text-base text-error-heart text-center -mt-1">{formError}</p>
         )}
 
         {resendMessage && (
-          <p className="text-xs text-[var(--color-text-secondary)] text-center -mt-1">{resendMessage}</p>
+          <p className="text-base text-[var(--color-text-secondary)] text-center -mt-1">{resendMessage}</p>
         )}
       </form>
     </AuthLayout>

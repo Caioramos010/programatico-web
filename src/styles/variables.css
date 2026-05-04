@@ -65,9 +65,9 @@
   --text-section-title: clamp(1.5rem, 3vw, 1.875rem); /* 24px → 30px */
   --text-section-body: 1rem;                         /* 16px */
   --text-card-title: 1.125rem;                       /* 18px */
-  --text-card-body: 0.875rem;                        /* 14px */
+  --text-card-body: 1rem;                           /* 16px */
   --text-stat-value: clamp(1.5rem, 3vw, 1.875rem);  /* 24px → 30px */
-  --text-stat-label: 0.75rem;                        /* 12px */
+  --text-stat-label: 0.875rem;                       /* 14px */
 
   --leading-hero: 1.15;
   --leading-section: 1.6;
@@ -93,6 +93,7 @@
 
   html {
     font-family: var(--font-fredoka);
+    font-size: 17px;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

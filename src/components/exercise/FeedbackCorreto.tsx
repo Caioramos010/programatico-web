@@ -17,14 +17,14 @@ export default function CorrectFeedback({ relatedTopics, onProceed }: Props) {
 
       {relatedTopics.length > 0 && (
         <div className="flex flex-col gap-2">
-          <span className="font-fredoka text-xs text-[var(--color-text-muted)] uppercase tracking-wide">
+          <span className="font-fredoka text-lg text-[var(--color-text-secondary)] uppercase tracking-wide">
             Assuntos relacionados
           </span>
           <div className="flex flex-wrap gap-2">
             {relatedTopics.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full bg-[var(--color-success)]/15 text-[var(--color-success)] font-fredoka text-sm"
+                className="px-3 py-1 rounded-full bg-[var(--color-success)]/15 text-[var(--color-success)] font-fredoka text-base"
               >
                 {tag}
               </span>

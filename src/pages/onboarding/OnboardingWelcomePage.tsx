@@ -11,11 +11,11 @@ export default function OnboardingWelcomePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 gap-6 font-fredoka">
       {/* Texts */}
-      <div className="text-center max-w-xs">
-        <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-2">
+      <div className="text-center max-w-md">
+        <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-3">
           Seja bem-vindo ao programático
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+        <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
           Sua jornada para se tornar um desenvolvedor de verdade começa agora,
           com foco total na prática.
         </p>
@@ -23,7 +23,7 @@ export default function OnboardingWelcomePage() {
 
       {/* Speech Bubble (above the mascot, not overlapping) */}
       <SpeechBubble tailPosition="bottom-center" className="max-w-[220px]">
-        <p className="text-sm text-[#293046] font-medium leading-snug text-center">
+        <p className="text-lg text-[#293046] font-medium leading-snug text-center">
           Eu sou a Gina e vou te ajudar nessa missão!
         </p>
       </SpeechBubble>

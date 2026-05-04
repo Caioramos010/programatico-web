@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -34,7 +34,7 @@ export default function PublicPageLayout({
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center gap-2 text-sm text-text-muted hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-2 text-lg text-[var(--color-text-secondary)] hover:text-white transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar
@@ -49,7 +49,7 @@ export default function PublicPageLayout({
         <span className="text-lg font-gloria text-white tracking-wide">
           PROGRAMÁTICO
         </span>
-        <div className="flex gap-6 text-sm text-text-muted">
+        <div className="flex gap-6 text-lg text-[var(--color-text-secondary)]">
           <Link to="/sobre" className="hover:text-white transition-colors">
             Sobre
           </Link>
@@ -60,7 +60,7 @@ export default function PublicPageLayout({
             Privacidade
           </Link>
         </div>
-        <p className="text-xs text-text-muted">
+        <p className="text-lg text-[var(--color-text-secondary)]">
           © 2026 Programático. Aprenda programação de forma divertida.
         </p>
       </footer>

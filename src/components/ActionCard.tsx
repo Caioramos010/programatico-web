@@ -44,10 +44,10 @@ export default function ActionCard({
       </span>
 
       <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
+        <span className="text-lg md:text-xl font-semibold text-[var(--color-text-primary)] truncate">
           {title}
         </span>
-        <span className="text-xs text-[var(--color-text-muted)] leading-snug line-clamp-2">
+        <span className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-snug line-clamp-3">
           {description}
         </span>
       </div>

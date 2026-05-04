@@ -71,7 +71,7 @@ function parseTags(raw: string | null): string[] {
 }
 
 const inputCls =
-  "w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
+  "w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
 
 export default function AdminAtividadesPage() {
   const { moduloId } = useParams<{ moduloId: string }>();
@@ -239,7 +239,7 @@ export default function AdminAtividadesPage() {
       {/* Breadcrumb */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
+        className="flex items-center gap-1.5 text-base text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         {trackTitle ? `${trackTitle} / ${moduloTitle}` : moduloTitle}
       </button>
@@ -248,18 +248,18 @@ export default function AdminAtividadesPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Atividades</h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">
+          <p className="text-base text-[var(--color-text-muted)] mt-1">
             {exercises.length} {exercises.length === 1 ? "atividade" : "atividades"}
           </p>
         </div>
         <button
           onClick={abrirCriar}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
           <Plus size={16} /> Nova Atividade
         </button>
       </div>
 
-      {pageError && <p className="mb-4 text-sm text-[var(--color-error-heart)]">{pageError}</p>}
+      {pageError && <p className="mb-4 text-base text-[var(--color-error-heart)]">{pageError}</p>}
 
       {/* List */}
       {isLoading ? (
@@ -271,11 +271,11 @@ export default function AdminAtividadesPage() {
       ) : exercises.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <Zap size={40} strokeWidth={1.5} className="mb-3 opacity-40" />
-          <p className="text-sm font-medium">Nenhuma atividade ainda</p>
-          <p className="text-xs mt-1 opacity-60">Crie a primeira atividade do módulo</p>
+          <p className="text-base font-medium">Nenhuma atividade ainda</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Crie a primeira atividade do módulo</p>
           <button
             onClick={abrirCriar}
-            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+            className="mt-5 px-4 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
             Nova Atividade
           </button>
         </div>
@@ -296,7 +296,7 @@ export default function AdminAtividadesPage() {
                 {ex.tags && parseTags(ex.tags).length > 0 && (
                   <div className="flex gap-1.5 mt-1 flex-wrap">
                     {parseTags(ex.tags).map((tag, i) => (
-                      <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--color-accent)]/10 text-[var(--color-accent-light)]">
+                      <span key={i} className="px-2 py-0.5 rounded-full text-base font-medium bg-[var(--color-accent)]/10 text-[var(--color-accent-light)]">
                         {tag}
                       </span>
                     ))}
@@ -305,13 +305,13 @@ export default function AdminAtividadesPage() {
               </div>
 
               {/* Type badge */}
-              <span className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${EX_TYPE_COLOR[ex.exerciseType]}`}>
+              <span className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-base font-semibold shrink-0 ${EX_TYPE_COLOR[ex.exerciseType]}`}>
                 <Zap size={11} />
                 {EX_TYPE_LABEL[ex.exerciseType]}
               </span>
 
               {/* XP */}
-              <span className="hidden sm:block text-xs font-semibold text-yellow-400/80 shrink-0">
+              <span className="hidden sm:block text-base font-semibold text-yellow-400/80 shrink-0">
                 +{ex.xpReward} XP
               </span>
 
@@ -349,7 +349,7 @@ export default function AdminAtividadesPage() {
                 <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
                   {editingId !== null ? "Editar Atividade" : "Nova Atividade"}
                 </h2>
-                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                <p className="text-base text-[var(--color-text-muted)] mt-0.5">
                   Passo {step} de 2 — {step === 1 ? "Configuração geral" : "Dados da atividade"}
                 </p>
               </div>
@@ -363,12 +363,12 @@ export default function AdminAtividadesPage() {
               <form onSubmit={avancarStep1} className="flex flex-col gap-4">
                 {/* Tipo */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Tipo de atividade</label>
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Tipo de atividade</label>
                   <div className="flex gap-2 flex-wrap">
                     {(Object.keys(EX_TYPE_LABEL) as ExType[]).map((t) => (
                       <button key={t} type="button"
                         onClick={() => setStep1((s) => ({ ...s, exerciseType: t }))}
-                        className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors border ${
+                        className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
                           step1.exerciseType === t
                             ? "bg-[var(--color-accent)] text-white border-transparent"
                             : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
@@ -381,7 +381,7 @@ export default function AdminAtividadesPage() {
 
                 {/* Enunciado */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Enunciado *</label>
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Enunciado *</label>
                   <textarea
                     className={inputCls + " resize-none"}
                     rows={4}
@@ -394,10 +394,10 @@ export default function AdminAtividadesPage() {
 
                 {/* Tags */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Assuntos relacionados</label>
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Assuntos relacionados</label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {step1.tags.map((tag, i) => (
-                      <span key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-[var(--color-accent)]/15 text-[var(--color-accent-light)]">
+                      <span key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-base font-medium bg-[var(--color-accent)]/15 text-[var(--color-accent-light)]">
                         {tag}
                         <button type="button" onClick={() => setStep1((s) => ({ ...s, tags: s.tags.filter((_, j) => j !== i) }))}>
                           <X size={10} />
@@ -406,7 +406,7 @@ export default function AdminAtividadesPage() {
                     ))}
                     <div className="flex items-center gap-1">
                       <input
-                        className="px-2.5 py-1 rounded-lg text-xs bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none w-28 focus:border-[var(--color-accent-light)]"
+                        className="px-2.5 py-1 rounded-lg text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none w-28 focus:border-[var(--color-accent-light)]"
                         placeholder="Tag..."
                         value={step1.tagInput}
                         onChange={(e) => setStep1((s) => ({ ...s, tagInput: e.target.value }))}
@@ -432,18 +432,18 @@ export default function AdminAtividadesPage() {
 
                 {/* Imagem */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Imagem (opcional)</label>
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Imagem (opcional)</label>
                   {step1.imageData ? (
                     <div className="flex items-center gap-3">
                       <img src={step1.imageData} alt="Preview" className="w-16 h-16 rounded-xl object-cover" />
                       <button type="button"
                         onClick={() => { setStep1((s) => ({ ...s, imageData: "" })); if (imageRef.current) imageRef.current.value = ""; }}
-                        className="flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
+                        className="flex items-center gap-1 text-base text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
                         <X size={12} /> Remover
                       </button>
                     </div>
                   ) : (
-                    <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
+                    <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
                       <Upload size={14} />
                       Selecionar imagem
                       <input ref={imageRef} type="file" accept="image/*" className="hidden"
@@ -452,15 +452,15 @@ export default function AdminAtividadesPage() {
                   )}
                 </div>
 
-                {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+                {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
 
                 <div className="flex items-center justify-end gap-2 pt-1">
                   <button type="button" onClick={fecharModal}
-                    className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                    className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                     Cancelar
                   </button>
                   <button type="submit"
-                    className="px-6 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+                    className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
                     Próximo →
                   </button>
                 </div>
@@ -469,12 +469,12 @@ export default function AdminAtividadesPage() {
               <form onSubmit={salvar} className="flex flex-col gap-4">
                 {/* XP */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-1.5">Recompensa de XP</label>
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Recompensa de XP</label>
                   <div className="flex gap-2">
                     {[3, 5, 7].map((xp) => (
                       <button key={xp} type="button"
                         onClick={() => setStep2((s) => ({ ...s, xpReward: xp }))}
-                        className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-colors border ${
+                        className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
                           step2.xpReward === xp
                             ? "bg-yellow-500/15 text-yellow-400 border-yellow-400/30"
                             : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
@@ -487,8 +487,8 @@ export default function AdminAtividadesPage() {
 
                 {/* Type-specific editor */}
                 <div>
-                  <label className="block text-xs font-medium text-[var(--color-text-muted)] mb-2">Conteúdo da atividade</label>
-                  <p className="text-sm text-[var(--color-text-primary)] mb-3 px-3 py-2 rounded-lg bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]">
+                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-2">Conteúdo da atividade</label>
+                  <p className="text-base text-[var(--color-text-primary)] mb-3 px-3 py-2 rounded-lg bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]">
                     {step1.statement}
                   </p>
 
@@ -497,13 +497,13 @@ export default function AdminAtividadesPage() {
                       {step2.pairs.map((pair, i) => (
                         <div key={i} className="flex gap-2">
                           <input
-                            className="flex-1 rounded-lg px-3 py-2 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                             placeholder={`Esquerda ${i + 1}`}
                             value={pair.left}
                             onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], left: e.target.value }; return { ...s, pairs: p }; })}
                           />
                           <input
-                            className="flex-1 rounded-lg px-3 py-2 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                             placeholder={`Direita ${i + 1}`}
                             value={pair.right}
                             onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], right: e.target.value }; return { ...s, pairs: p }; })}
@@ -519,7 +519,7 @@ export default function AdminAtividadesPage() {
                       ))}
                       <button type="button"
                         onClick={() => setStep2((s) => ({ ...s, pairs: [...s.pairs, { left: "", right: "" }] }))}
-                        className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
+                        className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
                         <Plus size={12} /> Adicionar par
                       </button>
                     </div>
@@ -530,7 +530,7 @@ export default function AdminAtividadesPage() {
                       {step2.dragItems.map((item, i) => (
                         <div key={i} className="flex gap-2">
                           <input
-                            className="flex-1 rounded-lg px-3 py-2 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                             placeholder={`Passo ${i + 1}`}
                             value={item}
                             onChange={(e) => setStep2((s) => { const it = [...s.dragItems]; it[i] = e.target.value; return { ...s, dragItems: it }; })}
@@ -546,7 +546,7 @@ export default function AdminAtividadesPage() {
                       ))}
                       <button type="button"
                         onClick={() => setStep2((s) => ({ ...s, dragItems: [...s.dragItems, ""] }))}
-                        className="flex items-center gap-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
+                        className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
                         <Plus size={12} /> Adicionar passo
                       </button>
                     </div>
@@ -554,7 +554,7 @@ export default function AdminAtividadesPage() {
 
                   {step1.exerciseType === "MULTIPLE_CHOICE" && (
                     <div>
-                      <p className="text-xs text-[var(--color-text-muted)] mb-2">Duplo clique para marcar a alternativa correta</p>
+                      <p className="text-lg text-[var(--color-text-secondary)] mb-2 leading-relaxed">Duplo clique para marcar a alternativa correta</p>
                       <div className="grid grid-cols-2 gap-3">
                         {step2.mcOptions.map((opt, i) => (
                           <div
@@ -573,14 +573,14 @@ export default function AdminAtividadesPage() {
                                 </button>
                               </div>
                             ) : (
-                              <label className="flex items-center justify-center gap-2 h-20 rounded-lg border border-dashed border-[var(--color-gray-border)] text-xs text-[var(--color-text-muted)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
+                              <label className="flex items-center justify-center gap-2 h-20 rounded-lg border border-dashed border-[var(--color-gray-border)] text-base text-[var(--color-text-muted)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
                                 <Upload size={12} /> Imagem
                                 <input ref={mcImageRefs[i]} type="file" accept="image/*" className="hidden"
                                   onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f, (d) => { setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], image: d }; return { ...s, mcOptions: o }; }); }); }} />
                               </label>
                             )}
                             <input
-                              className="w-full rounded-lg px-2 py-1.5 text-xs bg-transparent text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                              className="w-full rounded-lg px-2 py-1.5 text-base bg-transparent text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                               placeholder="Descrição"
                               value={opt.description}
                               onClick={(e) => e.stopPropagation()}
@@ -593,15 +593,15 @@ export default function AdminAtividadesPage() {
                   )}
                 </div>
 
-                {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+                {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
 
                 <div className="flex items-center justify-end gap-2 pt-1">
                   <button type="button" onClick={() => setStep(1)}
-                    className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                    className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                     ← Voltar
                   </button>
                   <button type="submit" disabled={isSaving}
-                    className="px-6 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
+                    className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
                     {isSaving ? "Salvando..." : editingId !== null ? "Salvar" : "Criar"}
                   </button>
                 </div>
@@ -617,14 +617,14 @@ export default function AdminAtividadesPage() {
           <div className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4 my-auto"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}>
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir atividade?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">Esta ação não pode ser desfeita.</p>
+            <p className="text-base text-[var(--color-text-secondary)]">Esta ação não pode ser desfeita.</p>
             <div className="flex items-center justify-end gap-2">
               <button onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 Cancelar
               </button>
               <button onClick={confirmarDelete} disabled={isDeleting}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 disabled:opacity-60 transition-colors">
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 disabled:opacity-60 transition-colors">
                 {isDeleting ? "Excluindo..." : "Excluir"}
               </button>
             </div>

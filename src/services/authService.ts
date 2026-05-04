@@ -12,8 +12,16 @@ export interface MessageResponse {
 }
 
 export const authService = {
-  login: (emailOuUsername: string, senha: string) =>
-    api.post<LoginResponse>("/api/auth/login", { emailOuUsername, senha }).then((r) => r.data),
+  iniciarLogin: (emailOuUsername: string, senha: string) =>
+    api.post<MessageResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
+
+  confirmarLogin: (emailOuUsername: string, senha: string, codigo: string) =>
+    api
+      .post<LoginResponse>("/api/auth/login/confirmar", { emailOuUsername, senha, codigo })
+      .then((r) => r.data),
+
+  reenviarCodigoLogin: (emailOuUsername: string, senha: string) =>
+    api.post<MessageResponse>("/api/auth/login/reenviar", { emailOuUsername, senha }).then((r) => r.data),
 
   registro: (data: {
     username: string;

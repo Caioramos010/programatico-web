@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
         </Button>
 
         {formError && (
-          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+          <p className="text-base text-error-heart text-center -mt-1">{formError}</p>
         )}
       </form>
     </AuthLayout>

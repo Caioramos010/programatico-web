@@ -22,9 +22,9 @@ function MissionItem({ missao }: { missao: MissaoResponse }) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-[var(--color-text-secondary)] min-w-0">
           {getMissionIcon(missao.tipo)}
-          <span className="text-sm font-fredoka font-medium truncate">{missao.titulo}</span>
+          <span className="text-base font-fredoka font-medium truncate">{missao.titulo}</span>
         </div>
-        <div className="flex items-center gap-0.5 text-sm font-fredoka shrink-0">
+        <div className="flex items-center gap-0.5 text-base font-fredoka shrink-0">
           <Xp className="w-3.5 h-3.5" />
           <span className="text-[var(--color-premium)]">+{missao.recompensaXp}XP</span>
         </div>
@@ -38,7 +38,7 @@ function MissionItem({ missao }: { missao: MissaoResponse }) {
             style={{ width: `${Math.min(missao.progressoAtual / missao.meta, 1) * 100}%` }}
           />
         </div>
-        <span className="text-sm text-[var(--color-text-muted)] font-fredoka shrink-0 tabular-nums">
+        <span className="text-base text-[var(--color-text-muted)] font-fredoka shrink-0 tabular-nums">
           {missao.progressoAtual}/{missao.meta}
         </span>
       </div>
@@ -50,7 +50,7 @@ export default function DailyMissions({ missoes, loading }: Props) {
   return (
     <aside className="w-64 xl:w-72 shrink-0 px-4 py-4">
       <div className="rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-5 flex flex-col gap-5">
-        <h2 className="font-fredoka font-semibold text-base text-[var(--color-text-primary)] tracking-wide">
+        <h2 className="font-fredoka font-semibold text-lg text-[var(--color-text-primary)] tracking-wide">
           Missões Diárias
         </h2>
 
@@ -64,7 +64,7 @@ export default function DailyMissions({ missoes, loading }: Props) {
             ))}
           </div>
         ) : missoes.length === 0 ? (
-          <p className="text-sm text-[var(--color-text-muted)] font-fredoka">
+          <p className="text-base text-[var(--color-text-muted)] font-fredoka">
             Sem missões disponíveis.
           </p>
         ) : (

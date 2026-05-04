@@ -134,7 +134,7 @@ export default function SignUpPage() {
           className={inputClass}
         />
 
-        <label className="flex items-start gap-3 cursor-pointer text-xs text-[var(--color-text-primary)] leading-relaxed">
+        <label className="flex items-start gap-3 cursor-pointer text-base text-[var(--color-text-primary)] leading-relaxed">
           <input
             type="checkbox"
             checked={acceptTerms}
@@ -159,7 +159,7 @@ export default function SignUpPage() {
         </Button>
 
         {formError && (
-          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+          <p className="text-base text-error-heart text-center -mt-1">{formError}</p>
         )}
       </form>
     </AuthLayout>

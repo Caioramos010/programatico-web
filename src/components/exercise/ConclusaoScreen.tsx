@@ -24,7 +24,7 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
           <h1 className="font-fredoka font-semibold text-3xl leading-tight text-[var(--color-text-primary)]">
             Você conseguiu!
           </h1>
-          <p className="font-fredoka text-[var(--color-text-muted)] text-sm leading-snug">
+          <p className="font-fredoka text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
             Você completou a prática, parabéns.
           </p>
         </div>
@@ -33,19 +33,19 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
         <div className="flex gap-4 justify-center flex-wrap">
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-gray-border)]">
             <Target size={18} className="text-[var(--color-text-muted)]" />
-            <span className="font-fredoka font-semibold text-[var(--color-text-primary)] text-sm">
+            <span className="font-fredoka font-semibold text-[var(--color-text-primary)] text-base">
               {accuracy}%
             </span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-gray-border)]">
             <Clock size={18} className="text-[var(--color-text-muted)]" />
-            <span className="font-fredoka font-semibold text-[var(--color-text-primary)] text-sm">
+            <span className="font-fredoka font-semibold text-[var(--color-text-primary)] text-base">
               {formatTime(durationSeconds)}
             </span>
           </div>
           <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-bg-card)] border border-[var(--color-gray-border)]">
             <Zap size={18} className="text-[var(--color-premium)]" fill="currentColor" />
-            <span className="font-fredoka font-semibold text-[var(--color-premium)] text-sm">
+            <span className="font-fredoka font-semibold text-[var(--color-premium)] text-base">
               {xpEarned}XP
             </span>
           </div>

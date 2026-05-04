@@ -81,7 +81,7 @@ export default function AdminUsuariosPage() {
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <input
-            className="pl-9 pr-4 py-2 rounded-xl text-sm bg-[var(--color-bg-card)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] w-72 placeholder:text-[var(--color-text-muted)]"
+            className="pl-9 pr-4 py-2 rounded-xl text-base bg-[var(--color-bg-card)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] w-72 placeholder:text-[var(--color-text-muted)]"
             placeholder="Pesquise por nome, cpf ou e-mail do usuário"
             value={busca}
             onChange={(e) => handleBusca(e.target.value)}
@@ -90,7 +90,7 @@ export default function AdminUsuariosPage() {
       </div>
 
       {formError && (
-        <p className="text-sm text-[var(--color-error-heart)] mb-4">{formError}</p>
+        <p className="text-base text-[var(--color-error-heart)] mb-4">{formError}</p>
       )}
 
       {isLoading ? (
@@ -101,8 +101,8 @@ export default function AdminUsuariosPage() {
         </div>
       ) : usuarios.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
-          <p className="text-sm font-medium">Nenhum usuário encontrado</p>
-          <p className="text-xs mt-1 opacity-70">Tente uma busca diferente</p>
+          <p className="text-base font-medium">Nenhum usuário encontrado</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Tente uma busca diferente</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -116,16 +116,16 @@ export default function AdminUsuariosPage() {
               </span>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{usuario.username}</p>
-                <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{usuario.email}</p>
+                <p className="text-base text-[var(--color-text-muted)] mt-0.5 truncate">{usuario.email}</p>
               </div>
-              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${
+              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-base font-semibold shrink-0 ${
                 usuario.role === "ADMIN"
                   ? "bg-purple-500/15 text-purple-400"
                   : "bg-blue-500/15 text-blue-400"
               }`}>
                 {usuario.role === "ADMIN" ? "Administrador" : "Usuário"}
               </span>
-              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-xs font-semibold shrink-0 ${
+              <span className={`hidden sm:flex items-center px-3 py-1 rounded-full text-base font-semibold shrink-0 ${
                 usuario.ativo ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400"
               }`}>
                 {usuario.ativo ? "Ativo" : "Inativo"}
@@ -161,9 +161,9 @@ export default function AdminUsuariosPage() {
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Editar Usuário</h2>
             <form onSubmit={salvar} className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-[var(--color-text-muted)]">Tipo</label>
+                <label className="text-base text-[var(--color-text-muted)]">Tipo</label>
                 <select
-                  className="w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                  className="w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                   value={editForm.role}
                   onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value as "USER" | "ADMIN" }))}
                 >
@@ -179,25 +179,25 @@ export default function AdminUsuariosPage() {
                   onChange={(e) => setEditForm((f) => ({ ...f, ativo: e.target.checked }))}
                   className="w-4 h-4 accent-[var(--color-accent-light)]"
                 />
-                <label htmlFor="ativo" className="text-sm text-[var(--color-text-secondary)]">
+                <label htmlFor="ativo" className="text-base text-[var(--color-text-secondary)]">
                   Conta ativa
                 </label>
               </div>
               {formError && (
-                <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>
+                <p className="text-base text-[var(--color-error-heart)]">{formError}</p>
               )}
               <div className="flex gap-3 justify-end mt-1">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                  className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
+                  className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
                 >
                   {isSaving ? "Salvando..." : "Salvar"}
                 </button>
@@ -215,19 +215,19 @@ export default function AdminUsuariosPage() {
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir usuário?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base text-[var(--color-text-secondary)]">
               Tem certeza que deseja deletar este usuário? Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={confirmarDelete}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
               >
                 Deletar
               </button>

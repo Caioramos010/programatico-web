@@ -31,7 +31,7 @@ export default function TrackBar({ trilha, loading }: Props) {
           {trilha.icon ? (
             <img src={trilha.icon} alt={trilha.titulo} className="w-full h-full object-cover" />
           ) : (
-            <span className="text-sm text-[var(--color-text-muted)] font-bold leading-none select-none">
+            <span className="text-base text-[var(--color-text-muted)] font-bold leading-none select-none">
               {trilha.titulo.charAt(0).toUpperCase()}
             </span>
           )}
@@ -41,7 +41,7 @@ export default function TrackBar({ trilha, loading }: Props) {
         <div className="flex-1 flex flex-col gap-1 min-w-0">
           {/* Row 1: title + refresh icon */}
           <div className="flex items-center justify-between gap-2">
-            <span className="font-fredoka font-semibold text-white text-sm truncate leading-none">
+            <span className="font-fredoka font-semibold text-white text-base truncate leading-none">
               {trilha.titulo}
             </span>
             <RefreshCw
@@ -51,7 +51,7 @@ export default function TrackBar({ trilha, loading }: Props) {
           </div>
           {/* Row 2: % text + progress bar + count */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--color-text-muted)] font-fredoka shrink-0">
+            <span className="text-base text-[var(--color-text-muted)] font-fredoka shrink-0">
               {trilha.percentualConcluido}% completo
             </span>
             <div className="flex-1 h-1.5 rounded-full bg-[var(--color-bg-card-inner)] overflow-hidden">
@@ -63,7 +63,7 @@ export default function TrackBar({ trilha, loading }: Props) {
                 }}
               />
             </div>
-            <span className="text-xs text-[var(--color-text-muted)] font-fredoka tabular-nums shrink-0">
+            <span className="text-base text-[var(--color-text-muted)] font-fredoka tabular-nums shrink-0">
               {trilha.concluidosModulos}/{trilha.totalModulos}
             </span>
           </div>

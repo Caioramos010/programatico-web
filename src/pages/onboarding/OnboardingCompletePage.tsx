@@ -54,11 +54,11 @@ export default function OnboardingCompletePage() {
       className="min-h-screen flex flex-col items-center justify-center px-6 py-12 gap-6 font-fredoka"
     >
       {/* Texts */}
-      <div className="text-center max-w-xs">
-        <h1 className="text-2xl font-semibold text-[var(--color-text-primary)] mb-2">
+      <div className="text-center max-w-md">
+        <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-3">
           Pratique agora
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">
+        <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
           É um prazer ter você conosco, comece a estudar agora mesmo!
         </p>
       </div>
@@ -74,7 +74,7 @@ export default function OnboardingCompletePage() {
       </motion.div>
 
       {error && (
-        <p className="text-sm text-[var(--color-error-heart)]">{error}</p>
+        <p className="text-base text-[var(--color-error-heart)]">{error}</p>
       )}
 
       {/* CTA */}
