@@ -96,10 +96,10 @@ export default function LoginVerificationPage() {
           </Button>
 
           {resendMessage && (
-            <p className="mt-2 text-xs text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
+            <p className="mt-2 text-base text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
           )}
 
-          <p className="mt-6 text-xs text-[var(--color-text-secondary)] text-center leading-relaxed">
+          <p className="mt-6 text-base text-[var(--color-text-secondary)] text-center leading-relaxed">
             Ao entrar ou se registrar no programático você concorda com todos os{" "}
             <a
               href="#termos"
@@ -136,7 +136,7 @@ export default function LoginVerificationPage() {
         </Button>
 
         {formError && (
-          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+          <p className="text-base text-error-heart text-center -mt-1">{formError}</p>
         )}
       </form>
     </AuthLayout>

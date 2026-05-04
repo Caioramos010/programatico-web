@@ -51,7 +51,7 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
   if (modulos.length === 0) {
     return (
       <div ref={containerRef} className="flex flex-1 flex-col items-center justify-center py-24 text-center px-6 w-full">
-        <p className="text-[var(--color-text-muted)] font-fredoka text-sm">
+        <p className="text-[var(--color-text-muted)] font-fredoka text-base">
           Nenhum módulo cadastrado nesta trilha ainda.
         </p>
       </div>
@@ -156,11 +156,11 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
                   }
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="text-sm font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight">
+                    <p className="text-base font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight">
                       {modulo.titulo}
                     </p>
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold shrink-0 ${
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-base font-semibold shrink-0 ${
                         modulo.tipo === "ACTIVITY"
                           ? "bg-yellow-500/15 text-yellow-400"
                           : "bg-blue-500/15 text-blue-400"
@@ -171,7 +171,7 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
                     </span>
                   </div>
                   {modulo.descricao && (
-                    <p className="text-xs text-[var(--color-text-muted)] leading-snug mb-3">
+                    <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-3">
                       {modulo.descricao}
                     </p>
                   )}
@@ -182,7 +182,7 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
                         setSelectedIndex(null);
                         onModuloClick?.(modulo);
                       }}
-                      className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-xs font-semibold font-fredoka text-[var(--color-text-secondary)]"
+                      className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-base font-semibold font-fredoka text-[var(--color-text-secondary)]"
                     >
                       {modulo.status === "COMPLETED" ? "REVER" : `COMEÇAR${modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}`}
                     </button>

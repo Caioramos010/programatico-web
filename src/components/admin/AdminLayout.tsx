@@ -24,7 +24,7 @@ export default function AdminLayout() {
           <span className="font-gloria text-xl text-[var(--color-text-primary)]">
             programático
           </span>
-          <span className="ml-2 inline-block text-[10px] font-semibold uppercase tracking-widest bg-[var(--color-premium)] text-[var(--color-bg-card)] rounded px-1.5 py-0.5 align-middle">
+          <span className="ml-2 inline-block text-base font-semibold uppercase tracking-widest bg-[var(--color-premium)] text-[var(--color-bg-card)] rounded px-1.5 py-0.5 align-middle">
             Admin
           </span>
         </div>
@@ -36,7 +36,7 @@ export default function AdminLayout() {
               key={to}
               to={to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-base font-medium transition-colors ${
                   isActive
                     ? "bg-[var(--color-premium)] text-[var(--color-bg-card)]"
                     : "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]"
@@ -53,7 +53,7 @@ export default function AdminLayout() {
         <div className="px-3 py-4 border-t border-[var(--color-gray-border)]">
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-sm font-medium text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)] transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-xl text-base font-medium text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)] transition-colors"
           >
             <LogOut size={18} />
             Sair

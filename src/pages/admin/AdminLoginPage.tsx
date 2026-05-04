@@ -73,7 +73,7 @@ export default function AdminLoginPage() {
         />
 
         {formError && (
-          <p className="text-sm text-[var(--color-error-heart)] text-center">{formError}</p>
+          <p className="text-base text-[var(--color-error-heart)] text-center">{formError}</p>
         )}
 
         <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
@@ -83,7 +83,7 @@ export default function AdminLoginPage() {
         <button
           type="button"
           onClick={() => navigate(`${basePath}/redefinir-senha`)}
-          className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
+          className="text-base font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
         >
           Esqueceu a senha?
         </button>

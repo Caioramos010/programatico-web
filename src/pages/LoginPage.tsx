@@ -96,13 +96,13 @@ export default function LoginPage() {
         </Button>
 
         {formError && (
-          <p className="text-xs text-error-heart text-center -mt-1">{formError}</p>
+          <p className="text-base text-error-heart text-center -mt-1">{formError}</p>
         )}
 
         <button
           type="button"
           onClick={() => navigate("/redefinir-senha")}
-          className="text-xs font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
+          className="text-base font-medium uppercase tracking-widest text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center block w-full"
         >
           Esqueceu a senha?
         </button>

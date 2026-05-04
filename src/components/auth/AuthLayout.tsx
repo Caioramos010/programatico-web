@@ -56,7 +56,7 @@ export default function AuthLayout({
       >
         <h1
           className={[
-            "text-2xl font-semibold text-center text-[var(--color-text-primary)]",
+            "text-3xl font-semibold text-center text-[var(--color-text-primary)]",
             adminBadge ? "mb-1" : subtitle ? "mb-2" : "mb-6",
           ].join(" ")}
         >
@@ -66,7 +66,7 @@ export default function AuthLayout({
         {adminBadge && (
           <p
             className={[
-              "text-[10px] font-semibold uppercase tracking-widest text-[var(--color-premium)] text-center",
+              "text-base font-semibold uppercase tracking-widest text-[var(--color-premium)] text-center",
               subtitle ? "mb-4" : "mb-6",
             ].join(" ")}
           >
@@ -75,7 +75,7 @@ export default function AuthLayout({
         )}
 
         {subtitle && (
-          <p className="text-sm text-[var(--color-text-secondary)] text-center mb-6">
+          <p className="text-base text-[var(--color-text-secondary)] text-center mb-6 leading-relaxed">
             {subtitle}
           </p>
         )}

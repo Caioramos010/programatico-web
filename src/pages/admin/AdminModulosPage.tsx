@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Pencil, Trash2, ChevronLeft, BookOpen, Zap, ChevronRight, GripVertical } from "lucide-react";
 import { adminService, type Modulo, type ModuloRequest } from "../../services/adminService";
@@ -151,15 +151,15 @@ export default function AdminModulosPage() {
 
   const TypeBadge = ({ type }: { type: ModuleType }) =>
     type === "STUDY"
-      ? <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-400"><BookOpen size={12}/> Teórico</span>
-      : <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-400"><Zap size={12}/> Atividade</span>;
+      ? <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-base font-semibold bg-blue-500/15 text-blue-400"><BookOpen size={12}/> Teórico</span>
+      : <span className="flex items-center gap-1.5 px-3 py-1 rounded-full text-base font-semibold bg-yellow-500/15 text-yellow-400"><Zap size={12}/> Atividade</span>;
 
-  const inputCls = "w-full rounded-xl px-4 py-3 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
+  const inputCls = "w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] transition-colors placeholder:text-[var(--color-text-muted)]";
 
   return (
     <div>
       <button onClick={() => navigate("/trilhas")}
-        className="flex items-center gap-1.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
+        className="flex items-center gap-1.5 text-base text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group">
         <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
         {trackTitle}
       </button>
@@ -167,15 +167,15 @@ export default function AdminModulosPage() {
       <div className="flex items-end justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Módulos</h1>
-          <p className="text-sm text-[var(--color-text-muted)] mt-1">{modulos.length} {modulos.length === 1 ? "módulo" : "módulos"}</p>
+          <p className="text-base text-[var(--color-text-muted)] mt-1">{modulos.length} {modulos.length === 1 ? "módulo" : "módulos"}</p>
         </div>
         <button onClick={abrirCriar}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
           + Novo módulo
         </button>
       </div>
 
-      {formError && !showModal && <p className="mb-4 text-sm text-[var(--color-error-heart)]">{formError}</p>}
+      {formError && !showModal && <p className="mb-4 text-base text-[var(--color-error-heart)]">{formError}</p>}
 
       {isLoading ? (
         <div className="flex flex-col gap-3">
@@ -184,10 +184,10 @@ export default function AdminModulosPage() {
       ) : modulos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <BookOpen size={36} className="mb-3 opacity-40" />
-          <p className="text-sm font-medium">Nenhum módulo ainda</p>
-          <p className="text-xs mt-1 opacity-70">Crie o primeiro módulo desta trilha</p>
+          <p className="text-base font-medium">Nenhum módulo ainda</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Crie o primeiro módulo desta trilha</p>
           <button onClick={abrirCriar}
-            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+            className="mt-5 px-4 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
             Criar módulo
           </button>
         </div>
@@ -215,10 +215,10 @@ export default function AdminModulosPage() {
               </span>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{modulo.title}</p>
-                {modulo.description && <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{modulo.description}</p>}
+                {modulo.description && <p className="text-base text-[var(--color-text-muted)] mt-0.5 truncate">{modulo.description}</p>}
               </div>
               <TypeBadge type={modulo.moduleType} />
-              <div className="hidden sm:flex items-center gap-4 text-xs text-[var(--color-text-muted)] shrink-0">
+              <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
                 <span>{modulo.totalComponentes} {modulo.totalComponentes === 1 ? "item" : "itens"}</span>
                 {modulo.totalXp > 0 && <span className="text-yellow-400/80">{modulo.totalXp} XP</span>}
               </div>
@@ -246,7 +246,7 @@ export default function AdminModulosPage() {
               <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
                 {editingId !== null ? "Editar módulo" : "Novo módulo"}
               </h2>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+              <p className="text-base text-[var(--color-text-muted)] mt-0.5">
                 {editingId !== null ? "Altere os dados do módulo" : "Configure e avance para adicionar conteúdo"}
               </p>
             </div>
@@ -254,7 +254,7 @@ export default function AdminModulosPage() {
               <div className="flex gap-2">
                 {(["STUDY", "ACTIVITY"] as ModuleType[]).map((type) => (
                   <button key={type} type="button" onClick={() => setForm((f) => ({ ...f, moduleType: type }))}
-                    className={"flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all border " + (
+                    className={"flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-base font-semibold transition-all border " + (
                       form.moduleType === type
                         ? type === "STUDY" ? "bg-blue-500/15 text-blue-400 border-blue-400/30" : "bg-yellow-500/15 text-yellow-400 border-yellow-400/30"
                         : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
@@ -268,14 +268,14 @@ export default function AdminModulosPage() {
                 value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
               <textarea className={inputCls + " resize-none"} placeholder="Descrição (opcional)" rows={3}
                 value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
-              {formError && <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>}
+              {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
               <div className="flex gap-3 justify-end pt-1">
                 <button type="button" onClick={fecharModal}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                  className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                   Cancelar
                 </button>
                 <button type="submit" disabled={isSaving}
-                  className="px-6 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
+                  className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
                   {isSaving ? "Salvando..." : editingId !== null ? "Salvar" : "Criar e editar conteúdo →"}
                 </button>
               </div>
@@ -289,16 +289,16 @@ export default function AdminModulosPage() {
           <div className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}>
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir módulo?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base text-[var(--color-text-secondary)]">
               Todo o conteúdo associado será removido permanentemente. Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-3 justify-end pt-1">
               <button onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
                 Cancelar
               </button>
               <button onClick={confirmarDelete}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors">
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors">
                 Excluir
               </button>
             </div>

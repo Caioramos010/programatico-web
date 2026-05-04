@@ -109,7 +109,7 @@ export default function AdminLoginVerificationPage() {
             {isResending ? "Reenviando..." : "Reenviar"}
           </Button>
           {resendMessage && (
-            <p className="mt-2 text-xs text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
+            <p className="mt-2 text-base text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
           )}
         </>
       }
@@ -133,7 +133,7 @@ export default function AdminLoginVerificationPage() {
         </Button>
 
         {formError && (
-          <p className="text-sm text-[var(--color-error-heart)] text-center">{formError}</p>
+          <p className="text-base text-[var(--color-error-heart)] text-center">{formError}</p>
         )}
       </form>
     </AuthLayout>

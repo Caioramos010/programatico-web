@@ -108,14 +108,14 @@ export default function AdminMissoesPage() {
         <h1 className="text-3xl font-semibold text-[var(--color-text-primary)]">Missões</h1>
         <button
           onClick={abrirCriar}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
         >
           + Nova Missão
         </button>
       </div>
 
       {formError && (
-        <p className="text-sm text-[var(--color-error-heart)] mb-4">{formError}</p>
+        <p className="text-base text-[var(--color-error-heart)] mb-4">{formError}</p>
       )}
 
       {isLoading ? (
@@ -126,11 +126,11 @@ export default function AdminMissoesPage() {
         </div>
       ) : missoes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
-          <p className="text-sm font-medium">Nenhuma missão cadastrada</p>
-          <p className="text-xs mt-1 opacity-70">Crie a primeira missão da plataforma</p>
+          <p className="text-base font-medium">Nenhuma missão cadastrada</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Crie a primeira missão da plataforma</p>
           <button
             onClick={abrirCriar}
-            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
+            className="mt-5 px-4 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
           >
             Nova Missão
           </button>
@@ -148,7 +148,7 @@ export default function AdminMissoesPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{missao.objectiveType}</p>
               </div>
-              <div className="hidden sm:flex items-center gap-4 text-xs text-[var(--color-text-muted)] shrink-0">
+              <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
                 <span>{missao.quantidade} {missao.quantidade === 1 ? "item" : "itens"}</span>
                 <span className="text-yellow-400/80 font-semibold">{missao.xpReward} XP</span>
               </div>
@@ -186,7 +186,7 @@ export default function AdminMissoesPage() {
             <form onSubmit={salvar} className="flex flex-col gap-5">
               {/* Tipo de missão */}
               <div className="flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
+                <span className="text-base font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
                   Selecione o tipo de missão
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -195,7 +195,7 @@ export default function AdminMissoesPage() {
                       key={tipo}
                       type="button"
                       onClick={() => setForm((f) => ({ ...f, objectiveType: tipo }))}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                      className="px-3 py-1.5 rounded-lg text-base font-medium transition-colors"
                       style={
                         form.objectiveType === tipo
                           ? { background: "var(--color-accent)", color: "#fff" }
@@ -215,13 +215,13 @@ export default function AdminMissoesPage() {
               {/* Slider de quantidade */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
+                  <span className="text-base font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
                     Quantidade de itens a completar
                   </span>
-                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">{form.quantidade}</span>
+                  <span className="text-base font-semibold text-[var(--color-text-primary)]">{form.quantidade}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-[var(--color-text-muted)]">1</span>
+                  <span className="text-base text-[var(--color-text-muted)]">1</span>
                   <input
                     type="range"
                     min={1}
@@ -231,20 +231,20 @@ export default function AdminMissoesPage() {
                     onChange={(e) => setForm((f) => ({ ...f, quantidade: Number(e.target.value) }))}
                     className="flex-1 accent-[var(--color-accent)]"
                   />
-                  <span className="text-xs text-[var(--color-text-muted)]">20</span>
+                  <span className="text-base text-[var(--color-text-muted)]">20</span>
                 </div>
               </div>
 
               {/* Slider de XP */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
+                  <span className="text-base font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
                     Recompensa de XP
                   </span>
-                  <span className="text-sm font-semibold text-[var(--color-text-primary)]">{form.xpReward}</span>
+                  <span className="text-base font-semibold text-[var(--color-text-primary)]">{form.xpReward}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-[var(--color-text-muted)]">5</span>
+                  <span className="text-base text-[var(--color-text-muted)]">5</span>
                   <input
                     type="range"
                     min={5}
@@ -254,24 +254,24 @@ export default function AdminMissoesPage() {
                     onChange={(e) => setForm((f) => ({ ...f, xpReward: Number(e.target.value) }))}
                     className="flex-1 accent-[var(--color-accent)]"
                   />
-                  <span className="text-xs text-[var(--color-text-muted)]">500</span>
+                  <span className="text-base text-[var(--color-text-muted)]">500</span>
                 </div>
               </div>
               {formError && (
-                <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>
+                <p className="text-base text-[var(--color-error-heart)]">{formError}</p>
               )}
               <div className="flex gap-3 justify-end mt-1">
                 <button
                   type="button"
                   onClick={fecharModal}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                  className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
+                  className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
                 >
                   {isSaving ? "Salvando..." : "Salvar"}
                 </button>
@@ -289,19 +289,19 @@ export default function AdminMissoesPage() {
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir missão?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base text-[var(--color-text-secondary)]">
               Tem certeza que deseja deletar esta missão? Esta ação não pode ser desfeita.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={confirmarDelete}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
               >
                 Deletar
               </button>

@@ -80,7 +80,7 @@ export default function LandingPage() {
         </span>
         <div className="flex items-center gap-3">
           <Link to="/login">
-            <Button variant="white" className="py-2.5! px-8! text-sm!">
+            <Button variant="white" className="py-2.5! px-8! text-base!">
               LOGIN
             </Button>
           </Link>
@@ -118,7 +118,7 @@ export default function LandingPage() {
           animate="animate"
           className="w-52 md:w-72 lg:w-80 shrink-0 flex flex-col items-center gap-3"
         >
-          <SpeechBubble tailPosition="bottom-center" className="text-sm text-gray-700 font-semibold">
+          <SpeechBubble tailPosition="bottom-center" className="text-base text-gray-700 font-semibold">
             Bora aprender a programar? 🦒
           </SpeechBubble>
           <Base className="w-full h-full" />
@@ -139,7 +139,7 @@ export default function LandingPage() {
             >
               <span className="text-accent-light">{s.icon}</span>
               <span className="text-2xl md:text-3xl font-bold text-white">{s.value}</span>
-              <span className="text-xs text-text-muted">{s.label}</span>
+              <span className="text-lg text-[var(--color-text-secondary)]">{s.label}</span>
             </motion.div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export default function LandingPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             Por que o Programático?
           </h2>
-          <p className="text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
             Uma plataforma completa pensada para quem quer aprender lógica de
             programação de verdade, com diversão e resultados reais.
           </p>
@@ -171,8 +171,8 @@ export default function LandingPage() {
               >
                 {f.icon}
               </div>
-              <h3 className="text-lg font-bold text-white">{f.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed">
+              <h3 className="text-xl md:text-2xl font-bold text-white">{f.title}</h3>
+              <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed max-w-sm mx-auto">
                 {f.description}
               </p>
             </motion.div>
@@ -186,7 +186,7 @@ export default function LandingPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
             Como funciona?
           </h2>
-          <p className="text-text-muted max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
             Em apenas 3 passos você já está aprendendo.
           </p>
         </div>
@@ -203,8 +203,8 @@ export default function LandingPage() {
               <div className="flex items-center justify-center w-14 h-14 rounded-full bg-accent text-white text-xl font-bold">
                 {step.number}
               </div>
-              <h3 className="text-lg font-bold text-white">{step.title}</h3>
-              <p className="text-sm text-text-muted leading-relaxed max-w-xs">
+              <h3 className="text-xl md:text-2xl font-bold text-white">{step.title}</h3>
+              <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed max-w-sm">
                 {step.description}
               </p>
             </motion.div>
@@ -219,7 +219,7 @@ export default function LandingPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
               O que você vai aprender?
             </h2>
-            <p className="text-text-muted max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
               Conteúdos essenciais para construir uma base sólida em programação.
             </p>
           </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
                 className="flex items-center gap-3 bg-bg-card-inner rounded-xl px-5 py-4 border border-gray-border"
               >
                 <CheckCircle className="w-5 h-5 text-accent-light shrink-0" />
-                <span className="text-sm text-white font-medium">{item}</span>
+                <span className="text-lg md:text-xl text-white font-medium">{item}</span>
               </motion.div>
             ))}
           </div>
@@ -264,7 +264,7 @@ export default function LandingPage() {
         <h2 className="text-2xl md:text-4xl font-bold text-white text-center leading-tight">
           Pronto para começar sua jornada?
         </h2>
-        <p className="text-text-muted text-center max-w-md">
+        <p className="text-lg md:text-xl text-[var(--color-text-secondary)] text-center max-w-md leading-relaxed">
           Junte-se a milhares de alunos que já estão aprendendo lógica de
           programação de forma divertida e gratuita.
         </p>
@@ -280,7 +280,7 @@ export default function LandingPage() {
         <span className="text-lg font-gloria text-white tracking-wide">
           PROGRAMÁTICO
         </span>
-        <div className="flex gap-6 text-sm text-text-muted">
+        <div className="flex gap-6 text-lg text-[var(--color-text-secondary)]">
           <Link to="/sobre" className="hover:text-white transition-colors">
             Sobre
           </Link>
@@ -291,7 +291,7 @@ export default function LandingPage() {
             Privacidade
           </Link>
         </div>
-        <p className="text-xs text-text-muted">
+        <p className="text-lg text-[var(--color-text-secondary)]">
           © 2026 Programático. Aprenda programação de forma divertida.
         </p>
       </footer>

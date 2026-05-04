@@ -99,7 +99,7 @@ export default function MatchPairsExercise({
                 disabled={disabled}
                 onClick={() => handleLeftClick(left)}
                 className={[
-                  "px-3 py-3 rounded-2xl border-2 font-fredoka font-semibold text-sm text-center transition-all duration-150 min-h-[52px] leading-tight",
+                  "px-3 py-3 rounded-2xl border-2 font-fredoka font-semibold text-base text-center transition-all duration-150 min-h-[52px] leading-tight",
                   matched && correctPairs.length > 0
                     ? isPairCorrect(left)
                       ? "border-[var(--color-success)] bg-[var(--color-success)]/20 text-[var(--color-text-primary)]"
@@ -129,7 +129,7 @@ export default function MatchPairsExercise({
                 disabled={disabled}
                 onClick={() => handleRightClick(right)}
                 className={[
-                  "px-3 py-3 rounded-2xl border-2 font-fredoka text-sm text-center transition-all duration-150 min-h-[52px] leading-tight",
+                  "px-3 py-3 rounded-2xl border-2 font-fredoka text-base text-center transition-all duration-150 min-h-[52px] leading-tight",
                   matched && correctPairs.length > 0
                     ? isRightCorrect(right)
                       ? "border-[var(--color-success)] bg-[var(--color-success)]/20 text-[var(--color-text-primary)]"

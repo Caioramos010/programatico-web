@@ -72,7 +72,7 @@ export default function LogicFlowExercise({
       {/* Answer area (selected order) */}
       <div className="w-full min-h-[52px] border-b-2 border-dashed border-[var(--color-gray-border)] flex flex-wrap gap-2 pb-2">
         {selected.length === 0 && (
-          <span className="text-[var(--color-text-muted)] font-fredoka text-sm self-center">
+          <span className="text-[var(--color-text-muted)] font-fredoka text-base self-center">
             Clique nos itens abaixo para ordenar
           </span>
         )}
@@ -83,7 +83,7 @@ export default function LogicFlowExercise({
             disabled={disabled}
             onClick={() => removeItem(item)}
             className={[
-              "px-4 py-2 rounded-xl border-2 font-fredoka text-sm transition-all duration-150",
+              "px-4 py-2 rounded-xl border-2 font-fredoka text-base transition-all duration-150",
               "border-[var(--color-accent-light)] bg-[var(--color-accent-light)]/20 text-[var(--color-text-primary)]",
               disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:opacity-80",
             ].join(" ")}
@@ -102,7 +102,7 @@ export default function LogicFlowExercise({
             disabled={disabled}
             onClick={() => addItem(item)}
             className={[
-              "px-4 py-2 rounded-xl border-2 font-fredoka text-sm transition-all duration-150",
+              "px-4 py-2 rounded-xl border-2 font-fredoka text-base transition-all duration-150",
               "border-[var(--color-gray-border)] bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)]",
               disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer hover:border-white/40",
             ].join(" ")}

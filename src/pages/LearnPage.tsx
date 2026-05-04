@@ -25,7 +25,9 @@ export default function LearnPage() {
     if (!el) return;
     dragState.current = { dragging: true, startY: e.clientY, scrollTop: el.scrollTop };
     el.style.cursor = "grabbing";
-  }, []);  const onMouseMove = useCallback((e: React.MouseEvent) => {
+  }, []);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
     if (!dragState.current.dragging) return;
     const el = mapRef.current;
     if (!el) return;
@@ -110,7 +112,7 @@ export default function LearnPage() {
       >
         {formError ? (
           <div className="flex items-center justify-center py-24 px-6">
-            <p className="text-[var(--color-error-heart)] font-fredoka text-sm text-center">
+            <p className="text-[var(--color-error-heart)] font-fredoka text-base text-center">
               {formError}
             </p>
           </div>

@@ -1,4 +1,4 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 export default function PublicPageLayout({
@@ -18,7 +18,7 @@ export default function PublicPageLayout({
         </Link>
         <Link
           to="/"
-          className="flex items-center gap-2 text-sm text-text-muted hover:text-white transition-colors"
+          className="flex items-center gap-2 text-base text-text-muted hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Início
@@ -33,7 +33,7 @@ export default function PublicPageLayout({
         <span className="text-lg font-gloria text-white tracking-wide">
           PROGRAMÁTICO
         </span>
-        <div className="flex gap-6 text-sm text-text-muted">
+        <div className="flex gap-6 text-lg text-[var(--color-text-secondary)]">
           <Link to="/sobre" className="hover:text-white transition-colors">
             Sobre
           </Link>
@@ -44,7 +44,7 @@ export default function PublicPageLayout({
             Privacidade
           </Link>
         </div>
-        <p className="text-xs text-text-muted">
+        <p className="text-lg text-[var(--color-text-secondary)]">
           © 2026 Programático. Aprenda programação de forma divertida.
         </p>
       </footer>

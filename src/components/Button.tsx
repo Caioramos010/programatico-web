@@ -55,7 +55,7 @@ export default function Button({
     "inline-flex items-center justify-center gap-2",
     "px-6 py-3",
     "rounded-xl",
-    "font-fredoka font-semibold text-sm uppercase tracking-wider",
+    "font-fredoka font-semibold text-base uppercase tracking-wider",
     "border-b-4",
     "transition-all duration-150 ease-in-out",
     "select-none cursor-pointer",

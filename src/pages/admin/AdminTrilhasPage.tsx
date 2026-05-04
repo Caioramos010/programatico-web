@@ -116,7 +116,7 @@ export default function AdminTrilhasPage() {
         <h1 className="text-3xl font-semibold text-[var(--color-text-primary)]">Trilhas</h1>
         <button
           onClick={abrirCriar}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
         >
           + Nova Trilha
         </button>
@@ -130,11 +130,11 @@ export default function AdminTrilhasPage() {
         </div>
       ) : trilhas.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
-          <p className="text-sm font-medium">Nenhuma trilha cadastrada</p>
-          <p className="text-xs mt-1 opacity-70">Crie a primeira trilha da plataforma</p>
+          <p className="text-base font-medium">Nenhuma trilha cadastrada</p>
+          <p className="text-lg mt-1 text-[var(--color-text-secondary)]">Crie a primeira trilha da plataforma</p>
           <button
             onClick={abrirCriar}
-            className="mt-5 px-4 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
+            className="mt-5 px-4 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors"
           >
             Nova Trilha
           </button>
@@ -153,10 +153,10 @@ export default function AdminTrilhasPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{trilha.title}</p>
                 {trilha.description && (
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{trilha.description}</p>
+                  <p className="text-base text-[var(--color-text-muted)] mt-0.5 truncate">{trilha.description}</p>
                 )}
               </div>
-              <span className="hidden sm:block text-xs text-[var(--color-text-muted)] shrink-0">
+              <span className="hidden sm:block text-base text-[var(--color-text-muted)] shrink-0">
                 {trilha.totalModulos} {trilha.totalModulos === 1 ? "módulo" : "módulos"}
               </span>
               {trilha.icon?.startsWith("data:") ? (
@@ -201,20 +201,20 @@ export default function AdminTrilhasPage() {
             </h2>
             <form onSubmit={salvar} className="flex flex-col gap-3">
               <input
-                className="w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                className="w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
                 placeholder="Título *"
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               />
               <textarea
-                className="w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none"
+                className="w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none"
                 placeholder="Descrição *"
                 rows={3}
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               />
               <div className="flex flex-col gap-2">
-                <label className="w-full rounded-xl px-4 py-2.5 text-sm bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors flex items-center gap-2">
+                <label className="w-full rounded-xl px-4 py-2.5 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors flex items-center gap-2">
                   <Upload size={14} />
                   {form.icon ? "Trocar imagem" : "Selecionar imagem"}
                   <input
@@ -234,7 +234,7 @@ export default function AdminTrilhasPage() {
                         setForm((f) => ({ ...f, icon: "" }));
                         if (fileInputRef.current) fileInputRef.current.value = "";
                       }}
-                      className="flex items-center gap-1 text-xs text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors"
+                      className="flex items-center gap-1 text-base text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors"
                     >
                       <X size={12} /> Remover
                     </button>
@@ -242,20 +242,20 @@ export default function AdminTrilhasPage() {
                 )}
               </div>
               {formError && (
-                <p className="text-sm text-[var(--color-error-heart)]">{formError}</p>
+                <p className="text-base text-[var(--color-error-heart)]">{formError}</p>
               )}
               <div className="flex gap-3 justify-end mt-1">
                 <button
                   type="button"
                   onClick={fecharModal}
-                  className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                  className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
+                  className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
                 >
                   {isSaving ? "Salvando..." : "Salvar"}
                 </button>
@@ -273,19 +273,19 @@ export default function AdminTrilhasPage() {
             style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}
           >
             <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Excluir trilha?</h2>
-            <p className="text-sm text-[var(--color-text-secondary)]">
+            <p className="text-base text-[var(--color-text-secondary)]">
               Tem certeza que deseja deletar esta trilha? Todos os módulos associados serão removidos.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-xl text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+                className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Cancelar
               </button>
               <button
                 onClick={confirmarDelete}
-                className="px-5 py-2 rounded-xl text-sm font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
+                className="px-5 py-2 rounded-xl text-base font-semibold bg-[var(--color-error)] text-white hover:opacity-90 transition-colors"
               >
                 Deletar
               </button>

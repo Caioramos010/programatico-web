@@ -1,4 +1,4 @@
-﻿import { motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Zap, BookOpen, Users, HeartHandshake } from "lucide-react";
 import { pageVariants, mascotEnterVariants } from "../hooks/useMascotAnimation";
@@ -50,7 +50,7 @@ export default function AboutPage() {
         {/* ── Hero ── */}
         <section className="flex flex-col md:flex-row items-center justify-center gap-10 px-6 md:px-16 lg:px-24 py-16 md:py-20 max-w-7xl mx-auto">
           <div className="flex flex-col gap-6 max-w-xl text-center md:text-left">
-            <span className="inline-block self-center md:self-start text-xs font-semibold tracking-widest text-accent-light bg-accent/20 border border-accent/40 rounded-full px-4 py-1 uppercase">
+            <span className="inline-block self-center md:self-start text-base font-semibold tracking-widest text-accent-light bg-accent/20 border border-accent/40 rounded-full px-4 py-1 uppercase">
               Nossa história
             </span>
             <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
@@ -60,13 +60,13 @@ export default function AboutPage() {
               </span>{" "}
               o ensino de programação
             </h1>
-            <p className="text-text-secondary leading-relaxed text-base md:text-lg">
+            <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
               O Programático surgiu da ideia simples de que aprender lógica de
               programação não precisa ser chato. Combinamos gamificação,
               exercícios práticos e uma mascote carismática para criar uma
               experiência única de aprendizado.
             </p>
-            <p className="text-text-secondary leading-relaxed text-base md:text-lg">
+            <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
               Hoje somos uma plataforma completa que acompanha o aluno desde os
               primeiros passos até os conceitos avançados — sempre de forma
               divertida, progressiva e interativa.
@@ -81,7 +81,7 @@ export default function AboutPage() {
           >
             <SpeechBubble
               tailPosition="bottom-center"
-              className="text-sm text-gray-700 font-semibold"
+              className="text-lg text-gray-700 font-semibold"
             >
               Ser programador(a) está ao seu alcance! 🚀
             </SpeechBubble>
@@ -95,7 +95,7 @@ export default function AboutPage() {
             <h2 className="text-2xl md:text-3xl font-bold text-white">
               Nossa Missão
             </h2>
-            <p className="text-text-secondary text-base md:text-lg leading-relaxed">
+            <p className="text-lg md:text-xl text-text-secondary leading-relaxed">
               Tornar o aprendizado de lógica de programação{" "}
               <strong className="text-white">acessível, divertido e eficaz</strong>{" "}
               para qualquer pessoa no Brasil — desde estudantes do ensino médio
@@ -112,7 +112,7 @@ export default function AboutPage() {
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
                 Nossos Valores
               </h2>
-              <p className="text-text-muted max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-2xl mx-auto leading-relaxed">
                 Esses princípios guiam cada decisão que tomamos na plataforma.
               </p>
             </div>
@@ -132,8 +132,8 @@ export default function AboutPage() {
                     {v.icon}
                   </div>
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-base font-bold text-white">{v.title}</h3>
-                    <p className="text-sm text-text-muted leading-relaxed">
+                    <h3 className="text-xl font-bold text-white">{v.title}</h3>
+                    <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
                       {v.description}
                     </p>
                   </div>
@@ -148,7 +148,7 @@ export default function AboutPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-white leading-tight">
             Faça parte da comunidade
           </h2>
-          <p className="text-text-muted max-w-md">
+          <p className="text-lg md:text-xl text-[var(--color-text-secondary)] max-w-md leading-relaxed">
             Junte-se a milhares de alunos que já estão transformando suas
             carreiras com o Programático.
           </p>

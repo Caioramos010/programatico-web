@@ -213,7 +213,7 @@ export default function ExercisePage() {
       {/* Header */}
       <header className="relative px-5 pt-4 pb-3 shrink-0">
         <div className="w-full max-w-lg mx-auto flex items-center gap-3 pr-8">
-          <span className="font-fredoka text-xs text-[var(--color-text-muted)] shrink-0">
+          <span className="font-fredoka text-base text-[var(--color-text-muted)] shrink-0">
             {currentIndex}/{exercises.length}
           </span>
           <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
@@ -224,7 +224,7 @@ export default function ExercisePage() {
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <Heart size={18} className="text-[var(--color-error-heart)]" fill="currentColor" />
-            <span className="font-fredoka text-sm font-semibold text-[var(--color-text-primary)]">
+            <span className="font-fredoka text-base font-semibold text-[var(--color-text-primary)]">
               {lives}/{maxLives}
             </span>
           </div>
@@ -284,7 +284,7 @@ export default function ExercisePage() {
               </>
             )}
             {submitError && (
-              <p className="mt-3 font-fredoka text-sm text-[var(--color-error-heart)]">{submitError}</p>
+              <p className="mt-3 font-fredoka text-base text-[var(--color-error-heart)]">{submitError}</p>
             )}
           </div>
         </div>
