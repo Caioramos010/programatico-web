@@ -1,9 +1,8 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 import { LayoutDashboard, LogOut, Zap, Users, Target } from "lucide-react";
-
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
-const basePath = isAdminSubdomain ? "" : "/admin";
+import ToastContainer from "../Toast";
+import { adminBasePath as basePath } from "../../lib/adminBasePath";
 
 const navLinks = [
   { to: `${basePath}/dashboard`, label: "Dashboard", icon: LayoutDashboard },
@@ -65,6 +64,7 @@ export default function AdminLayout() {
       <main className="flex-1 p-8 overflow-auto">
         <Outlet />
       </main>
+      <ToastContainer />
     </div>
   );
 }

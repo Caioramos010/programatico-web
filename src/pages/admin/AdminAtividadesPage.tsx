@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Zap, Plus, Pencil, Trash2, X, Upload } from "lucide-react";
 import { adminService, type Exercise, type ExerciseRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
+import { toast } from "../../components/toast/toastBus";
 
 type ExType = "PAIRS" | "DRAG_DROP" | "MULTIPLE_CHOICE";
 
@@ -196,9 +197,11 @@ export default function AdminAtividadesPage() {
       if (editingId !== null) {
         const updated = await adminService.atualizarExercicio(editingId, payload);
         setExercises((prev) => prev.map((ex) => (ex.id === editingId ? updated : ex)));
+        toast.success("Atividade atualizada com sucesso.");
       } else {
         const novo = await adminService.criarExercicio(Number(moduloId), payload);
         setExercises((prev) => [...prev, novo]);
+        toast.success("Atividade criada com sucesso.");
       }
       fecharModal();
     } catch (err) {
@@ -216,8 +219,9 @@ export default function AdminAtividadesPage() {
       await adminService.deletarExercicio(deleteId);
       setExercises((prev) => prev.filter((ex) => ex.id !== deleteId));
       setDeleteId(null);
+      toast.success("Atividade excluída.");
     } catch {
-      setPageError("Erro ao deletar atividade.");
+      toast.error("Erro ao deletar atividade.");
       setDeleteId(null);
     } finally {
       setIsDeleting(false);

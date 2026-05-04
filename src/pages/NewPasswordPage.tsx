@@ -42,7 +42,15 @@ export default function NewPasswordPage() {
 
     try {
       await authService.novaSenha(codigo, password);
-      navigate("/login");
+      navigate("/sucesso", {
+        replace: true,
+        state: {
+          title: "Senha redefinida",
+          message: "Sua senha foi alterada com sucesso. Faça login com a nova senha.",
+          ctaLabel: "Ir para o login",
+          ctaTo: "/login",
+        },
+      });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);

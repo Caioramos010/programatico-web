@@ -21,6 +21,7 @@ export default function ActivationPage() {
   const [code, setCode] = useState("");
   const [resendMessage, setResendMessage] = useState("");
   const [isResending, setIsResending] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const activationEmail = useMemo(() => {
     const stateEmail = (location.state as { email?: string } | null)?.email?.trim();
@@ -40,16 +41,28 @@ export default function ActivationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!validate(values())) return;
 
+    setSubmitting(true);
     try {
       await authService.ativar(code);
       sessionStorage.removeItem("pendingActivationEmail");
-      navigate("/login");
+      navigate("/sucesso", {
+        replace: true,
+        state: {
+          title: "Conta ativada",
+          message: "Sua conta foi ativada com sucesso. Faça login para continuar.",
+          ctaLabel: "Ir para o login",
+          ctaTo: "/login",
+        },
+      });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
       if (msg) setFormError(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -97,8 +110,6 @@ export default function ActivationPage() {
             Ao entrar ou se registrar no programático você concorda com todos os{" "}
             <Link
               to="/termos"
-              target="_blank"
-              rel="noopener noreferrer"
               className="underline text-[var(--color-text-primary)] hover:text-white/90 transition-colors"
             >
               termos do site
@@ -133,8 +144,8 @@ export default function ActivationPage() {
           className={inputClass}
         />
 
-        <Button type="submit" variant="white" className="w-full">
-          Entrar
+        <Button type="submit" variant="white" className="w-full" disabled={submitting}>
+          {submitting ? "Ativando..." : "Entrar"}
         </Button>
 
         {formError && (

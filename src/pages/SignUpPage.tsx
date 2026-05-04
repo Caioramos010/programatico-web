@@ -25,6 +25,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [age, setAge] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
 
@@ -32,8 +33,10 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     if (!validate(values())) return;
 
+    setSubmitting(true);
     try {
       await authService.registro({
         username,
@@ -47,6 +50,8 @@ export default function SignUpPage() {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
       if (msg) setFormError(msg);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -141,8 +146,6 @@ export default function SignUpPage() {
             os{" "}
             <Link
               to="/termos"
-              target="_blank"
-              rel="noopener noreferrer"
               className="underline hover:text-white/90 transition-colors"
             >
               termos do site
@@ -151,8 +154,8 @@ export default function SignUpPage() {
           </span>
         </label>
 
-        <Button type="submit" variant="white" disabled={!acceptTerms} className="w-full">
-          Criar conta
+        <Button type="submit" variant="white" disabled={!acceptTerms || submitting} className="w-full">
+          {submitting ? "Criando..." : "Criar conta"}
         </Button>
 
         {formError && (

@@ -127,9 +127,20 @@ export default function LearnPage() {
               ))}
             </div>
           </div>
+        ) : !trilha || trilha.modulos.length === 0 ? (
+          <div className="flex items-center justify-center py-24 px-6">
+            <div className="flex flex-col items-center gap-3 max-w-sm text-center font-fredoka">
+              <p className="text-base font-semibold text-[var(--color-text-primary)]">
+                Nenhuma trilha disponível
+              </p>
+              <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                Ainda não há módulos publicados para o seu nível. Volte em breve — novos conteúdos estão a caminho!
+              </p>
+            </div>
+          </div>
         ) : (
           <TrackMap
-            modulos={trilha?.modulos ?? []}
+            modulos={trilha.modulos}
             onModuloClick={handleModuloClick}
           />
         )}
