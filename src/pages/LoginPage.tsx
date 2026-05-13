@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -18,6 +18,8 @@ const schema = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,7 +36,9 @@ export default function LoginPage() {
     setFormError("");
     try {
       await authService.iniciarLogin(email, password);
-      navigate("/login/verificacao", { state: { emailOuUsername: email, senha: password } });
+      navigate("/login/verificacao", {
+        state: { emailOuUsername: email, senha: password, from },
+      });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
