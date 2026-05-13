@@ -104,9 +104,28 @@ export default function Sidebar() {
           "md:hidden",
         ].join(" ")}
       >
-        {[...mainNav.filter((i) => !i.premium), ...bottomNav.slice(0, 1)].map(
-          ({ label, icon: Icon, path }) => {
+        {[
+          ...mainNav.filter((i) => !i.premium),
+          mainNav.find((i) => i.premium)!,
+          bottomNav[0],
+        ].map(({ label, icon: Icon, path, premium }) => {
             const isActive = pathname.startsWith(path);
+            if (premium) {
+              return (
+                <NavLink
+                  key={path}
+                  to={path}
+                  className={[
+                    "flex flex-col items-center gap-0.5 px-2 py-1 cursor-pointer",
+                    "transition-colors duration-200",
+                    isActive ? "text-[var(--color-premium)]" : "text-[#d4a843] hover:text-[#fde68a]",
+                  ].join(" ")}
+                >
+                  <Icon className="w-6 h-6 fill-current" />
+                  <span className="text-base font-medium">{label}</span>
+                </NavLink>
+              );
+            }
             return (
               <NavLink
                 key={path}
@@ -123,8 +142,7 @@ export default function Sidebar() {
                 <span className="text-base font-medium">{label}</span>
               </NavLink>
             );
-          }
-        )}
+          })}
       </nav>
 
       {/* ── Desktop: sidebar lateral fixa ── */}
