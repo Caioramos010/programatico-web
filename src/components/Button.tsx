@@ -1,6 +1,6 @@
 import { type ButtonHTMLAttributes } from "react";
 
-type Variant = "primary" | "neutral" | "success" | "error";
+type Variant = "primary" | "neutral" | "success" | "error" | "white";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -34,6 +34,14 @@ const variantStyles: Record<Variant, string> = {
     "hover:bg-[#a01e21]",
     "text-white",
   ].join(" "),
+
+  white: [
+    "bg-white",
+    "border-b-[#d1d5db]",
+    "hover:bg-gray-50",
+    "text-gray-700",
+    "shadow-md",
+  ].join(" "),
 };
 
 export default function Button({
@@ -47,11 +55,11 @@ export default function Button({
     "inline-flex items-center justify-center gap-2",
     "px-6 py-3",
     "rounded-xl",
-    "font-fredoka font-semibold text-sm uppercase tracking-wider",
+    "font-fredoka font-semibold text-base uppercase tracking-wider",
     "border-b-4",
     "transition-all duration-150 ease-in-out",
     "select-none cursor-pointer",
-    "active:translate-y-[2px] active:border-b-0",
+    "active:translate-y-[2px] active:border-b-transparent",
   ].join(" ");
 
   const disabledStyles =

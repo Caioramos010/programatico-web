@@ -1,13 +1,16 @@
 import { type InputHTMLAttributes, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
+  darkBackground?: boolean;
 }
 
 export default function Input({
   type,
   error,
+  darkBackground: _dark,
   className = "",
   ...rest
 }: InputProps) {
@@ -20,14 +23,16 @@ export default function Input({
         <input
           type={isPassword && showPassword ? "text" : type}
           className={[
-            "w-full px-4 py-3 rounded-xl",
+            "w-full px-4 py-3 rounded-xl text-base",
             "bg-[var(--color-login-glass)] text-white",
-            "border border-white/40",
-            "placeholder:uppercase placeholder:text-xs placeholder:tracking-widest placeholder:text-white/50",
-            "outline-none focus:border-white/80 focus:bg-white/15",
+            "border",
+            "placeholder:uppercase placeholder:text-base placeholder:tracking-widest placeholder:text-white/50",
+            "outline-none focus:bg-white/15",
             "transition-all duration-200",
             isPassword ? "pr-12" : "",
-            error ? "border-[var(--color-error-heart)]" : "",
+            error
+              ? "border-[var(--color-error-heart)] focus:border-[var(--color-error-heart)]"
+              : "border-white/40 focus:border-white/80",
             className,
           ].join(" ")}
           {...rest}
@@ -46,11 +51,20 @@ export default function Input({
         )}
       </div>
 
-      {error && (
-        <span className="text-xs text-[var(--color-error-heart)] pl-1">
-          {error}
-        </span>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.span
+            initial={{ opacity: 0, y: -4, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="text-base text-[var(--color-error-heart)] pl-1 overflow-hidden"
+            role="alert"
+          >
+            {error}
+          </motion.span>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

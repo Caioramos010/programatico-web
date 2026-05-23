@@ -1,14 +1,16 @@
-import { type SVGProps, type ReactElement, useState } from "react";
+import { type SVGProps, type ReactElement } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Book,
   Pin,
-  Calendar,
   Crown,
   User,
   Settings,
   Notification,
+  LogOut,
 } from "./icons";
+import { useAuthStore } from "../stores/authStore";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
 
@@ -23,7 +25,6 @@ const mainNav: NavItem[] = [
   { label: "APRENDER", icon: Home, path: "/aprender" },
   { label: "PRATICAR", icon: Book, path: "/praticar" },
   { label: "REVISAR", icon: Pin, path: "/revisar" },
-  { label: "MISSÕES", icon: Calendar, path: "/missoes" },
   { label: "SEJA ROOT", icon: Crown, path: "/seja-root", premium: true },
 ];
 
@@ -34,49 +35,60 @@ const bottomNav: NavItem[] = [
 ];
 
 export default function Sidebar() {
-  const [active, setActive] = useState("/aprender");
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((s) => s.logout);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   const renderItem = ({ label, icon: Icon, path, premium }: NavItem) => {
-    const isActive = active === path;
+    const isActive = pathname.startsWith(path);
 
     if (premium) {
       return (
-        <button
+        <NavLink
           key={path}
-          onClick={() => setActive(path)}
+          to={path}
           className={[
+            "relative overflow-hidden group",
             "flex items-center gap-3 w-full cursor-pointer",
-            "py-4 px-5",
-            "font-fredoka font-medium text-[18px] leading-[100%]",
+            "px-3 py-2.5 rounded-xl",
+            "font-fredoka font-medium text-base",
             "bg-gradient-to-r from-[var(--color-premium-dark)] to-[var(--color-premium)]",
-            "text-white",
-            "transition-all duration-200",
-            "hover:brightness-110",
+            "text-white transition-all duration-200 hover:brightness-110",
           ].join(" ")}
         >
-          <Icon className="w-6 h-6 shrink-0" />
+          {/* shine sweep */}
+          <span
+            aria-hidden
+            className="absolute top-0 left-[-75%] h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none group-hover:animate-shine"
+          />
+          <Icon className="w-5 h-5 shrink-0" />
           <span>{label}</span>
-        </button>
+        </NavLink>
       );
     }
 
     return (
-      <button
+      <NavLink
         key={path}
-        onClick={() => setActive(path)}
+        to={path}
         className={[
           "flex items-center gap-3 w-full cursor-pointer",
-          "py-4 px-5",
-          "font-fredoka font-medium text-[18px] leading-[100%]",
+          "px-3 py-2.5 rounded-xl",
+          "font-fredoka font-medium text-base",
           "transition-all duration-200",
           isActive
-            ? "text-white bg-[var(--color-bg-card-inner)] border-l-4 border-[var(--color-accent)] pl-4"
-            : "text-[var(--color-text-muted)] border-l-4 border-transparent hover:text-white hover:bg-white/5",
+            ? "bg-[var(--color-accent)] text-white"
+            : "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]",
         ].join(" ")}
       >
-        <Icon className="w-6 h-6 shrink-0" />
+        <Icon className="w-5 h-5 shrink-0" />
         <span>{label}</span>
-      </button>
+      </NavLink>
     );
   };
 
@@ -94,22 +106,22 @@ export default function Sidebar() {
       >
         {[...mainNav.filter((i) => !i.premium), ...bottomNav.slice(0, 1)].map(
           ({ label, icon: Icon, path }) => {
-            const isActive = active === path;
+            const isActive = pathname.startsWith(path);
             return (
-              <button
+              <NavLink
                 key={path}
-                onClick={() => setActive(path)}
+                to={path}
                 className={[
                   "flex flex-col items-center gap-0.5 px-2 py-1 cursor-pointer",
                   "transition-colors duration-200",
                   isActive
-                    ? "text-[var(--color-accent)] border-t-4 border-[var(--color-accent)] -mt-1"
-                    : "text-[var(--color-text-muted)] border-t-4 border-transparent -mt-1 hover:text-white",
+                    ? "text-[var(--color-accent)]"
+                    : "text-[var(--color-text-muted)] hover:text-white",
                 ].join(" ")}
               >
                 <Icon className="w-6 h-6 fill-current" />
-                <span className="text-[10px] font-medium">{label}</span>
-              </button>
+                <span className="text-base font-medium">{label}</span>
+              </NavLink>
             );
           }
         )}
@@ -119,28 +131,38 @@ export default function Sidebar() {
       <aside
         className={[
           "hidden md:flex",
-          "fixed left-0 top-0 z-50 h-screen w-64",
+          "fixed left-0 top-0 z-50 h-screen w-60",
           "flex-col",
           "bg-[var(--color-bg-card)] border-r-2 border-[var(--color-accent)]",
           "font-fredoka",
         ].join(" ")}
       >
         {/* Logo */}
-        <div className="flex items-center justify-center py-8 px-5">
-          <h1 className="font-gloria text-4xl text-white">Programático</h1>
+        <div className="px-6 py-6 border-b border-[var(--color-gray-border)]">
+          <h1 className="font-gloria text-2xl text-white">programático</h1>
         </div>
 
         {/* Navegação principal */}
-        <nav className="flex flex-col gap-1 w-full pt-3">
+        <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
           {mainNav.map(renderItem)}
         </nav>
 
-        {/* Espaçador */}
-        <div className="flex-1" />
-
         {/* Navegação inferior */}
-        <nav className="flex flex-col gap-1 w-full pb-6">
+        <nav className="px-3 py-4 border-t border-[var(--color-gray-border)] flex flex-col gap-1">
           {bottomNav.map(renderItem)}
+          <button
+            onClick={handleLogout}
+            className={[
+              "flex items-center gap-3 w-full cursor-pointer",
+              "px-3 py-2.5 rounded-xl",
+              "font-fredoka font-medium text-base",
+              "transition-all duration-200",
+              "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]",
+            ].join(" ")}
+          >
+            <LogOut className="w-5 h-5 shrink-0" />
+            <span>ENCERRAR SESSÃO</span>
+          </button>
         </nav>
       </aside>
     </>
