@@ -93,7 +93,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] px-4 py-6 md:px-8 md:py-8 font-fredoka">
-      <div className="mx-auto w-full max-w-5xl flex flex-col gap-6 md:gap-8">
+      <div className="mx-auto w-full max-w-6xl flex flex-col gap-6 md:gap-8">
         <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <Bell className="w-7 h-7 text-yellow-300 fill-yellow-300" />
