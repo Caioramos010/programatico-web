@@ -128,10 +128,11 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
           const cy = getY(i);
           const isSelected = selectedIndex === i;
 
-          // Popover position: prefer right side, fallback to left when near right edge
+          // Popover position: prefer right side, fallback to left when near right edge.
+          // Popover width is w-64 (256px); add some margin to keep it within the container.
           const popoverLeft = cx + nodeR + 12;
           const popoverRight = containerW - (cx - nodeR - 12);
-          const showRight = popoverLeft + 180 <= containerW;
+          const showRight = popoverLeft + 256 <= containerW;
 
           return (
             <div key={modulo.id}>
@@ -148,44 +149,57 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
 
               {isSelected && (
                 <div
-                  className="absolute z-10 w-44 rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
+                  className="absolute z-10 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
                   style={
                     showRight
                       ? { left: popoverLeft, top: cy - nodeR }
                       : { right: popoverRight, top: cy - nodeR }
                   }
                 >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="text-base font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight">
+                  <div className="flex flex-col gap-2 mb-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 ${
+                          modulo.tipo === "ACTIVITY"
+                            ? "bg-yellow-500/15 text-yellow-400"
+                            : "bg-blue-500/15 text-blue-400"
+                        }`}
+                      >
+                        {modulo.tipo === "ACTIVITY" ? <Zap size={10} /> : <BookOpen size={10} />}
+                        {modulo.tipo === "ACTIVITY" ? "Atividade" : "Teórico"}
+                      </span>
+                      {modulo.status === "LOCKED" && (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 bg-[var(--color-bg-card-inner)] text-[var(--color-text-muted)]">
+                          Bloqueado
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-base font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight break-words">
                       {modulo.titulo}
                     </p>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-base font-semibold shrink-0 ${
-                        modulo.tipo === "ACTIVITY"
-                          ? "bg-yellow-500/15 text-yellow-400"
-                          : "bg-blue-500/15 text-blue-400"
-                      }`}
-                    >
-                      {modulo.tipo === "ACTIVITY" ? <Zap size={10} /> : <BookOpen size={10} />}
-                      {modulo.tipo === "ACTIVITY" ? "Atividade" : "Teórico"}
-                    </span>
                   </div>
                   {modulo.descricao && (
-                    <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-3">
+                    <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-3 break-words">
                       {modulo.descricao}
                     </p>
                   )}
                   <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedIndex(null);
-                        onModuloClick?.(modulo);
-                      }}
-                      className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-base font-semibold font-fredoka text-[var(--color-text-secondary)]"
-                    >
-                      {modulo.status === "COMPLETED" ? "REVER" : `COMEÇAR${modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}`}
-                    </button>
+                    {modulo.status === "LOCKED" ? (
+                      <span className="text-xs font-fredoka text-[var(--color-text-muted)] italic">
+                        Conclua os módulos anteriores
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedIndex(null);
+                          onModuloClick?.(modulo);
+                        }}
+                        className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-sm font-semibold font-fredoka text-[var(--color-text-secondary)]"
+                      >
+                        {modulo.status === "COMPLETED" ? "REVER" : `COMEÇAR${modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}`}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

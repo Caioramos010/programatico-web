@@ -37,7 +37,7 @@ const statusConfig = {
 export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
   const cfg = statusConfig[modulo.status];
   const isActivity = modulo.tipo === "ACTIVITY";
-  const isClickable = modulo.status !== "LOCKED";
+  const isLocked = modulo.status === "LOCKED";
   const isCompleted = modulo.status === "COMPLETED";
 
   const shape = isActivity ? "rounded-full" : "rounded-2xl";
@@ -49,8 +49,7 @@ export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
       <div className="relative">
         <button
           type="button"
-          disabled={!isClickable}
-          onClick={isClickable ? onClick : undefined}
+          onClick={onClick}
           aria-label={`${modulo.titulo} — ${modulo.status}`}
           style={{ background: cfg.gradient, width: nodeSize, height: nodeSize }}
           className={[
@@ -59,7 +58,8 @@ export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
             cfg.ring,
             cfg.glow,
             cfg.opacity,
-            isClickable ? "cursor-pointer hover:scale-105 active:scale-95" : "cursor-not-allowed",
+            "cursor-pointer hover:scale-105 active:scale-95",
+            isLocked ? "hover:brightness-110" : "",
           ].join(" ")}
         >
           {isActivity ? (
