@@ -9,7 +9,7 @@ import { authService } from "../../services/authService";
 import { parseApiError } from "../../utils/parseApiError";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
 const basePath = isAdminSubdomain ? "" : "/admin";
 
 const inputClass =

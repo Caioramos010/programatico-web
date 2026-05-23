@@ -18,7 +18,7 @@ adminApi.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAdminAuthStore.getState().logout();
-      const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+      const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
       window.location.href = isAdminSubdomain ? "/login" : "/admin/login";
     }
     return Promise.reject(error);

@@ -46,7 +46,7 @@ const OnboardingWelcomePage = lazy(() => import("./pages/onboarding/OnboardingWe
 const OnboardingLevelPage = lazy(() => import("./pages/onboarding/OnboardingLevelPage"));
 const OnboardingCompletePage = lazy(() => import("./pages/onboarding/OnboardingCompletePage"));
 
-const isAdmin = window.location.hostname.startsWith("admin.");
+const isAdmin = /^admin[.-]/.test(window.location.hostname);
 
 function App() {
   if (isAdmin) {
