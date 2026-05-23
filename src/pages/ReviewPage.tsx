@@ -1,6 +1,8 @@
 ﻿import { useState } from "react";
 import RoundedDropdown from "../components/RoundedDropdown";
+import ReviewPerformanceChart from "../components/review/ReviewPerformanceChart";
 import ReviewStatCard from "../components/review/ReviewStatCard";
+import ReviewSubjectAccuracy from "../components/review/ReviewSubjectAccuracy";
 
 const completedTracks = [
   "Trilha lógica de programação",
@@ -35,6 +37,23 @@ const mockReviewStats = [
     subtitle: "por exercício",
     valueClassName: "text-white",
   },
+];
+
+const mockPerformanceData = [
+  { day: "Seg", acertos: 8, erros: 3 },
+  { day: "Ter", acertos: 10, erros: 5 },
+  { day: "Qua", acertos: 11, erros: 2 },
+  { day: "Qui", acertos: 9, erros: 4 },
+  { day: "Sex", acertos: 7, erros: 6 },
+  { day: "Sáb", acertos: 10, erros: 3 },
+  { day: "Dom", acertos: 11, erros: 2 },
+];
+
+const mockSubjectAccuracy = [
+  { assunto: "Sequência lógica", percentual: 95, color: "#5aa4ff" },
+  { assunto: "Raciocínio lógico", percentual: 88, color: "#5aa4ff" },
+  { assunto: "Lógica base", percentual: 62, color: "#f5c13d" },
+  { assunto: "Fluxo lógico", percentual: 45, color: "#f27584" },
 ];
 
 export default function ReviewPage() {
@@ -83,6 +102,15 @@ export default function ReviewPage() {
               valueClassName={stat.valueClassName}
             />
           ))}
+        </section>
+
+        <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-5">
+          <div className="xl:col-span-3">
+            <ReviewPerformanceChart data={mockPerformanceData} />
+          </div>
+          <div className="xl:col-span-2">
+            <ReviewSubjectAccuracy data={mockSubjectAccuracy} />
+          </div>
         </section>
       </div>
     </div>
