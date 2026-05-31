@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useAdminAuthStore } from "../stores/adminAuthStore";
 
+const apiBase = import.meta.env.VITE_API_URL;
 const adminApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
+  baseURL: apiBase && String(apiBase).trim() !== "" ? apiBase : "",
 });
 
 adminApi.interceptors.request.use((config) => {

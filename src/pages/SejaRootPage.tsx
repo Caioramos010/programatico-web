@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { Clock, Activity, X } from "lucide-react";
 import { toast } from "../components/toast/toastBus";
 import { Crown } from "../components/icons";
+import { paymentService } from "../services/paymentService";
 
 function FeatureCard({
   icon,
@@ -40,14 +42,48 @@ function FeatureCard({
 
 export default function SejaRootPage() {
   const navigate = useNavigate();
-  const checkoutUrl = import.meta.env.VITE_ABACATE_PAY_CHECKOUT_URL as string | undefined;
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const checkoutUrlFromBuild = import.meta.env.VITE_ABACATE_PAY_CHECKOUT_URL as string | undefined;
 
-  const handleAssinar = () => {
-    if (checkoutUrl && checkoutUrl.trim().length > 0) {
-      window.open(checkoutUrl.trim(), "_blank", "noopener,noreferrer");
+  const openCheckout = (url: string) => {
+    window.open(url.trim(), "_blank", "noopener,noreferrer");
+  };
+
+  const handleAssinar = async () => {
+    const fromBuild = checkoutUrlFromBuild?.trim();
+    if (fromBuild) {
+      openCheckout(fromBuild);
       return;
     }
-    toast.info("Link de pagamento em configuração. Defina VITE_ABACATE_PAY_CHECKOUT_URL no ambiente.");
+
+    setLoadingCheckout(true);
+    try {
+      const { url } = await paymentService.getCheckoutUrl();
+      if (url?.trim()) {
+        openCheckout(url);
+        return;
+      }
+      toast.info(
+        "Pagamento não configurado. Defina ABACATEPAY_API_KEY e ABACATEPAY_PRODUCT_ID no .env."
+      );
+    } catch (err: unknown) {
+      const mensagem =
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object" &&
+        "mensagem" in err.response.data &&
+        typeof err.response.data.mensagem === "string"
+          ? err.response.data.mensagem
+          : "Não foi possível obter o link de pagamento. Tente novamente.";
+      toast.error(mensagem);
+    } finally {
+      setLoadingCheckout(false);
+    }
   };
 
   return (
@@ -107,14 +143,15 @@ export default function SejaRootPage() {
           <button
             type="button"
             onClick={handleAssinar}
+            disabled={loadingCheckout}
             className={[
               "w-full max-w-md rounded-2xl py-4 px-8",
               "bg-white text-[#1f2937] font-fredoka font-bold text-lg uppercase tracking-wider",
               "shadow-[0_4px_0_#d1d5db] hover:brightness-[1.02] active:translate-y-1 active:shadow-[0_1px_0_#d1d5db]",
-              "transition-transform cursor-pointer",
+              "transition-transform cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed",
             ].join(" ")}
           >
-            Assine agora!
+            {loadingCheckout ? "Abrindo..." : "Assine agora!"}
           </button>
         </div>
       </div>

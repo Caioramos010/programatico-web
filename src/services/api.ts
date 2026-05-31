@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useAuthStore } from "../stores/authStore";
 
+const apiBase = import.meta.env.VITE_API_URL;
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:8080",
+  baseURL: apiBase && String(apiBase).trim() !== "" ? apiBase : "",
 });
 
 // Attach bearer token to every request
@@ -14,11 +15,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally
+// Handle 401 globally (except auth endpoints — evita loop silencioso no login)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url ?? "";
+    const isAuthRoute = url.includes("/api/auth/");
+    if (error.response?.status === 401 && !isAuthRoute) {
       useAuthStore.getState().logout();
       window.location.href = "/login";
     }
