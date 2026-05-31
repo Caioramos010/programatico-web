@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clock, Activity, X } from "lucide-react";
 import { toast } from "../components/toast/toastBus";
 import { Crown } from "../components/icons";
 import { paymentService } from "../services/paymentService";
+import { useAuthStore } from "../stores/authStore";
+import { isActiveRoot } from "../lib/subscription";
 
 function FeatureCard({
   icon,
@@ -42,8 +44,19 @@ function FeatureCard({
 
 export default function SejaRootPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const [loadingCheckout, setLoadingCheckout] = useState(false);
   const checkoutUrlFromBuild = import.meta.env.VITE_ABACATE_PAY_CHECKOUT_URL as string | undefined;
+
+  useEffect(() => {
+    if (isActiveRoot(user)) {
+      navigate("/root", { replace: true });
+    }
+  }, [user, navigate]);
+
+  if (isActiveRoot(user)) {
+    return null;
+  }
 
   const openCheckout = (url: string) => {
     window.open(url.trim(), "_blank", "noopener,noreferrer");
@@ -58,7 +71,10 @@ export default function SejaRootPage() {
 
     setLoadingCheckout(true);
     try {
-      const { url } = await paymentService.getCheckoutUrl();
+      const { url, billId } = await paymentService.getCheckoutUrl();
+      if (billId?.trim()) {
+        paymentService.savePendingBillId(billId);
+      }
       if (url?.trim()) {
         openCheckout(url);
         return;
