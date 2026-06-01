@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Camera, CheckCircle2, ShieldCheck, X } from "lucide-react";
+import { useEffect, useState, type FormEvent } from "react";
+import { Camera, CheckCircle2, ShieldCheck, X, Check } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
 import Button from "../components/Button";
 import { useAuthStore } from "../stores/authStore";
 import { learnService, type UserStatsResponse } from "../services/learnService";
 import { usuarioService } from "../services/usuarioService";
 import { parseApiError } from "../utils/parseApiError";
+import { DEFAULT_AVATARS, avatarUrl } from "../constants/avatars";
 
 /* ── Stat card ── */
 function StatCard({
@@ -46,7 +47,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<UserStatsResponse | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [deleteStep, setDeleteStep] = useState<DeleteStep>("idle");
   const [deleteCode, setDeleteCode] = useState("");
   const [deleteError, setDeleteError] = useState("");
@@ -96,12 +97,9 @@ export default function ProfilePage() {
     setEditing(false);
   };
 
-  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setAvatarData(reader.result as string);
-    reader.readAsDataURL(file);
+  const handleSelectAvatar = (filename: string) => {
+    setAvatarData(avatarUrl(filename));
+    setShowAvatarPicker(false);
   };
 
   const handleRequestDelete = async () => {
@@ -154,23 +152,22 @@ export default function ProfilePage() {
               <div className="absolute -top-1 -right-1 flex flex-col gap-1">
                 <button
                   type="button"
-                  onClick={() => avatarInputRef.current?.click()}
+                  onClick={() => setShowAvatarPicker(true)}
                   className="p-1 rounded-full bg-black/60 text-white/80 hover:text-white transition-colors cursor-pointer"
-                  aria-label="Editar avatar"
+                  aria-label="Escolher avatar"
                 >
                   <Camera size={14} />
                 </button>
                 {displayAvatar && (
                   <button
                     type="button"
-                    onClick={() => { setAvatarData(""); if (avatarInputRef.current) avatarInputRef.current.value = ""; }}
+                    onClick={() => setAvatarData("")}
                     className="p-1 rounded-full bg-black/60 text-white/80 hover:text-[var(--color-error-heart)] transition-colors cursor-pointer"
                     aria-label="Remover avatar"
                   >
                     <X size={14} />
                   </button>
                 )}
-                <input ref={avatarInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarFile} />
               </div>
             )}
           </div>
@@ -245,6 +242,65 @@ export default function ProfilePage() {
             Editar perfil
           </Button>
         </>
+      )}
+
+      {/* ══════ AVATAR PICKER ══════ */}
+      {showAvatarPicker && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          onClick={() => setShowAvatarPicker(false)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-[var(--color-bg-card)] border border-[var(--color-gray-border)] p-6 flex flex-col gap-4 font-fredoka"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">Escolher avatar</h3>
+              <button
+                type="button"
+                onClick={() => setShowAvatarPicker(false)}
+                className="p-1 rounded-lg text-[var(--color-text-muted)] hover:text-white hover:bg-white/10 transition-colors"
+                aria-label="Fechar"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {DEFAULT_AVATARS.length === 0 ? (
+              <p className="text-base text-[var(--color-text-muted)] text-center py-8">
+                Nenhum avatar disponível ainda.
+              </p>
+            ) : (
+              <div className="grid grid-cols-4 gap-3">
+                {DEFAULT_AVATARS.map((filename) => {
+                  const url = avatarUrl(filename);
+                  const selected = avatarData === url;
+                  return (
+                    <button
+                      key={filename}
+                      type="button"
+                      onClick={() => handleSelectAvatar(filename)}
+                      className={[
+                        "relative aspect-square rounded-full overflow-hidden border-2 transition-all cursor-pointer",
+                        selected
+                          ? "border-[var(--color-accent-light)] shadow-[0_0_0_2px_var(--color-accent-light)]/30"
+                          : "border-transparent hover:border-white/40",
+                      ].join(" ")}
+                      aria-label={`Avatar ${filename}`}
+                    >
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      {selected && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <Check size={20} className="text-white" strokeWidth={3} />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* ══════ DELETE MODAL ══════ */}
