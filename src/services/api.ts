@@ -14,11 +14,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally
+// 401 + 403 sem `mensagem` (Spring Security default = token rejeitado)
+// → sessão quebrada, força logout e manda pro login. 403 com `mensagem`
+// (vindo do GlobalExceptionHandler) preserva — significa "logado mas sem
+// permissão pra essa ação".
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    const hasMensagem = data && typeof data === "object" && "mensagem" in data;
+    const isAuthBreak = status === 401 || (status === 403 && !hasMensagem);
+    if (isAuthBreak) {
       useAuthStore.getState().logout();
       window.location.href = "/login";
     }
