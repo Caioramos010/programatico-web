@@ -8,10 +8,10 @@ const TIPOS_MISSAO = ["Módulos", "Teóricas", "Atividades", "Práticas", "Fixa�
 interface FormState {
   objectiveType: string;
   xpReward: number;
-  quantidade: number;
+  quantity: number;
 }
 
-const emptyForm: FormState = { objectiveType: TIPOS_MISSAO[0], xpReward: 50, quantidade: 5 };
+const emptyForm: FormState = { objectiveType: TIPOS_MISSAO[0], xpReward: 50, quantity: 5 };
 
 export default function AdminMissoesPage() {
   const [missoes, setMissoes] = useState<Missao[]>([]);
@@ -48,7 +48,7 @@ export default function AdminMissoesPage() {
     setForm({
       objectiveType: missao.objectiveType,
       xpReward: missao.xpReward,
-      quantidade: missao.quantidade,
+      quantity: missao.quantity,
     });
     setFormError(null);
     setShowModal(true);
@@ -70,7 +70,7 @@ export default function AdminMissoesPage() {
       title: form.objectiveType,
       objectiveType: form.objectiveType,
       xpReward: form.xpReward,
-      quantidade: form.quantidade,
+      quantity: form.quantity,
     };
     setIsSaving(true);
     try {
@@ -149,7 +149,7 @@ export default function AdminMissoesPage() {
                 <p className="font-semibold text-[var(--color-text-primary)] truncate">{missao.objectiveType}</p>
               </div>
               <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
-                <span>{missao.quantidade} {missao.quantidade === 1 ? "item" : "itens"}</span>
+                <span>{missao.quantity} {missao.quantity === 1 ? "item" : "itens"}</span>
                 <span className="text-yellow-400/80 font-semibold">{missao.xpReward} XP</span>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -218,7 +218,7 @@ export default function AdminMissoesPage() {
                   <span className="text-base font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
                     Quantidade de itens a completar
                   </span>
-                  <span className="text-base font-semibold text-[var(--color-text-primary)]">{form.quantidade}</span>
+                  <span className="text-base font-semibold text-[var(--color-text-primary)]">{form.quantity}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-base text-[var(--color-text-muted)]">1</span>
@@ -227,8 +227,8 @@ export default function AdminMissoesPage() {
                     min={1}
                     max={20}
                     step={1}
-                    value={form.quantidade}
-                    onChange={(e) => setForm((f) => ({ ...f, quantidade: Number(e.target.value) }))}
+                    value={form.quantity}
+                    onChange={(e) => setForm((f) => ({ ...f, quantity: Number(e.target.value) }))}
                     className="flex-1 accent-[var(--color-accent)]"
                   />
                   <span className="text-base text-[var(--color-text-muted)]">20</span>

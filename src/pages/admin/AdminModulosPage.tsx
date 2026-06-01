@@ -226,7 +226,7 @@ export default function AdminModulosPage() {
               </div>
               <TypeBadge type={modulo.moduleType} />
               <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
-                <span>{modulo.totalComponentes} {modulo.totalComponentes === 1 ? "item" : "itens"}</span>
+                <span>{modulo.totalComponents} {modulo.totalComponents === 1 ? "item" : "itens"}</span>
                 {modulo.totalXp > 0 && <span className="text-yellow-400/80">{modulo.totalXp} XP</span>}
               </div>
               <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
