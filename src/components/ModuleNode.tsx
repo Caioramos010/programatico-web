@@ -1,9 +1,9 @@
 import { Zap, CheckCircle2 } from "lucide-react";
 import BookOne from "./icons/BookOne";
-import type { ModuloComProgresso } from "../services/learnService";
+import type { ModuleWithProgress } from "../services/learnService";
 
 interface Props {
-  modulo: ModuloComProgresso;
+  module: ModuleWithProgress;
   nodeSize?: number;
   onClick?: () => void;
 }
@@ -34,11 +34,11 @@ const statusConfig = {
   },
 } as const;
 
-export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
-  const cfg = statusConfig[modulo.status];
-  const isActivity = modulo.tipo === "ACTIVITY";
-  const isLocked = modulo.status === "LOCKED";
-  const isCompleted = modulo.status === "COMPLETED";
+export default function ModuleNode({ module, nodeSize = 96, onClick }: Props) {
+  const cfg = statusConfig[module.status];
+  const isActivity = module.type === "ACTIVITY";
+  const isLocked = module.status === "LOCKED";
+  const isCompleted = module.status === "COMPLETED";
 
   const shape = isActivity ? "rounded-full" : "rounded-2xl";
   const iconPx = Math.round(nodeSize * 0.42);
@@ -50,7 +50,7 @@ export default function ModuleNode({ modulo, nodeSize = 96, onClick }: Props) {
         <button
           type="button"
           onClick={onClick}
-          aria-label={`${modulo.titulo} — ${modulo.status}`}
+          aria-label={`${module.title} — ${module.status}`}
           style={{ background: cfg.gradient, width: nodeSize, height: nodeSize }}
           className={[
             "flex items-center justify-center border-4 transition-all duration-200",
