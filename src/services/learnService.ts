@@ -1,50 +1,50 @@
 import api from "./api";
 
-export interface ModuloComProgresso {
+export interface ModuleWithProgress {
   id: number;
-  titulo: string;
-  tipo: "ACTIVITY" | "STUDY";
-  ordem: number;
+  title: string;
+  type: "ACTIVITY" | "STUDY";
+  order: number;
   status: "LOCKED" | "UNLOCKED" | "COMPLETED";
-  descricao: string | null;
+  description: string | null;
   totalXp: number;
 }
 
-export interface TrilhaResponse {
+export interface TrackResponse {
   id: number;
-  titulo: string;
-  descricao: string;
+  title: string;
+  description: string;
   icon: string | null;
-  modulos: ModuloComProgresso[];
-  percentualConcluido: number;
-  totalModulos: number;
-  concluidosModulos: number;
+  modules: ModuleWithProgress[];
+  completedPercentage: number;
+  totalModules: number;
+  completedModules: number;
 }
 
 export interface UserStatsResponse {
   totalXp: number;
-  vidasAtuais: number;
-  sequenciaAtual: number;
-  maxSequencia: number;
+  currentLives: number;
+  currentStreak: number;
+  maxStreak: number;
 }
 
-export interface MissaoResponse {
+export interface MissionResponse {
   missionId: number;
-  titulo: string;
-  tipo: string;
-  progressoAtual: number;
-  meta: number;
-  recompensaXp: number;
-  concluida: boolean;
+  title: string;
+  type: string;
+  currentProgress: number;
+  goal: number;
+  xpReward: number;
+  completed: boolean;
 }
 
 export const learnService = {
-  getTrilha: () =>
-    api.get<TrilhaResponse>("/api/aprender/trilha").then((r) => r.data),
+  getTrack: () =>
+    api.get<TrackResponse>("/api/aprender/trilha").then((r) => r.data),
 
   getStats: () =>
     api.get<UserStatsResponse>("/api/aprender/stats").then((r) => r.data),
 
-  getMissoes: () =>
-    api.get<MissaoResponse[]>("/api/aprender/missoes").then((r) => r.data),
+  getMissions: () =>
+    api.get<MissionResponse[]>("/api/aprender/missoes").then((r) => r.data),
 };

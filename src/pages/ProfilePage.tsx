@@ -236,8 +236,8 @@ export default function ProfilePage() {
             <h3 className="text-lg font-semibold text-white">Estatísticas</h3>
             <div className="grid grid-cols-2 gap-3">
               <StatCard label="Experiência" value={`${(stats?.totalXp ?? 0).toLocaleString("pt-BR")} XP`} icon={<Xp className="w-5 h-5" />} full />
-              <StatCard label="Dias seguidos" value={stats?.sequenciaAtual ?? 0} icon={<FireOn className="w-5 h-5" />} />
-              <StatCard label="Máximo de dias seguidos" value={stats?.maxSequencia ?? 0} icon={<FireOff className="w-5 h-5" />} />
+              <StatCard label="Dias seguidos" value={stats?.currentStreak ?? 0} icon={<FireOn className="w-5 h-5" />} />
+              <StatCard label="Máximo de dias seguidos" value={stats?.maxStreak ?? 0} icon={<FireOff className="w-5 h-5" />} />
             </div>
           </section>
 
