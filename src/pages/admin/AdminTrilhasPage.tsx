@@ -162,7 +162,7 @@ export default function AdminTrilhasPage() {
                 )}
               </div>
               <span className="hidden sm:block text-base text-[var(--color-text-muted)] shrink-0">
-                {trilha.totalModulos} {trilha.totalModulos === 1 ? "módulo" : "módulos"}
+                {trilha.totalModules} {trilha.totalModules === 1 ? "módulo" : "módulos"}
               </span>
               {trilha.icon?.startsWith("data:") ? (
                 <img src={trilha.icon} alt="ícone" className="w-8 h-8 rounded-lg object-cover shrink-0" />
