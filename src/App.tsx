@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import MainLayout from "./components/MainLayout";
 import LearnPage from "./pages/LearnPage";
+import PraticarPage from "./pages/PraticarPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ActivationPage from "./pages/ActivationPage";
@@ -103,6 +104,7 @@ function App() {
           {/* Main app (sidebar + content) */}
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/aprender" element={<LearnPage />} />
+            <Route path="/praticar" element={<PraticarPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/notificacoes" element={<NotificationsPage />} />
           </Route>
