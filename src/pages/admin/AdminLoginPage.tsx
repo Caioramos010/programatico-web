@@ -7,7 +7,7 @@ import { useFormValidation, rules } from "../../hooks/useFormValidation";
 import { authService } from "../../services/authService";
 import { parseApiError } from "../../utils/parseApiError";
 
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
 const basePath = isAdminSubdomain ? "" : "/admin";
 
 const inputClass =
