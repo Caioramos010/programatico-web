@@ -38,6 +38,28 @@ export interface MissionResponse {
   completed: boolean;
 }
 
+export interface TheoryBlock {
+  id: number;
+  layoutType: "TEXT" | "IMAGE" | "CARDS";
+  textContent: string | null;
+  imageUrl: string | null;
+  order: number;
+}
+
+export interface TheoryPage {
+  id: number;
+  title: string;
+  description: string | null;
+  order: number;
+  blocks: TheoryBlock[];
+}
+
+export interface TheoryResponse {
+  moduleId: number;
+  moduleTitle: string;
+  pages: TheoryPage[];
+}
+
 export const learnService = {
   getTrack: () =>
     api.get<TrackResponse>("/api/aprender/trilha").then((r) => r.data),
@@ -47,4 +69,10 @@ export const learnService = {
 
   getMissions: () =>
     api.get<MissionResponse[]>("/api/aprender/missoes").then((r) => r.data),
+
+  getTheory: (moduleId: number) =>
+    api.get<TheoryResponse>(`/api/aprender/modulos/${moduleId}/teorico`).then((r) => r.data),
+
+  finishTheory: (moduleId: number) =>
+    api.post<void>(`/api/aprender/modulos/${moduleId}/teorico/concluir`).then((r) => r.data),
 };
