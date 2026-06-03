@@ -1,13 +1,13 @@
 import { RefreshCw } from "lucide-react";
-import type { TrilhaResponse } from "../services/learnService";
+import type { TrackResponse } from "../services/learnService";
 
 interface Props {
-  trilha: TrilhaResponse | null;
+  track: TrackResponse | null;
   loading?: boolean;
 }
 
-export default function TrackBar({ trilha, loading }: Props) {
-  if (loading || !trilha) {
+export default function TrackBar({ track, loading }: Props) {
+  if (loading || !track) {
     return (
       <div className="w-full flex justify-center pt-4 pb-2 px-4">
         <div className="w-full max-w-2xl flex items-center gap-3 rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] px-5 py-3">
@@ -28,11 +28,11 @@ export default function TrackBar({ trilha, loading }: Props) {
       <div className="w-full max-w-2xl flex items-center gap-3 rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] px-5 py-3">
         {/* Track icon */}
         <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)] overflow-hidden">
-          {trilha.icon ? (
-            <img src={trilha.icon} alt={trilha.titulo} className="w-full h-full object-cover" />
+          {track.icon ? (
+            <img src={track.icon} alt={track.title} className="w-full h-full object-cover" />
           ) : (
             <span className="text-base text-[var(--color-text-muted)] font-bold leading-none select-none">
-              {trilha.titulo.charAt(0).toUpperCase()}
+              {track.title.charAt(0).toUpperCase()}
             </span>
           )}
         </div>
@@ -42,7 +42,7 @@ export default function TrackBar({ trilha, loading }: Props) {
           {/* Row 1: title + refresh icon */}
           <div className="flex items-center justify-between gap-2">
             <span className="font-fredoka font-semibold text-white text-base truncate leading-none">
-              {trilha.titulo}
+              {track.title}
             </span>
             <RefreshCw
               size={13}
@@ -52,19 +52,19 @@ export default function TrackBar({ trilha, loading }: Props) {
           {/* Row 2: % text + progress bar + count */}
           <div className="flex items-center gap-2">
             <span className="text-base text-[var(--color-text-muted)] font-fredoka shrink-0">
-              {trilha.percentualConcluido}% completo
+              {track.completedPercentage}% completo
             </span>
             <div className="flex-1 h-1.5 rounded-full bg-[var(--color-bg-card-inner)] overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{
-                  width: `${trilha.percentualConcluido}%`,
+                  width: `${track.completedPercentage}%`,
                   background: "linear-gradient(90deg, #11604D 0%, #178a6e 100%)",
                 }}
               />
             </div>
             <span className="text-base text-[var(--color-text-muted)] font-fredoka tabular-nums shrink-0">
-              {trilha.concluidosModulos}/{trilha.totalModulos}
+              {track.completedModules}/{track.totalModules}
             </span>
           </div>
         </div>

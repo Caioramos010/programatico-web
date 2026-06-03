@@ -1,12 +1,12 @@
 import { useMemo, useEffect, useRef, useState } from "react";
 import { Zap, BookOpen } from "lucide-react";
-import type { ModuloComProgresso } from "../services/learnService";
+import type { ModuleWithProgress } from "../services/learnService";
 import ModuleNode from "./ModuleNode";
 import ConnectorLine from "./ConnectorLine";
 
 interface Props {
-  modulos: ModuloComProgresso[];
-  onModuloClick?: (modulo: ModuloComProgresso) => void;
+  modules: ModuleWithProgress[];
+  onModuleClick?: (module: ModuleWithProgress) => void;
 }
 
 const CONN_H = 44;
@@ -20,7 +20,7 @@ function computeLayout(w: number) {
   return { nodeR, leftCx, rightCx, rowH, padTop };
 }
 
-export default function TrackMap({ modulos, onModuloClick }: Props) {
+export default function TrackMap({ modules, onModuleClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerW, setContainerW] = useState(640);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -48,7 +48,7 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, [selectedIndex]);
 
-  if (modulos.length === 0) {
+  if (modules.length === 0) {
     return (
       <div ref={containerRef} className="flex flex-1 flex-col items-center justify-center py-24 text-center px-6 w-full">
         <p className="text-[var(--color-text-muted)] font-fredoka text-base">
@@ -71,12 +71,12 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
   }
   function getY(i: number) { return Math.floor(i / 2) * rowH + padTop; }
 
-  const totalRows = Math.ceil(modulos.length / 2);
+  const totalRows = Math.ceil(modules.length / 2);
   const containerH = totalRows * rowH + padTop + nodeR * 2 + 40;
 
   const connections = useMemo(() => {
-    return modulos.slice(1).map((mod, i) => {
-      const active = modulos[i].status !== "LOCKED";
+    return modules.slice(1).map((mod, i) => {
+      const active = modules[i].status !== "LOCKED";
       const cx1 = getX(i);
       const cy1 = getY(i);
       const cx2 = getX(i + 1);
@@ -89,17 +89,17 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
       // For circles (ACTIVITY): boundary is nodeR in all directions.
       // For squares (STUDY): boundary in a given direction = nodeR / max(|cosθ|, |sinθ|).
       // This ensures the arrowhead lands exactly at the node's visible edge, not inside it.
-      const srcMod = modulos[i];
-      const srcBoundary = srcMod.tipo === "ACTIVITY"
+      const srcMod = modules[i];
+      const srcBoundary = srcMod.type === "ACTIVITY"
         ? nodeR
         : nodeR / Math.max(Math.abs(Math.cos(angleRad)), Math.abs(Math.sin(angleRad)));
-      const dstBoundary = mod.tipo === "ACTIVITY"
+      const dstBoundary = mod.type === "ACTIVITY"
         ? nodeR
         : nodeR / Math.max(Math.abs(Math.cos(angleRad)), Math.abs(Math.sin(angleRad)));
       return { key: mod.id, cx1, cy1, dist, srcBoundary, dstBoundary, angle, active };
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modulos, containerW]);
+  }, [modules, containerW]);
 
   return (
     <div className="flex flex-1 w-full py-8 justify-center px-4">
@@ -123,24 +123,25 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
           </div>
         ))}
 
-        {modulos.map((modulo, i) => {
+        {modules.map((module, i) => {
           const cx = getX(i);
           const cy = getY(i);
           const isSelected = selectedIndex === i;
 
-          // Popover position: prefer right side, fallback to left when near right edge
+          // Popover position: prefer right side, fallback to left when near right edge.
+          // Popover width is w-64 (256px); add some margin to keep it within the container.
           const popoverLeft = cx + nodeR + 12;
           const popoverRight = containerW - (cx - nodeR - 12);
-          const showRight = popoverLeft + 180 <= containerW;
+          const showRight = popoverLeft + 256 <= containerW;
 
           return (
-            <div key={modulo.id}>
+            <div key={module.id}>
               <div
                 className="absolute"
                 style={{ left: cx - nodeR, top: cy - nodeR, width: nodeR * 2, zIndex: 2 }}
               >
 <ModuleNode
-                  modulo={modulo}
+                  module={module}
                   nodeSize={nodeR * 2}
                   onClick={() => setSelectedIndex(isSelected ? null : i)}
                 />
@@ -148,44 +149,57 @@ export default function TrackMap({ modulos, onModuloClick }: Props) {
 
               {isSelected && (
                 <div
-                  className="absolute z-10 w-44 rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
+                  className="absolute z-10 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
                   style={
                     showRight
                       ? { left: popoverLeft, top: cy - nodeR }
                       : { right: popoverRight, top: cy - nodeR }
                   }
                 >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="text-base font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight">
-                      {modulo.titulo}
+                  <div className="flex flex-col gap-2 mb-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 ${
+                          module.type === "ACTIVITY"
+                            ? "bg-yellow-500/15 text-yellow-400"
+                            : "bg-blue-500/15 text-blue-400"
+                        }`}
+                      >
+                        {module.type === "ACTIVITY" ? <Zap size={10} /> : <BookOpen size={10} />}
+                        {module.type === "ACTIVITY" ? "Atividade" : "Teórico"}
+                      </span>
+                      {module.status === "LOCKED" && (
+                        <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 bg-[var(--color-bg-card-inner)] text-[var(--color-text-muted)]">
+                          Bloqueado
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-base font-semibold font-fredoka text-[var(--color-text-primary)] leading-tight break-words">
+                      {module.title}
                     </p>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-base font-semibold shrink-0 ${
-                        modulo.tipo === "ACTIVITY"
-                          ? "bg-yellow-500/15 text-yellow-400"
-                          : "bg-blue-500/15 text-blue-400"
-                      }`}
-                    >
-                      {modulo.tipo === "ACTIVITY" ? <Zap size={10} /> : <BookOpen size={10} />}
-                      {modulo.tipo === "ACTIVITY" ? "Atividade" : "Teórico"}
-                    </span>
                   </div>
-                  {modulo.descricao && (
-                    <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-3">
-                      {modulo.descricao}
+                  {module.description && (
+                    <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-3 break-words">
+                      {module.description}
                     </p>
                   )}
                   <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedIndex(null);
-                        onModuloClick?.(modulo);
-                      }}
-                      className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-base font-semibold font-fredoka text-[var(--color-text-secondary)]"
-                    >
-                      {modulo.status === "COMPLETED" ? "REVER" : `COMEÇAR${modulo.totalXp > 0 ? ` +${modulo.totalXp}XP` : ""}`}
-                    </button>
+                    {module.status === "LOCKED" ? (
+                      <span className="text-xs font-fredoka text-[var(--color-text-muted)] italic">
+                        Conclua os módulos anteriores
+                      </span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedIndex(null);
+                          onModuleClick?.(module);
+                        }}
+                        className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-sm font-semibold font-fredoka text-[var(--color-text-secondary)]"
+                      >
+                        {module.status === "COMPLETED" ? "REVER" : `COMEÇAR${module.totalXp > 0 ? ` +${module.totalXp}XP` : ""}`}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}

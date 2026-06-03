@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import MainLayout from "./components/MainLayout";
 import LearnPage from "./pages/LearnPage";
+import PraticarPage from "./pages/PraticarPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ActivationPage from "./pages/ActivationPage";
@@ -41,13 +42,16 @@ const AdminTeoricaPage = lazy(() => import("./pages/admin/AdminTeoricaPage"));
 // Exercise — lazy-loaded (full-screen activity flow)
 const ExercisePage = lazy(() => import("./pages/ExercisePage"));
 
+// Theory — lazy-loaded (full-screen theoretical content viewer)
+const TheoryPage = lazy(() => import("./pages/TheoryPage"));
+
 // Onboarding — lazy-loaded (only fetched during onboarding flow)
 const OnboardingLayout = lazy(() => import("./components/onboarding/OnboardingLayout"));
 const OnboardingWelcomePage = lazy(() => import("./pages/onboarding/OnboardingWelcomePage"));
 const OnboardingLevelPage = lazy(() => import("./pages/onboarding/OnboardingLevelPage"));
 const OnboardingCompletePage = lazy(() => import("./pages/onboarding/OnboardingCompletePage"));
 
-const isAdmin = window.location.hostname.startsWith("admin.");
+const isAdmin = /^admin[.-]/.test(window.location.hostname);
 
 function App() {
   if (isAdmin) {
@@ -104,6 +108,7 @@ function App() {
           {/* Main app (sidebar + content) */}
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/aprender" element={<LearnPage />} />
+            <Route path="/praticar" element={<PraticarPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/notificacoes" element={<NotificationsPage />} />
             <Route path="/revisar" element={<ReviewPage />} />
@@ -112,6 +117,11 @@ function App() {
           <Route
             path="/modulos/:moduloId/exercicio"
             element={<ProtectedRoute><ExercisePage /></ProtectedRoute>}
+          />
+          {/* Theory — full screen, outside MainLayout */}
+          <Route
+            path="/modulos/:moduloId/teorico"
+            element={<ProtectedRoute><TheoryPage /></ProtectedRoute>}
           />
           {/* Onboarding */}
           <Route path="/onboarding" element={<OnboardingLayout />}>

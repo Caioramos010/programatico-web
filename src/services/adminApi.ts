@@ -16,9 +16,13 @@ adminApi.interceptors.request.use((config) => {
 adminApi.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const data = error.response?.data;
+    const hasMensagem = data && typeof data === "object" && "mensagem" in data;
+    const isAuthBreak = status === 401 || (status === 403 && !hasMensagem);
+    if (isAuthBreak) {
       useAdminAuthStore.getState().logout();
-      const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+      const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
       window.location.href = isAdminSubdomain ? "/login" : "/admin/login";
     }
     return Promise.reject(error);
