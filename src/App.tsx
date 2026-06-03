@@ -41,6 +41,9 @@ const AdminTeoricaPage = lazy(() => import("./pages/admin/AdminTeoricaPage"));
 // Exercise — lazy-loaded (full-screen activity flow)
 const ExercisePage = lazy(() => import("./pages/ExercisePage"));
 
+// Theory — lazy-loaded (full-screen theoretical content viewer)
+const TheoryPage = lazy(() => import("./pages/TheoryPage"));
+
 // Onboarding — lazy-loaded (only fetched during onboarding flow)
 const OnboardingLayout = lazy(() => import("./components/onboarding/OnboardingLayout"));
 const OnboardingWelcomePage = lazy(() => import("./pages/onboarding/OnboardingWelcomePage"));
@@ -112,6 +115,11 @@ function App() {
           <Route
             path="/modulos/:moduloId/exercicio"
             element={<ProtectedRoute><ExercisePage /></ProtectedRoute>}
+          />
+          {/* Theory — full screen, outside MainLayout */}
+          <Route
+            path="/modulos/:moduloId/teorico"
+            element={<ProtectedRoute><TheoryPage /></ProtectedRoute>}
           />
           {/* Onboarding */}
           <Route path="/onboarding" element={<OnboardingLayout />}>

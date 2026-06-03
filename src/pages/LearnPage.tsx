@@ -72,8 +72,11 @@ export default function LearnPage() {
   }, []);
 
   function handleModuloClick(modulo: ModuleWithProgress) {
+    if (modulo.status === "LOCKED") return;
     if (modulo.type === "ACTIVITY") {
       navigate(`/modulos/${modulo.id}/exercicio`);
+    } else if (modulo.type === "STUDY") {
+      navigate(`/modulos/${modulo.id}/teorico`);
     }
   }
 
