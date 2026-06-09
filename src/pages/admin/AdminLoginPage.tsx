@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import AuthLayout from "../../components/auth/AuthLayout";
@@ -20,6 +20,8 @@ const schema = {
 
 export default function AdminLoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
@@ -35,7 +37,9 @@ export default function AdminLoginPage() {
     setIsLoading(true);
     try {
       await authService.iniciarLogin(email, password);
-      navigate(`${basePath}/login/verificacao`, { state: { emailOuUsername: email, senha: password } });
+      navigate(`${basePath}/login/verificacao`, {
+        state: { emailOuUsername: email, senha: password, from },
+      });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       setFormError(msg ?? "Erro ao entrar. Tente novamente.");

@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 
 /**
@@ -8,9 +8,13 @@ import { useAuthStore } from "../stores/authStore";
 export default function GuestRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
+  const isLoginVerification = location.pathname === "/login/verificacao";
 
-  if (isAuthenticated) {
-    return <Navigate to={user?.nivelHabilidade ? "/aprender" : "/onboarding"} replace />;
+  if (isAuthenticated && !isLoginVerification) {
+    const fallback = user?.nivelHabilidade ? "/aprender" : "/onboarding";
+    return <Navigate to={from ?? fallback} replace />;
   }
 
   return <>{children}</>;

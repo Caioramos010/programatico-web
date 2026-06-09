@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 
 export default function ProtectedRoute({
@@ -8,9 +8,11 @@ export default function ProtectedRoute({
 }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
+  const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    const from = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/login" replace state={{ from }} />;
   }
 
   if (!user?.nivelHabilidade) {

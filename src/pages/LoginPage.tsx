@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -7,6 +7,8 @@ import OrDivider from "../components/auth/OrDivider";
 import { useFormValidation, rules } from "../hooks/useFormValidation";
 import { parseApiError } from "../utils/parseApiError";
 import { authService } from "../services/authService";
+import { useAuthStore } from "../stores/authStore";
+import { clearPendingLogin, savePendingLogin, type PendingLoginState } from "../lib/pendingLogin";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -18,11 +20,19 @@ const schema = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const logout = useAuthStore((s) => s.logout);
+  const from = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    logout();
+    clearPendingLogin();
+  }, [logout]);
 
   const values = () => ({ email, password });
 
@@ -34,11 +44,13 @@ export default function LoginPage() {
     setFormError("");
     try {
       await authService.iniciarLogin(email, password);
-      navigate("/login/verificacao", { state: { emailOuUsername: email, senha: password } });
+      const pending: PendingLoginState = { emailOuUsername: email, senha: password, from };
+      savePendingLogin(pending);
+      navigate("/login/verificacao", { state: pending });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
-      if (msg) setFormError(msg);
+      setFormError(msg ?? "Não foi possível iniciar o login. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
