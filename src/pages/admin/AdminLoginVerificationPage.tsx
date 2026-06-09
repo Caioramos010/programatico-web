@@ -19,7 +19,7 @@ const schema = {
   code: [rules.required("Código"), rules.code(6)],
 };
 
-type LoginVerifyState = { emailOuUsername: string; senha: string };
+type LoginVerifyState = { emailOuUsername: string; senha: string; from?: string };
 
 export default function AdminLoginVerificationPage() {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function AdminLoginVerificationPage() {
         email: data.usuario.email,
         role: data.usuario.role as string,
       });
-      navigate(`${basePath}/dashboard`);
+      navigate(state.from ?? `${basePath}/dashboard`, { replace: true });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);

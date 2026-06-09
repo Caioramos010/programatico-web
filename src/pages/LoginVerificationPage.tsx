@@ -8,6 +8,12 @@ import { useFormValidation, rules } from "../hooks/useFormValidation";
 import { authService } from "../services/authService";
 import { parseApiError } from "../utils/parseApiError";
 import { useAuthStore } from "../stores/authStore";
+import {
+  clearPendingLogin,
+  loadPendingLogin,
+  savePendingLogin,
+  type PendingLoginState,
+} from "../lib/pendingLogin";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -16,12 +22,11 @@ const schema = {
   code: [rules.required("Código"), rules.code(6)],
 };
 
-type LoginVerifyState = { emailOuUsername: string; senha: string };
-
 export default function LoginVerificationPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const state = location.state as LoginVerifyState | undefined;
+  const routeState = location.state as PendingLoginState | undefined;
+  const state = routeState ?? loadPendingLogin() ?? undefined;
 
   const [code, setCode] = useState("");
   const [resendMessage, setResendMessage] = useState("");
@@ -36,8 +41,12 @@ export default function LoginVerificationPage() {
   useEffect(() => {
     if (!state?.emailOuUsername || !state?.senha) {
       navigate("/login", { replace: true });
+      return;
     }
-  }, [state, navigate]);
+    if (!routeState) {
+      savePendingLogin(state);
+    }
+  }, [state, routeState, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,8 +56,11 @@ export default function LoginVerificationPage() {
     setFormError("");
     try {
       const data = await authService.confirmarLogin(state.emailOuUsername, state.senha, code);
+      clearPendingLogin();
       storeLogin(data.token, data.usuario);
-      navigate(data.usuario.nivelHabilidade ? "/aprender" : "/onboarding");
+      const fallback = data.usuario.nivelHabilidade ? "/aprender" : "/onboarding";
+      const target = data.usuario.nivelHabilidade && state.from ? state.from : fallback;
+      navigate(target, { replace: true });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);

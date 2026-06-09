@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 export type NivelHabilidade = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
 
+export type SubscriptionType = "FREE" | "ROOT";
+
 export interface User {
   id: number;
   username: string;
@@ -13,6 +15,8 @@ export interface User {
   role?: string;
   icon?: string | null;
   nivelHabilidade?: NivelHabilidade | null;
+  subscriptionType?: SubscriptionType;
+  subscriptionExpiresAt?: string | null;
 }
 
 interface AuthState {
