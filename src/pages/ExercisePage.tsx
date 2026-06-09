@@ -233,7 +233,7 @@ export default function ExercisePage() {
           type="button"
           aria-label="Exit exercise"
           onClick={handleExit}
-          className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
         >
           <X size={22} />
         </button>
@@ -289,11 +289,11 @@ export default function ExercisePage() {
           </div>
         </div>
 
-        {/* Feedback panel — right column, naturally below header/X */}
+        {/* Feedback panel — overlay full-height on the right; X do header fica acima (z-20 > z-10) */}
         {feedbackOpen && (
           <aside
             className={[
-              "w-80 xl:w-96 shrink-0 flex flex-col p-6 shadow-2xl overflow-y-auto",
+              "absolute inset-y-0 right-0 z-10 w-80 xl:w-96 flex flex-col p-6 pt-16 shadow-2xl overflow-y-auto",
               phase === "correct-feedback"
                 ? "bg-[var(--color-success-light)] border-l-4 border-[var(--color-success)]"
                 : "bg-[var(--color-error-light)] border-l-4 border-[var(--color-error-heart)]/60",
