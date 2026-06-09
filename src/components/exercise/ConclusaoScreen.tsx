@@ -1,4 +1,5 @@
 import { Target, Clock, Zap } from "lucide-react";
+import { Excited } from "../mascot";
 
 interface Props {
   xpEarned: number;
@@ -53,7 +54,7 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
 
         {/* Mascote */}
         <div className="w-52 h-52">
-          <span className="text-[208px] leading-none" role="img" aria-label="mascote">🦒</span>
+          <Excited className="w-full h-full" aria-label="Gina comemorando" />
         </div>
 
         <button
