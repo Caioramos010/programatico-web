@@ -2,6 +2,7 @@
 // Para adicionar novos: coloque o arquivo em /public/avatars/ e
 // inclua o nome do arquivo no array abaixo.
 export const DEFAULT_AVATARS: string[] = [
+  "gina.png",
   "dalmata.png",
   "gato.png",
   "coruja.png",
