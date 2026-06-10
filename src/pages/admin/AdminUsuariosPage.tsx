@@ -82,7 +82,7 @@ export default function AdminUsuariosPage() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
           <input
             className="pl-9 pr-4 py-2 rounded-xl text-base bg-[var(--color-bg-card)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] w-72 placeholder:text-[var(--color-text-muted)]"
-            placeholder="Pesquise por nome, cpf ou e-mail do usuário"
+            placeholder="Pesquise por nome ou e-mail do usuário"
             value={busca}
             onChange={(e) => handleBusca(e.target.value)}
           />
