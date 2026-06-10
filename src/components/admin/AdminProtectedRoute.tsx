@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 
 const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
@@ -9,10 +9,12 @@ export default function AdminProtectedRoute({
   children: React.ReactNode;
 }) {
   const isAuthenticated = useAdminAuthStore((s) => s.isAuthenticated);
+  const location = useLocation();
 
   if (!isAuthenticated) {
     const loginPath = isAdminSubdomain ? "/login" : "/admin/login";
-    return <Navigate to={loginPath} replace />;
+    const from = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to={loginPath} replace state={{ from }} />;
   }
 
   return <>{children}</>;

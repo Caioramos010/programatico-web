@@ -5,7 +5,9 @@ COPY package.json package-lock.json* ./
 RUN npm install
 COPY . .
 ARG VITE_API_URL
+ARG VITE_ABACATE_PAY_CHECKOUT_URL
 ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_ABACATE_PAY_CHECKOUT_URL=$VITE_ABACATE_PAY_CHECKOUT_URL
 RUN npm run build
 
 # Runtime stage
