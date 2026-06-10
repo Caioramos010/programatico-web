@@ -2,9 +2,12 @@
 // Para adicionar novos: coloque o arquivo em /public/avatars/ e
 // inclua o nome do arquivo no array abaixo.
 export const DEFAULT_AVATARS: string[] = [
-  // "avatar-01.png",
-  // "avatar-02.png",
-  // "avatar-03.png",
+  "dalmata.png",
+  "gato.png",
+  "coruja.png",
+  "urso.png",
+  "lobo.png",
+  "jacare.png",
 ];
 
 export const avatarUrl = (filename: string) => `/avatars/${filename}`;
