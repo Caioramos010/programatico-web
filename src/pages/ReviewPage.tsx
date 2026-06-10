@@ -6,6 +6,8 @@ import ReviewLevelProgressChart from "../components/review/ReviewLevelProgressCh
 import ReviewPerformanceChart from "../components/review/ReviewPerformanceChart";
 import ReviewStatCard from "../components/review/ReviewStatCard";
 import ReviewSubjectAccuracy from "../components/review/ReviewSubjectAccuracy";
+import { downloadReviewReportPdf } from "../reports/downloadReviewReportPdf";
+import { useAuthStore } from "../stores/authStore";
 
 const completedTracks = [
   "Trilha lógica de programação",
@@ -83,10 +85,37 @@ const mockRecentMissions = [
 export default function ReviewPage() {
   const [selectedTrack, setSelectedTrack] = useState(completedTracks[0]);
   const [selectedDays, setSelectedDays] = useState(dayOptions[0]);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const user = useAuthStore((s) => s.user);
   const currentLevel = 4;
   const currentXp = 820;
   const nextLevelXp = 1200;
   const remainingXp = Math.max(0, nextLevelXp - currentXp);
+
+  const handleGeneratePdfReport = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const reportDataFromBackend = {
+        userName: user?.username ?? "Usuario",
+        selectedTrack,
+        selectedDays,
+        extractionDate: new Date().toLocaleString("pt-BR"),
+        currentLevel,
+        currentXp,
+        nextLevelXp,
+        stats: mockReviewStats.map(({ title, value, subtitle }) => ({ title, value, subtitle })),
+        performanceData: mockPerformanceData,
+        subjectAccuracy: mockSubjectAccuracy,
+        errorsBySubject: mockErrorsBySubject,
+        reviewNow: mockReviewNow.map(({ assunto }) => ({ assunto })),
+        recentMissions: mockRecentMissions.map(({ label, status }) => ({ label, status })),
+      };
+
+      await downloadReviewReportPdf(reportDataFromBackend);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] px-4 py-6 md:px-8 md:py-8 font-fredoka">
@@ -112,9 +141,11 @@ export default function ReviewPage() {
 
               <button
                 type="button"
+                onClick={handleGeneratePdfReport}
+                disabled={isGeneratingPdf}
                 className="h-11 min-w-52 cursor-pointer rounded-xl bg-[#2f67ff] px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-[#4c7cff]"
               >
-                Gerar Relatório PDF
+                {isGeneratingPdf ? "Gerando PDF..." : "Gerar Relatório PDF"}
               </button>
             </div>
           </div>
