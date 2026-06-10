@@ -37,9 +37,7 @@ export interface ReviewReportData {
   selectedTrack: string;
   selectedDays: string;
   extractionDate: string;
-  currentLevel: number;
   currentXp: number;
-  nextLevelXp: number;
   stats: ReviewStat[];
   performanceData: PerformancePoint[];
   subjectAccuracy: SubjectAccuracyItem[];
@@ -173,17 +171,6 @@ const styles = StyleSheet.create({
     borderBottom: "1 solid #e7edf8",
     paddingVertical: 4,
   },
-  progressOuter: { marginTop: 6 },
-  levelBox: {
-    backgroundColor: "#142748",
-    border: "1 solid #1e3b6b",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-  },
-  levelTitle: { color: "#ffffff", fontSize: 12, fontWeight: 700 },
-  levelInfo: { color: "#dce8ff", marginTop: 4 },
-  levelResult: { marginTop: 4, color: "#9ec0ff" },
   lastPageFooter: {
     position: "absolute",
     left: 24,
@@ -220,9 +207,6 @@ function ProgressBar({ percent, color }: { percent: number; color: string }) {
 }
 
 export function ReviewReportPdf({ data }: { data: ReviewReportData }) {
-  const progress = Math.round((data.currentXp / data.nextLevelXp) * 100);
-  const remainingXp = Math.max(0, data.nextLevelXp - data.currentXp);
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -317,19 +301,6 @@ export function ReviewReportPdf({ data }: { data: ReviewReportData }) {
               </View>
             ))}
           </View>
-        </View>
-
-        <View style={styles.levelBox}>
-          <Text style={styles.levelTitle}>Evolucao de nivel</Text>
-          <Text style={styles.levelInfo}>
-            Nivel {data.currentLevel} para nivel {data.currentLevel + 1}
-          </Text>
-          <View style={styles.progressOuter}>
-            <ProgressBar percent={progress} color="#5aa4ff" />
-          </View>
-          <Text style={styles.levelResult}>
-            {progress}% - faltam {remainingXp} XP para o proximo nivel
-          </Text>
         </View>
 
         <View style={styles.lastPageFooter} fixed>
