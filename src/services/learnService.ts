@@ -24,6 +24,11 @@ export interface TrackResponse {
 export interface UserStatsResponse {
   totalXp: number;
   currentLives: number;
+  maxLives: number;
+  /** Segundos até a próxima vida; null quando as vidas estão cheias ou são ilimitadas. */
+  secondsUntilNextLife: number | null;
+  secondsPerLife: number;
+  unlimitedLives: boolean;
   currentStreak: number;
   maxStreak: number;
 }
