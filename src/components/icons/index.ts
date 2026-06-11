@@ -3,7 +3,6 @@ export { default as Cancel } from "./Cancel";
 export { default as Calendar } from "./Calendar";
 export { default as CircleX } from "./CircleX";
 export { default as Crown } from "./Crown";
-export { default as DebugSearch } from "./DebugSearch";
 export { default as FireOff } from "./FireOff";
 export { default as FireOn } from "./FireOn";
 export { default as Home } from "./Home";
