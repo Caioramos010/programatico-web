@@ -1,5 +1,5 @@
 import { type SVGProps, type ReactElement } from "react";
-import { CircleX, Lightning, DebugSearch, Stopwatch } from "../components/icons";
+import { CircleX, Lightning, Stopwatch } from "../components/icons";
 import { toast } from "../components/toast/toastBus";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
@@ -25,13 +25,6 @@ const cards: PraticarCard[] = [
     description:
       "Atividades diretas para reforçar o conteúdo estudado de forma ágil.",
     icon: Lightning,
-  },
-  {
-    key: "debug",
-    title: "DEBUG",
-    description:
-      "Análise e correção de códigos com erros para aprimorar suas habilidades.",
-    icon: DebugSearch,
   },
   {
     key: "cronometrado",

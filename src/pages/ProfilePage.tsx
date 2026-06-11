@@ -145,7 +145,7 @@ export default function ProfilePage() {
               {displayAvatar ? (
                 <img src={displayAvatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-gray-400" />
+                <img src={avatarUrl("gina.png")} alt="Gina, avatar padrão" className="w-full h-full object-cover" />
               )}
             </div>
             {editing && (
