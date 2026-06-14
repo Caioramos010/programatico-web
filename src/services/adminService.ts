@@ -120,9 +120,22 @@ export interface ContentBlockRequest {
   displayOrder: number;
 }
 
+// ── Dashboard ─────────────────────────────────────────
+
+export interface DashboardMetrics {
+  totalUsers: number;
+  activeSessions: number;
+  totalModules: number;
+  growthPercent: number;
+}
+
 // ── Service ────────────────────────────────────────────
 
 export const adminService = {
+  // Dashboard
+  getDashboard: () =>
+    adminApi.get<DashboardMetrics>("/api/admin/dashboard").then((r) => r.data),
+
   // Trilhas
   listarTrilhas: () =>
     adminApi.get<Trilha[]>("/api/admin/trilhas").then((r) => r.data),
