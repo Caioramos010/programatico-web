@@ -1,6 +1,6 @@
 import { type SVGProps, type ReactElement } from "react";
+import { useNavigate } from "react-router-dom";
 import { CircleX, Lightning, Stopwatch } from "../components/icons";
-import { toast } from "../components/toast/toastBus";
 
 type IconComponent = (props: SVGProps<SVGSVGElement>) => ReactElement;
 
@@ -36,6 +36,7 @@ const cards: PraticarCard[] = [
 ];
 
 export default function PraticarPage() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] font-fredoka">
       <div className="max-w-3xl mx-auto px-6 py-10 flex flex-col gap-5">
@@ -43,7 +44,7 @@ export default function PraticarPage() {
           <button
             key={key}
             type="button"
-            onClick={() => toast.info("Em breve.")}
+            onClick={() => navigate(`/praticar/${key}`)}
             className={[
               "flex items-center justify-between gap-6 w-full text-left",
               "px-7 py-6 rounded-2xl",
