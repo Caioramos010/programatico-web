@@ -13,6 +13,7 @@ import NewPasswordPage from "./pages/NewPasswordPage";
 import ProfilePage from "./pages/ProfilePage";
 import SejaRootPage from "./pages/SejaRootPage";
 import RootPage from "./pages/RootPage";
+import SettingsPage from "./pages/SettingsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -107,6 +108,7 @@ function App() {
             <Route path="/seja-root" element={<SejaRootPage />} />
             <Route path="/root" element={<RootPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
+            <Route path="/configuracoes" element={<SettingsPage />} />
           </Route>
           {/* Exercise — full screen, outside MainLayout */}
           <Route

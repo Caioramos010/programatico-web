@@ -41,6 +41,14 @@ export function parseApiError(error: unknown): ParsedApiError {
 
   if (typeof data.mensagem === "string") {
     result.formError = data.mensagem;
+  } else if (error.response.status === 401 || error.response.status === 403) {
+    result.formError = "Sessão expirada. Faça login novamente.";
+  } else if (error.response.status >= 500) {
+    result.formError = "Erro no servidor. Tente novamente em instantes.";
+  }
+
+  if (!result.formError && !result.fieldErrors) {
+    result.formError = "Erro inesperado. Tente novamente.";
   }
 
   return result;

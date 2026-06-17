@@ -7,6 +7,7 @@ import TrackBar from "../components/TrackBar";
 import TrackMap from "../components/TrackMap";
 import DailyMissions from "../components/DailyMissions";
 import UserStatsBar from "../components/UserStatsBar";
+import { notifyUserDaystreak, notifyUserMission } from "../lib/userNotifications";
 
 export default function LearnPage() {
   const navigate = useNavigate();
@@ -70,6 +71,38 @@ export default function LearnPage() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!stats || stats.sequenciaAtual <= 0) {
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const key = `daystreak-toast-${today}-${stats.sequenciaAtual}`;
+    if (sessionStorage.getItem(key)) {
+      return;
+    }
+    notifyUserDaystreak(
+      `Você está em uma sequência de ${stats.sequenciaAtual} dia${stats.sequenciaAtual === 1 ? "" : "s"}! Continue assim.`
+    );
+    sessionStorage.setItem(key, "1");
+  }, [stats]);
+
+  useEffect(() => {
+    if (missoes.length === 0) {
+      return;
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    missoes
+      .filter((m) => m.concluida)
+      .forEach((m) => {
+        const key = `mission-toast-${today}-${m.missionId}`;
+        if (sessionStorage.getItem(key)) {
+          return;
+        }
+        notifyUserMission(`Missão concluída: ${m.titulo}! +${m.recompensaXp} XP`);
+        sessionStorage.setItem(key, "1");
+      });
+  }, [missoes]);
 
   function handleModuloClick(modulo: ModuloComProgresso) {
     if (modulo.tipo === "ACTIVITY") {
