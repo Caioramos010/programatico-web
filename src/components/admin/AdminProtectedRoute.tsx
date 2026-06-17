@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useAdminAuthStore } from "../../stores/adminAuthStore";
 
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
 
 export default function AdminProtectedRoute({
   children,

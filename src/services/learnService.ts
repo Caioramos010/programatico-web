@@ -1,50 +1,83 @@
 import api from "./api";
 
-export interface ModuloComProgresso {
+export interface ModuleWithProgress {
   id: number;
-  titulo: string;
-  tipo: "ACTIVITY" | "STUDY";
-  ordem: number;
+  title: string;
+  type: "ACTIVITY" | "STUDY";
+  order: number;
   status: "LOCKED" | "UNLOCKED" | "COMPLETED";
-  descricao: string | null;
+  description: string | null;
   totalXp: number;
 }
 
-export interface TrilhaResponse {
+export interface TrackResponse {
   id: number;
-  titulo: string;
-  descricao: string;
+  title: string;
+  description: string;
   icon: string | null;
-  modulos: ModuloComProgresso[];
-  percentualConcluido: number;
-  totalModulos: number;
-  concluidosModulos: number;
+  modules: ModuleWithProgress[];
+  completedPercentage: number;
+  totalModules: number;
+  completedModules: number;
 }
 
 export interface UserStatsResponse {
   totalXp: number;
-  vidasAtuais: number;
-  sequenciaAtual: number;
-  maxSequencia: number;
+  currentLives: number;
+  maxLives: number;
+  /** Segundos até a próxima vida; null quando as vidas estão cheias ou são ilimitadas. */
+  secondsUntilNextLife: number | null;
+  secondsPerLife: number;
+  unlimitedLives: boolean;
+  currentStreak: number;
+  maxStreak: number;
 }
 
-export interface MissaoResponse {
+export interface MissionResponse {
   missionId: number;
-  titulo: string;
-  tipo: string;
-  progressoAtual: number;
-  meta: number;
-  recompensaXp: number;
-  concluida: boolean;
+  title: string;
+  type: string;
+  currentProgress: number;
+  goal: number;
+  xpReward: number;
+  completed: boolean;
+}
+
+export interface TheoryBlock {
+  id: number;
+  layoutType: "TEXT" | "IMAGE" | "CARDS";
+  textContent: string | null;
+  imageUrl: string | null;
+  order: number;
+}
+
+export interface TheoryPage {
+  id: number;
+  title: string;
+  description: string | null;
+  order: number;
+  blocks: TheoryBlock[];
+}
+
+export interface TheoryResponse {
+  moduleId: number;
+  moduleTitle: string;
+  pages: TheoryPage[];
 }
 
 export const learnService = {
-  getTrilha: () =>
-    api.get<TrilhaResponse>("/api/aprender/trilha").then((r) => r.data),
+  getTrack: () =>
+    api.get<TrackResponse>("/api/aprender/trilha").then((r) => r.data),
 
   getStats: () =>
     api.get<UserStatsResponse>("/api/aprender/stats").then((r) => r.data),
 
-  getMissoes: () =>
-    api.get<MissaoResponse[]>("/api/aprender/missoes").then((r) => r.data),
+  getMissions: () =>
+    api.get<MissionResponse[]>("/api/aprender/missoes").then((r) => r.data),
+
+  getTheory: (moduleId: number) =>
+    api.get<TheoryResponse>(`/api/aprender/modulos/${moduleId}/teorico`).then((r) => r.data),
+
+  finishTheory: (moduleId: number) =>
+    api.post<void>(`/api/aprender/modulos/${moduleId}/teorico/concluir`).then((r) => r.data),
 };

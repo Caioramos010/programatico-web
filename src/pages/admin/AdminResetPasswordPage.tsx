@@ -6,7 +6,7 @@ import AuthLayout from "../../components/auth/AuthLayout";
 import OrDivider from "../../components/auth/OrDivider";
 import { useFormValidation, rules } from "../../hooks/useFormValidation";
 
-const isAdminSubdomain = window.location.hostname.startsWith("admin.");
+const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
 const basePath = isAdminSubdomain ? "" : "/admin";
 
 const inputClass =

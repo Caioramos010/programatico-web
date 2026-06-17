@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import MainLayout from "./components/MainLayout";
 import LearnPage from "./pages/LearnPage";
+import PraticarPage from "./pages/PraticarPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import ActivationPage from "./pages/ActivationPage";
@@ -22,6 +23,8 @@ import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import SuccessPage from "./pages/SuccessPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import ReviewPage from "./pages/ReviewPage";
 
 // Admin — lazy-loaded (only fetched on admin subdomain or /admin/* dev fallback)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -41,6 +44,11 @@ const AdminTeoricaPage = lazy(() => import("./pages/admin/AdminTeoricaPage"));
 
 // Exercise — lazy-loaded (full-screen activity flow)
 const ExercisePage = lazy(() => import("./pages/ExercisePage"));
+// Esqueleto Práticas (Hyorran)
+const PracticaSessionPage = lazy(() => import("./pages/PracticaSessionPage"));
+
+// Theory — lazy-loaded (full-screen theoretical content viewer)
+const TheoryPage = lazy(() => import("./pages/TheoryPage"));
 
 // Onboarding — lazy-loaded (only fetched during onboarding flow)
 const OnboardingLayout = lazy(() => import("./components/onboarding/OnboardingLayout"));
@@ -48,7 +56,7 @@ const OnboardingWelcomePage = lazy(() => import("./pages/onboarding/OnboardingWe
 const OnboardingLevelPage = lazy(() => import("./pages/onboarding/OnboardingLevelPage"));
 const OnboardingCompletePage = lazy(() => import("./pages/onboarding/OnboardingCompletePage"));
 
-const isAdmin = window.location.hostname.startsWith("admin.");
+const isAdmin = /^admin[.-]/.test(window.location.hostname);
 
 function App() {
   if (isAdmin) {
@@ -105,15 +113,28 @@ function App() {
           {/* Main app (sidebar + content) */}
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/aprender" element={<LearnPage />} />
+            <Route path="/praticar" element={<PraticarPage />} />
             <Route path="/seja-root" element={<SejaRootPage />} />
             <Route path="/root" element={<RootPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/configuracoes" element={<SettingsPage />} />
+            <Route path="/notificacoes" element={<NotificationsPage />} />
+            <Route path="/revisar" element={<ReviewPage />} />
           </Route>
           {/* Exercise — full screen, outside MainLayout */}
           <Route
             path="/modulos/:moduloId/exercicio"
             element={<ProtectedRoute><ExercisePage /></ProtectedRoute>}
+          />
+          {/* Práticas — full screen, outside MainLayout (esqueleto Hyorran) */}
+          <Route
+            path="/praticar/:modo"
+            element={<ProtectedRoute><PracticaSessionPage /></ProtectedRoute>}
+          />
+          {/* Theory — full screen, outside MainLayout */}
+          <Route
+            path="/modulos/:moduloId/teorico"
+            element={<ProtectedRoute><TheoryPage /></ProtectedRoute>}
           />
           {/* Onboarding */}
           <Route path="/onboarding" element={<OnboardingLayout />}>

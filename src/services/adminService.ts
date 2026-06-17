@@ -8,7 +8,7 @@ export interface Trilha {
   description: string;
   displayOrder: number;
   icon: string | null;
-  totalModulos: number;
+  totalModules: number;
 }
 
 export interface TrilhaRequest {
@@ -22,14 +22,14 @@ export interface Missao {
   title: string;
   objectiveType: string;
   xpReward: number;
-  quantidade: number;
+  quantity: number;
 }
 
 export interface MissaoRequest {
   title: string;
   objectiveType: string;
   xpReward: number;
-  quantidade: number;
+  quantity: number;
 }
 
 export interface AdminUsuario {
@@ -55,7 +55,7 @@ export interface Modulo {
   moduleType: "ACTIVITY" | "STUDY";
   displayOrder: number;
   description: string | null;
-  totalComponentes: number;
+  totalComponents: number;
   totalXp: number;
 }
 
@@ -120,9 +120,22 @@ export interface ContentBlockRequest {
   displayOrder: number;
 }
 
+// ── Dashboard ─────────────────────────────────────────
+
+export interface DashboardMetrics {
+  totalUsers: number;
+  activeSessions: number;
+  totalModules: number;
+  growthPercent: number;
+}
+
 // ── Service ────────────────────────────────────────────
 
 export const adminService = {
+  // Dashboard
+  getDashboard: () =>
+    adminApi.get<DashboardMetrics>("/api/admin/dashboard").then((r) => r.data),
+
   // Trilhas
   listarTrilhas: () =>
     adminApi.get<Trilha[]>("/api/admin/trilhas").then((r) => r.data),
