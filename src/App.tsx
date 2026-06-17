@@ -22,6 +22,8 @@ import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import SuccessPage from "./pages/SuccessPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import ReviewPage from "./pages/ReviewPage";
 
 // Admin — lazy-loaded (only fetched on admin subdomain or /admin/* dev fallback)
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -109,6 +111,8 @@ function App() {
             <Route path="/root" element={<RootPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/configuracoes" element={<SettingsPage />} />
+            <Route path="/notificacoes" element={<NotificationsPage />} />
+            <Route path="/revisar" element={<ReviewPage />} />
           </Route>
           {/* Exercise — full screen, outside MainLayout */}
           <Route
