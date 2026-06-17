@@ -8,7 +8,7 @@ import {
   User,
   Settings,
   Notification,
-  Cancel,
+  LogOut,
 } from "./icons";
 import { useAuthStore } from "../stores/authStore";
 import { isActiveRoot } from "../lib/subscription";
@@ -225,7 +225,7 @@ export default function Sidebar() {
               "text-[var(--color-text-secondary)] hover:bg-white/10 hover:text-[var(--color-text-primary)]",
             ].join(" ")}
           >
-            <Cancel className="w-5 h-5 shrink-0" />
+            <LogOut className="w-5 h-5 shrink-0" />
             <span>ENCERRAR SESSÃO</span>
           </button>
         </nav>

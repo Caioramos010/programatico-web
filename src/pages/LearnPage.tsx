@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { learnService } from "../services/learnService";
-import type { TrilhaResponse, UserStatsResponse, MissaoResponse, ModuloComProgresso } from "../services/learnService";
+import type { TrackResponse, UserStatsResponse, MissionResponse, ModuleWithProgress } from "../services/learnService";
 import { parseApiError } from "../utils/parseApiError";
 import TrackBar from "../components/TrackBar";
 import TrackMap from "../components/TrackMap";
@@ -11,9 +11,9 @@ import { notifyUserDaystreak, notifyUserMission } from "../lib/userNotifications
 
 export default function LearnPage() {
   const navigate = useNavigate();
-  const [trilha, setTrilha] = useState<TrilhaResponse | null>(null);
+  const [track, setTrack] = useState<TrackResponse | null>(null);
   const [stats, setStats] = useState<UserStatsResponse | null>(null);
-  const [missoes, setMissoes] = useState<MissaoResponse[]>([]);
+  const [missions, setMissions] = useState<MissionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -48,15 +48,15 @@ export default function LearnPage() {
       setLoading(true);
       setFormError(null);
       try {
-        const [trilhaData, statsData, missoesData] = await Promise.all([
-          learnService.getTrilha(),
+        const [trackData, statsData, missionsData] = await Promise.all([
+          learnService.getTrack(),
           learnService.getStats(),
-          learnService.getMissoes(),
+          learnService.getMissions(),
         ]);
         if (cancelled) return;
-        setTrilha(trilhaData);
+        setTrack(trackData);
         setStats(statsData);
-        setMissoes(missoesData);
+        setMissions(missionsData);
       } catch (err) {
         if (cancelled) return;
         const { formError: msg } = parseApiError(err);
@@ -72,41 +72,12 @@ export default function LearnPage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!stats || stats.sequenciaAtual <= 0) {
-      return;
-    }
-    const today = new Date().toISOString().slice(0, 10);
-    const key = `daystreak-toast-${today}-${stats.sequenciaAtual}`;
-    if (sessionStorage.getItem(key)) {
-      return;
-    }
-    notifyUserDaystreak(
-      `Você está em uma sequência de ${stats.sequenciaAtual} dia${stats.sequenciaAtual === 1 ? "" : "s"}! Continue assim.`
-    );
-    sessionStorage.setItem(key, "1");
-  }, [stats]);
-
-  useEffect(() => {
-    if (missoes.length === 0) {
-      return;
-    }
-    const today = new Date().toISOString().slice(0, 10);
-    missoes
-      .filter((m) => m.concluida)
-      .forEach((m) => {
-        const key = `mission-toast-${today}-${m.missionId}`;
-        if (sessionStorage.getItem(key)) {
-          return;
-        }
-        notifyUserMission(`Missão concluída: ${m.titulo}! +${m.recompensaXp} XP`);
-        sessionStorage.setItem(key, "1");
-      });
-  }, [missoes]);
-
-  function handleModuloClick(modulo: ModuloComProgresso) {
-    if (modulo.tipo === "ACTIVITY") {
+  function handleModuloClick(modulo: ModuleWithProgress) {
+    if (modulo.status === "LOCKED") return;
+    if (modulo.type === "ACTIVITY") {
       navigate(`/modulos/${modulo.id}/exercicio`);
+    } else if (modulo.type === "STUDY") {
+      navigate(`/modulos/${modulo.id}/teorico`);
     }
   }
 
@@ -115,12 +86,12 @@ export default function LearnPage() {
 
       {/* ── TrackBar: fixed top ── */}
       <div className="fixed top-0 left-0 right-0 z-30 md:left-60 lg:right-64 xl:right-72">
-        <TrackBar trilha={trilha} loading={loading} />
+        <TrackBar track={track} loading={loading} />
       </div>
 
       {/* ── DailyMissions: fixed right (desktop only) ── */}
       <div className="hidden lg:flex fixed top-0 right-0 z-30 h-full items-center">
-        <DailyMissions missoes={missoes} loading={loading} />
+        <DailyMissions missions={missions} loading={loading} />
       </div>
 
       {/* ── UserStatsBar: fixed bottom ── */}
@@ -160,7 +131,7 @@ export default function LearnPage() {
               ))}
             </div>
           </div>
-        ) : !trilha || trilha.modulos.length === 0 ? (
+        ) : !track || track.modules.length === 0 ? (
           <div className="flex items-center justify-center py-24 px-6">
             <div className="flex flex-col items-center gap-3 max-w-sm text-center font-fredoka">
               <p className="text-base font-semibold text-[var(--color-text-primary)]">
@@ -173,8 +144,8 @@ export default function LearnPage() {
           </div>
         ) : (
           <TrackMap
-            modulos={trilha.modulos}
-            onModuloClick={handleModuloClick}
+            modules={track.modules}
+            onModuleClick={handleModuloClick}
           />
         )}
       </div>
