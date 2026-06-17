@@ -1,11 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, useNavigate, useSearchParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import ToastContainer from "./Toast";
 import { useAuthStore } from "../stores/authStore";
 import { authService } from "../services/authService";
 import { paymentService } from "../services/paymentService";
+import { settingsService } from "../services/settingsService";
+import { useSettingsStore } from "../stores/settingsStore";
 import { isActiveRoot } from "../lib/subscription";
+import { notifyUserSubscription } from "../lib/userNotifications";
 
 async function refreshSubscription(
   userId: number,
@@ -33,8 +36,14 @@ async function refreshSubscription(
 export default function MainLayout() {
   const user = useAuthStore((s) => s.user);
   const updateUser = useAuthStore((s) => s.updateUser);
+  const setNotifications = useSettingsStore((s) => s.setNotifications);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const wasRootRef = useRef(isActiveRoot(user));
+
+  useEffect(() => {
+    wasRootRef.current = isActiveRoot(user);
+  }, [user?.id, user?.subscriptionType, user?.subscriptionExpiresAt]);
 
   useEffect(() => {
     if (!user?.id) {
@@ -48,13 +57,25 @@ export default function MainLayout() {
       if (cancelled || !updated) {
         return;
       }
-      if (searchParams.get("root") === "sync" && isActiveRoot(updated)) {
+      const isRootNow = isActiveRoot(updated);
+      if (isRootNow && !wasRootRef.current) {
+        notifyUserSubscription("Parabéns! Você agora é Root. Aproveite os benefícios!");
+        wasRootRef.current = true;
+      }
+      if (searchParams.get("root") === "sync" && isRootNow) {
         setSearchParams({}, { replace: true });
         navigate("/root", { replace: true });
       }
     };
 
     void run();
+
+    settingsService
+      .getNotificationPreferences()
+      .then(setNotifications)
+      .catch(() => {
+        /* preferências opcionais no mount */
+      });
 
     const onFocus = () => {
       if (!isActiveRoot(useAuthStore.getState().user)) {
@@ -75,7 +96,7 @@ export default function MainLayout() {
       window.clearInterval(interval);
       window.removeEventListener("focus", onFocus);
     };
-  }, [user?.id, updateUser, navigate, searchParams, setSearchParams]);
+  }, [user?.id, updateUser, navigate, searchParams, setSearchParams, setNotifications]);
 
   return (
     <>

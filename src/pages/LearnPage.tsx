@@ -7,6 +7,7 @@ import TrackBar from "../components/TrackBar";
 import TrackMap from "../components/TrackMap";
 import DailyMissions from "../components/DailyMissions";
 import UserStatsBar from "../components/UserStatsBar";
+import { notifyUserDaystreak, notifyUserMission } from "../lib/userNotifications";
 
 export default function LearnPage() {
   const navigate = useNavigate();
