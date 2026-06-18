@@ -9,6 +9,8 @@ export interface SessionExercise {
   xpReward: number;
   relatedTopics: string[];
   imageData: string | null;
+  /** Tempo por exercício na prática cronometrada (segundos). */
+  timeLimitSeconds?: number | null;
 }
 
 export interface StartSessionResponse {
@@ -16,8 +18,6 @@ export interface StartSessionResponse {
   moduleTitle: string;
   initialLives: number;
   totalExercises: number;
-  /** Preenchido só na prática CRONOMETRADO; null nas demais. */
-  timeLimitSeconds?: number | null;
   exercises: SessionExercise[];
 }
 
