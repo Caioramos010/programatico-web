@@ -4,8 +4,10 @@ import {
   exerciseService,
   type SessionExercise,
   type ConclusionResponse,
+  type AnswerResponse,
 } from "../../services/exerciseService";
 import { parseApiError } from "../../utils/parseApiError";
+import { Stopwatch } from "../icons";
 import MultipleChoiceExercise from "./AlternativaCorretaExercise";
 import LogicFlowExercise from "./FluxoLogicoExercise";
 import MatchPairsExercise from "./CombinarParesExercise";
@@ -23,6 +25,19 @@ export interface ExerciseSessionFlowProps {
   onExit: () => void;
 }
 
+function formatTimer(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function timeoutAnswerFor(exercise: SessionExercise): string {
+  if (exercise.tipo === "DRAG_DROP" || exercise.tipo === "PAIRS") {
+    return "[]";
+  }
+  return "__TIMEOUT__";
+}
+
 export default function ExerciseSessionFlow({
   sessionId,
   exercises,
@@ -37,18 +52,81 @@ export default function ExerciseSessionFlow({
   const [phase, setPhase] = useState<CurrentPhase>(initialLives === 0 ? "no-lives" : "exercise");
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [relatedTopics, setRelatedTopics] = useState<string[]>([]);
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
 
   const [conclusion, setConclusion] = useState<ConclusionResponse | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const currentExercise: SessionExercise | undefined = exercises[currentIndex];
+  const isTimedExercise = (currentExercise?.timeLimitSeconds ?? 0) > 0;
+
+  const lastPairsCountRef = useRef<number>(0);
+  const timeoutHandledRef = useRef(false);
+
+  const applyRespondResult = useCallback((result: AnswerResponse, exercise: SessionExercise) => {
+    setLives(result.remainingLives);
+    if (result.correct && result.correctAnswer === "" && exercise.tipo === "PAIRS") {
+      return;
+    }
+    if (!result.correct && result.remainingLives === 0) {
+      setPhase("no-lives");
+      return;
+    }
+    setCorrectAnswer(result.correctAnswer);
+    setRelatedTopics(result.relatedTopics);
+    setPhase(result.correct ? "correct-feedback" : "incorrect-feedback");
+  }, []);
+
+  const submitAnswer = useCallback(async (answer: string, exercise: SessionExercise) => {
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const result = await exerciseService.respond(sessionId, exercise.id, answer);
+      applyRespondResult(result, exercise);
+    } catch (err) {
+      const { formError } = parseApiError(err);
+      setSubmitError(formError ?? "Erro ao enviar resposta.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [sessionId, applyRespondResult]);
 
   const handleAnswer = useCallback((answer: string) => {
     setSelectedAnswer(answer);
   }, []);
 
-  const lastPairsCountRef = useRef<number>(0);
+  useEffect(() => {
+    if (phase !== "exercise" || !isTimedExercise || !currentExercise?.timeLimitSeconds) {
+      setSecondsLeft(null);
+      return;
+    }
+
+    timeoutHandledRef.current = false;
+    setSecondsLeft(currentExercise.timeLimitSeconds);
+
+    const interval = window.setInterval(() => {
+      setSecondsLeft((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, [currentIndex, phase, currentExercise?.id, currentExercise?.timeLimitSeconds, isTimedExercise]);
+
+  useEffect(() => {
+    if (
+      phase !== "exercise" ||
+      !currentExercise ||
+      !isTimedExercise ||
+      secondsLeft !== 0 ||
+      timeoutHandledRef.current ||
+      submitting
+    ) {
+      return;
+    }
+
+    timeoutHandledRef.current = true;
+    void submitAnswer(timeoutAnswerFor(currentExercise), currentExercise);
+  }, [secondsLeft, phase, currentExercise, isTimedExercise, submitting, submitAnswer]);
 
   useEffect(() => {
     if (selectedAnswer === "") {
@@ -64,26 +142,7 @@ export default function ExerciseSessionFlow({
     try { currentCount = (JSON.parse(selectedAnswer) as unknown[]).length; } catch { return; }
     if (currentCount <= lastPairsCountRef.current) return;
     lastPairsCountRef.current = currentCount;
-    setSubmitting(true);
-    setSubmitError(null);
-    exerciseService
-      .respond(sessionId, currentExercise.id, selectedAnswer)
-      .then((result) => {
-        setLives(result.remainingLives);
-        if (result.correct && result.correctAnswer === "") return;
-        if (!result.correct && result.remainingLives === 0) {
-          setPhase("no-lives");
-          return;
-        }
-        setCorrectAnswer(result.correctAnswer);
-        setRelatedTopics(result.relatedTopics);
-        setPhase(result.correct ? "correct-feedback" : "incorrect-feedback");
-      })
-      .catch((err) => {
-        const { formError } = parseApiError(err);
-        setSubmitError(formError ?? "Erro ao enviar resposta.");
-      })
-      .finally(() => setSubmitting(false));
+    void submitAnswer(selectedAnswer, currentExercise);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnswer, submitting]);
 
@@ -110,24 +169,7 @@ export default function ExerciseSessionFlow({
     }
 
     if (!selectedAnswer) return;
-    setSubmitting(true);
-    setSubmitError(null);
-    try {
-      const result = await exerciseService.respond(sessionId, currentExercise.id, selectedAnswer);
-      setLives(result.remainingLives);
-      if (!result.correct && result.remainingLives === 0) {
-        setPhase("no-lives");
-        return;
-      }
-      setCorrectAnswer(result.correctAnswer);
-      setRelatedTopics(result.relatedTopics);
-      setPhase(result.correct ? "correct-feedback" : "incorrect-feedback");
-    } catch (err) {
-      const { formError } = parseApiError(err);
-      setSubmitError(formError ?? "Erro ao enviar resposta.");
-    } finally {
-      setSubmitting(false);
-    }
+    await submitAnswer(selectedAnswer, currentExercise);
   }
 
   if (phase === "no-lives") {
@@ -154,6 +196,7 @@ export default function ExerciseSessionFlow({
     ? Math.round((currentIndex / exercises.length) * 100)
     : 0;
   const feedbackOpen = phase === "correct-feedback" || phase === "incorrect-feedback";
+  const inputsDisabled = feedbackOpen || submitting || (isTimedExercise && secondsLeft === 0);
   const canProceed = phase !== "exercise" || (selectedAnswer.length > 0 && !submitting);
 
   return (
@@ -161,7 +204,7 @@ export default function ExerciseSessionFlow({
       <header className="relative px-5 pt-4 pb-3 shrink-0">
         <div className="w-full max-w-lg mx-auto flex items-center gap-3 pr-8">
           <span className="font-fredoka text-base text-[var(--color-text-muted)] shrink-0">
-            {currentIndex}/{exercises.length}
+            {currentIndex + 1}/{exercises.length}
           </span>
           <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
             <div
@@ -169,6 +212,17 @@ export default function ExerciseSessionFlow({
               style={{ width: `${progressPercent}%`, background: "var(--color-accent-light)" }}
             />
           </div>
+          {isTimedExercise && secondsLeft !== null && (
+            <div
+              className={[
+                "flex items-center gap-1 shrink-0 font-fredoka text-base font-semibold tabular-nums",
+                secondsLeft <= 10 ? "text-[var(--color-error-heart)]" : "text-[var(--color-text-primary)]",
+              ].join(" ")}
+            >
+              <Stopwatch className="w-5 h-5" />
+              {formatTimer(secondsLeft)}
+            </div>
+          )}
           <div className="flex items-center gap-1 shrink-0">
             <Heart size={18} className="text-[var(--color-error-heart)]" fill="currentColor" />
             <span className="font-fredoka text-base font-semibold text-[var(--color-text-primary)]">
@@ -207,14 +261,14 @@ export default function ExerciseSessionFlow({
                     displayData={currentExercise.displayData}
                     imageData={currentExercise.imageData}
                     onAnswer={handleAnswer}
-                    disabled={feedbackOpen || submitting}
+                    disabled={inputsDisabled}
                   />
                 )}
                 {currentExercise.tipo === "PAIRS" && (
                   <MatchPairsExercise
                     displayData={currentExercise.displayData}
                     onAnswer={handleAnswer}
-                    disabled={feedbackOpen || submitting}
+                    disabled={inputsDisabled}
                     correctAnswer={phase === "incorrect-feedback" ? correctAnswer : undefined}
                   />
                 )}
@@ -223,7 +277,7 @@ export default function ExerciseSessionFlow({
                     displayData={currentExercise.displayData}
                     imageData={currentExercise.imageData}
                     onAnswer={handleAnswer}
-                    disabled={feedbackOpen || submitting}
+                    disabled={inputsDisabled}
                   />
                 )}
               </>
