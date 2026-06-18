@@ -24,7 +24,7 @@ function CorrectAnswerView({ exerciseType, correctAnswer }: { exerciseType: stri
           {items.map((item, i) => (
             <div
               key={i}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-error-heart)]/40"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-error-light)] border-2 border-[var(--color-error-heart)]/40"
             >
               <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-error-heart)] text-white text-sm font-bold shrink-0">
                 {i + 1}
@@ -45,7 +45,7 @@ function CorrectAnswerView({ exerciseType, correctAnswer }: { exerciseType: stri
           {pairs.map((p, i) => (
             <div
               key={i}
-              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-error-heart)]/40"
+              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--color-error-light)] border-2 border-[var(--color-error-heart)]/40"
             >
               <span className="font-fredoka text-base text-[var(--color-text-primary)] flex-1">{p.left}</span>
               <span className="text-[var(--color-error-heart)] font-bold shrink-0">→</span>
@@ -59,7 +59,7 @@ function CorrectAnswerView({ exerciseType, correctAnswer }: { exerciseType: stri
 
   // MULTIPLE_CHOICE (ou fallback): uma única resposta em destaque.
   return (
-    <div className="rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-error-heart)]/40 px-4 py-3">
+    <div className="rounded-xl bg-[var(--color-error-light)] border-2 border-[var(--color-error-heart)]/40 px-4 py-3">
       <span className="font-fredoka text-lg text-[var(--color-text-primary)]">{correctAnswer}</span>
     </div>
   );
