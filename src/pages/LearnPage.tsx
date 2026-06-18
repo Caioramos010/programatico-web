@@ -7,6 +7,7 @@ import TrackBar from "../components/TrackBar";
 import TrackMap from "../components/TrackMap";
 import DailyMissions from "../components/DailyMissions";
 import UserStatsBar from "../components/UserStatsBar";
+import WeekStreakScreen from "../components/streak/WeekStreakScreen";
 
 export default function LearnPage() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function LearnPage() {
   const [missions, setMissions] = useState<MissionResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
+  const [showStreak, setShowStreak] = useState(false);
 
   // Drag-to-scroll
   const mapRef = useRef<HTMLDivElement>(null);
@@ -56,6 +58,12 @@ export default function LearnPage() {
         setTrack(trackData);
         setStats(statsData);
         setMissions(missionsData);
+        // Ofensiva semanal (estilo Duolingo): a cada múltiplo de 7 dias, mostra uma vez por marco.
+        const streak = statsData.currentStreak ?? 0;
+        if (streak >= 7 && streak % 7 === 0 && !localStorage.getItem(`streak-${streak}`)) {
+          setShowStreak(true);
+          localStorage.setItem(`streak-${streak}`, "1");
+        }
       } catch (err) {
         if (cancelled) return;
         const { formError: msg } = parseApiError(err);
@@ -82,6 +90,10 @@ export default function LearnPage() {
 
   return (
     <div className="bg-[var(--color-bg-primary)]" style={{ height: "100dvh" }}>
+
+      {showStreak && stats && (
+        <WeekStreakScreen streak={stats.currentStreak} onContinue={() => setShowStreak(false)} />
+      )}
 
       {/* ── TrackBar: fixed top ── */}
       <div className="fixed top-0 left-0 right-0 z-30 md:left-60 lg:right-64 xl:right-72">
