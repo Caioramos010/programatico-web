@@ -7,23 +7,62 @@ interface Props {
   onProceed: () => void;
 }
 
-function formatCorrectAnswer(exerciseType: string, answerJson: string): string {
+function parse<T>(json: string): T | null {
   try {
-    if (exerciseType === "MULTIPLE_CHOICE") {
-      return answerJson;
-    }
-    if (exerciseType === "DRAG_DROP") {
-      const items: string[] = JSON.parse(answerJson);
-      return items.map((item, i) => `${i + 1}. ${item}`).join(" → ");
-    }
-    if (exerciseType === "PAIRS") {
-      const pairs: Array<{ left: string; right: string }> = JSON.parse(answerJson);
-      return pairs.map((p) => `${p.left} \u2192 ${p.right}`).join("\n");
-    }
+    return JSON.parse(json) as T;
   } catch {
-    /* no-op */
+    return null;
   }
-  return answerJson;
+}
+
+function CorrectAnswerView({ exerciseType, correctAnswer }: { exerciseType: string; correctAnswer: string }) {
+  if (exerciseType === "DRAG_DROP") {
+    const items = parse<string[]>(correctAnswer);
+    if (items && items.length > 0) {
+      return (
+        <div className="flex flex-col gap-2">
+          {items.map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-success)]/40"
+            >
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-success)] text-white text-sm font-bold shrink-0">
+                {i + 1}
+              </span>
+              <span className="font-fredoka text-base text-[var(--color-text-primary)]">{item}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }
+
+  if (exerciseType === "PAIRS") {
+    const pairs = parse<Array<{ left: string; right: string }>>(correctAnswer);
+    if (pairs && pairs.length > 0) {
+      return (
+        <div className="flex flex-col gap-2">
+          {pairs.map((p, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-success)]/40"
+            >
+              <span className="font-fredoka text-base text-[var(--color-text-primary)] flex-1">{p.left}</span>
+              <span className="text-[var(--color-success)] font-bold shrink-0">→</span>
+              <span className="font-fredoka text-base text-[var(--color-text-primary)] flex-1 text-right">{p.right}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }
+
+  // MULTIPLE_CHOICE (ou fallback): uma única resposta em destaque.
+  return (
+    <div className="rounded-xl bg-[var(--color-bg-card-inner)] border-2 border-[var(--color-success)]/40 px-4 py-3">
+      <span className="font-fredoka text-lg text-[var(--color-text-primary)]">{correctAnswer}</span>
+    </div>
+  );
 }
 
 export default function IncorrectFeedback({ correctAnswer, exerciseType, relatedTopics, onProceed }: Props) {
@@ -36,11 +75,7 @@ export default function IncorrectFeedback({ correctAnswer, exerciseType, related
         </span>
       </div>
 
-      <div className="rounded-xl bg-[var(--color-error-light)] border border-[var(--color-error-heart)]/30 px-4 py-3">
-        <p className="font-fredoka text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">
-          {formatCorrectAnswer(exerciseType, correctAnswer)}
-        </p>
-      </div>
+      <CorrectAnswerView exerciseType={exerciseType} correctAnswer={correctAnswer} />
 
       {relatedTopics.length > 0 && (
         <div className="flex flex-col gap-2">
