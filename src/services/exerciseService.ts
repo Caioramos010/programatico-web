@@ -9,6 +9,8 @@ export interface SessionExercise {
   xpReward: number;
   relatedTopics: string[];
   imageData: string | null;
+  /** Tempo por exercício na prática cronometrada (segundos). */
+  timeLimitSeconds?: number | null;
 }
 
 export interface StartSessionResponse {
@@ -37,6 +39,11 @@ export interface ConclusionResponse {
 export const exerciseService = {
   start: (moduleId: number) =>
     api.post<StartSessionResponse>(`/api/aprender/modulos/${moduleId}/iniciar`).then((r) => r.data),
+
+  // Esqueleto Práticas (Hyorran): modo = "erros" | "fixacao" | "cronometrado".
+  // responder()/conclude() abaixo são reaproveitados sem mudança.
+  startPractice: (modo: string) =>
+    api.post<StartSessionResponse>(`/api/aprender/pratica/${modo}/iniciar`).then((r) => r.data),
 
   respond: (sessionId: number, exerciseId: number, answer: string) =>
     api
