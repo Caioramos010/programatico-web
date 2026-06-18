@@ -64,6 +64,16 @@ export default function ExerciseSessionFlow({
   const lastPairsCountRef = useRef<number>(0);
   const timeoutHandledRef = useRef(false);
 
+  // Pré-carrega as imagens da sessão para renderizarem junto do exercício (sem atraso).
+  useEffect(() => {
+    exercises.forEach((ex) => {
+      if (ex.imageData) {
+        const img = new Image();
+        img.src = ex.imageData;
+      }
+    });
+  }, [exercises]);
+
   const applyRespondResult = useCallback((result: AnswerResponse, exercise: SessionExercise) => {
     setLives(result.remainingLives);
     if (result.correct && result.correctAnswer === "" && exercise.tipo === "PAIRS") {
