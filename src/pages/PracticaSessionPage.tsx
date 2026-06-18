@@ -2,20 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { exerciseService, type StartSessionResponse } from "../services/exerciseService";
 import { parseApiError } from "../utils/parseApiError";
+import ExerciseSessionFlow from "../components/exercise/ExerciseSessionFlow";
 
-/**
- * Esqueleto Práticas (Hyorran).
- *
- * Inicia a sessão de prática do modo informado na rota (/praticar/:modo) e, por ora,
- * exibe um placeholder com os dados da sessão.
- *
- * TODO(hyorran):
- *  - Reaproveitar a UI de exercícios da ExercisePage para renderizar a sessão.
- *    `exerciseService.respond(sessionId, ...)` e `exerciseService.conclude(sessionId)`
- *    já funcionam para sessões de prática (são agnósticos de módulo).
- *  - Modo "cronometrado": exibir um cronômetro a partir de `session.timeLimitSeconds`
- *    e concluir a sessão automaticamente ao zerar.
- */
 export default function PracticaSessionPage() {
   const { modo } = useParams<{ modo: string }>();
   const navigate = useNavigate();
@@ -34,10 +22,17 @@ export default function PracticaSessionPage() {
       .finally(() => setLoading(false));
   }, [modo]);
 
+  function handleExit() {
+    navigate("/praticar");
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--color-bg-primary)]">
-        Carregando prática…
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-[var(--color-accent-light)] border-t-transparent rounded-full animate-spin" />
+          <p className="font-fredoka text-[var(--color-text-muted)]">Carregando prática…</p>
+        </div>
       </div>
     );
   }
@@ -45,25 +40,26 @@ export default function PracticaSessionPage() {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-6 text-center bg-[var(--color-bg-primary)]">
-        <p>{error}</p>
-        <button type="button" onClick={() => navigate("/praticar")} className="underline">
+        <p className="font-fredoka text-[var(--color-text-primary)]">{error}</p>
+        <button
+          type="button"
+          onClick={handleExit}
+          className="px-6 py-2 rounded-xl bg-[var(--color-bg-card)] text-[var(--color-text-secondary)] font-fredoka hover:bg-[var(--color-bg-card-inner)] transition-all"
+        >
           Voltar
         </button>
       </div>
     );
   }
 
-  // TODO(hyorran): substituir este placeholder pela renderização real dos exercícios.
+  if (!session) return null;
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-2 px-6 text-center bg-[var(--color-bg-primary)]">
-      <h1 className="text-2xl font-bold">{session?.moduleTitle ?? "Prática"}</h1>
-      <p>
-        {session?.totalExercises ?? 0} exercícios — sessão #{session?.sessionId}
-      </p>
-      {session?.timeLimitSeconds ? <p>Tempo limite: {session.timeLimitSeconds}s</p> : null}
-      <p className="text-sm opacity-70">
-        TODO(hyorran): renderizar os exercícios reaproveitando a ExercisePage.
-      </p>
-    </div>
+    <ExerciseSessionFlow
+      sessionId={session.sessionId}
+      exercises={session.exercises}
+      initialLives={session.initialLives}
+      onExit={handleExit}
+    />
   );
 }
