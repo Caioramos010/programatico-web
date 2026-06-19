@@ -118,6 +118,7 @@ export interface ContentBlock {
 export interface ContentBlockRequest {
   layoutType: "TEXT" | "IMAGE" | "CARDS";
   textContent?: string;
+  imageUrl?: string;
   displayOrder: number;
 }
 
