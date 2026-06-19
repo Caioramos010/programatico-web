@@ -79,5 +79,7 @@ export const learnService = {
     api.get<TheoryResponse>(`/api/aprender/modulos/${moduleId}/teorico`).then((r) => r.data),
 
   finishTheory: (moduleId: number) =>
-    api.post<void>(`/api/aprender/modulos/${moduleId}/teorico/concluir`).then((r) => r.data),
+    api
+      .post<{ firstCompletion: boolean }>(`/api/aprender/modulos/${moduleId}/teorico/concluir`)
+      .then((r) => r.data),
 };

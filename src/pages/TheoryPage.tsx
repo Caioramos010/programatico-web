@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { learnService } from "../services/learnService";
 import type { TheoryResponse, TheoryBlock } from "../services/learnService";
 import { parseApiError } from "../utils/parseApiError";
+import { toast } from "../components/toast/toastBus";
 
 export default function TheoryPage() {
   const { moduloId } = useParams<{ moduloId: string }>();
@@ -48,7 +49,10 @@ export default function TheoryPage() {
     setIsFinishing(true);
     setFinishError(null);
     try {
-      await learnService.finishTheory(Number(moduloId));
+      const { firstCompletion } = await learnService.finishTheory(Number(moduloId));
+      if (firstCompletion) {
+        toast.success("Módulo teórico concluído!");
+      }
       navigate("/aprender");
     } catch (err) {
       const { formError } = parseApiError(err);

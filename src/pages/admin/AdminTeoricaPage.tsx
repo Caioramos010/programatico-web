@@ -10,6 +10,8 @@ interface BlockDraft {
   id?: number;
   layoutType: LayoutType;
   textContent: string;
+  /** URL/caminho da imagem já salva (blocos IMAGE vindos do servidor). */
+  imageUrl?: string;
   displayOrder: number;
   isNew?: boolean;
 }
@@ -87,11 +89,11 @@ function BlockEditor({
 
       {block.layoutType === "IMAGE" && (
         <div className="flex flex-col gap-2">
-          {block.textContent ? (
+          {(block.textContent || block.imageUrl) ? (
             <div className="relative w-fit">
-              <img src={block.textContent} alt="" className="max-h-48 rounded-xl object-contain" />
+              <img src={block.textContent || block.imageUrl} alt="" className="max-h-48 rounded-xl object-contain" />
               <button type="button"
-                onClick={() => { onChange({ ...block, textContent: "" }); if (fileRef.current) fileRef.current.value = ""; }}
+                onClick={() => { onChange({ ...block, textContent: "", imageUrl: "" }); if (fileRef.current) fileRef.current.value = ""; }}
                 className="absolute top-2 right-2 bg-black/60 rounded-full p-1 text-white hover:bg-[var(--color-error)] transition-colors">
                 <X size={12} />
               </button>
@@ -156,6 +158,7 @@ export default function AdminTeoricaPage() {
         id: cb.id,
         layoutType: cb.layoutType,
         textContent: cb.textContent ?? "",
+        imageUrl: cb.imageUrl ?? undefined,
         displayOrder: cb.displayOrder,
       })));
     } catch {
