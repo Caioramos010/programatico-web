@@ -21,7 +21,10 @@ export default function ReviewSubjectAccuracy({ data }: ReviewSubjectAccuracyPro
     <article className="h-full rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-4 md:p-5">
       <h3 className="text-lg text-[var(--color-text-primary)]">Taxa de acerto por assunto</h3>
 
-      <div className="mt-4 flex h-[240px] flex-col justify-center gap-5">
+      <div className="mt-4 flex max-h-[280px] flex-col gap-5 overflow-y-auto pr-1">
+        {data.length === 0 && (
+          <p className="text-base text-[var(--color-text-muted)]">Sem dados ainda.</p>
+        )}
         {data.map((item) => (
           <div key={item.assunto} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] items-center gap-3">
             <p className="text-base text-[var(--color-text-primary)] whitespace-nowrap">{item.assunto}</p>
