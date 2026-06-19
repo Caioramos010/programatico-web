@@ -8,6 +8,8 @@ export interface ModuleWithProgress {
   status: "LOCKED" | "UNLOCKED" | "COMPLETED";
   description: string | null;
   totalXp: number;
+  /** Assuntos mais frequentes do módulo (só preenchido para usuários Root). */
+  topAssuntos: string[];
 }
 
 export interface TrackResponse {
