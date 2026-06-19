@@ -20,6 +20,8 @@ export interface StartSessionResponse {
   totalExercises: number;
   /** Índice em que retomar (nº de exercícios já respondidos numa sessão reaberta). 0 = nova. */
   resumedFrom: number;
+  /** Ids dos alvos já dominados (na retomada) — ficam no total mas fora da fila. */
+  masteredIds: number[];
   exercises: SessionExercise[];
 }
 
@@ -40,6 +42,8 @@ export interface ConclusionResponse {
   firstCompletion: boolean;
   /** Títulos das missões diárias concluídas nesta sessão. */
   completedMissions: string[];
+  /** Desempenho por assunto (acertos/erros por tag) — review Root ao final. */
+  subjectReview: { assunto: string; acertos: number; erros: number }[];
 }
 
 export const exerciseService = {

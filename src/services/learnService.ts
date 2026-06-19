@@ -10,6 +10,8 @@ export interface ModuleWithProgress {
   totalXp: number;
   /** Assuntos mais frequentes do módulo (só preenchido para usuários Root). */
   topAssuntos: string[];
+  /** true se há sessão aberta deste módulo (botão "Continuar"). */
+  emAndamento: boolean;
 }
 
 export interface TrackResponse {

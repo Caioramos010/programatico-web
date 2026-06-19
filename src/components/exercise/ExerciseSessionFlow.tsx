@@ -23,6 +23,8 @@ export interface ExerciseSessionFlowProps {
   sessionId: number;
   exercises: SessionExercise[];
   initialLives: number;
+  /** Ids de alvos já dominados (retomada): ficam no total, mas fora da fila inicial. */
+  masteredIds?: number[];
   onExit: () => void;
 }
 
@@ -43,15 +45,19 @@ export default function ExerciseSessionFlow({
   sessionId,
   exercises,
   initialLives,
+  masteredIds = [],
   onExit,
 }: ExerciseSessionFlowProps) {
   // Maestria: a sessão é uma FILA. Os "alvos" são os exercícios originais; errar reenfileira
   // o alvo e injeta um reforço do mesmo assunto. Conclui quando a fila esvazia (tudo dominado).
+  // Na retomada, os já dominados ficam no TOTAL mas fora da fila inicial.
   const targetIds = useMemo(() => new Set(exercises.map((e) => e.id)), [exercises]);
   const totalTargets = exercises.length;
   const maxShown = totalTargets + 20; // teto de segurança
 
-  const [queue, setQueue] = useState<SessionExercise[]>(() => [...exercises]);
+  const [queue, setQueue] = useState<SessionExercise[]>(
+    () => exercises.filter((e) => !masteredIds.includes(e.id)),
+  );
   const [shownCount, setShownCount] = useState(1);
   const shownIdsRef = useRef<Set<number>>(new Set(exercises.map((e) => e.id)));
 
@@ -236,6 +242,7 @@ export default function ExerciseSessionFlow({
         xpEarned={conclusion.xpEarned}
         accuracy={conclusion.accuracy}
         durationSeconds={conclusion.durationSeconds}
+        subjectReview={conclusion.subjectReview}
         onContinue={onExit}
       />
     );

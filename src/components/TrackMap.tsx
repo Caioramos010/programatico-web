@@ -1,6 +1,9 @@
 import { useMemo, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Zap, BookOpen } from "lucide-react";
 import type { ModuleWithProgress } from "../services/learnService";
+import { useAuthStore } from "../stores/authStore";
+import { isActiveRoot } from "../lib/subscription";
 import ModuleNode from "./ModuleNode";
 import ConnectorLine from "./ConnectorLine";
 
@@ -24,6 +27,8 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerW, setContainerW] = useState(640);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const isRoot = isActiveRoot(useAuthStore((s) => s.user));
 
   useEffect(() => {
     const el = containerRef.current;
@@ -183,7 +188,7 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                       {module.description}
                     </p>
                   )}
-                  {module.topAssuntos && module.topAssuntos.length > 0 && (
+                  {module.topAssuntos && module.topAssuntos.length > 0 ? (
                     <div className="mb-3">
                       <p className="text-xs text-[var(--color-text-muted)] mb-1">Assuntos principais</p>
                       <div className="flex flex-wrap gap-1.5">
@@ -197,7 +202,15 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                         ))}
                       </div>
                     </div>
-                  )}
+                  ) : !isRoot ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate("/seja-root")}
+                      className="mb-3 w-full text-left rounded-lg border border-[var(--color-premium-dark)] bg-[var(--color-bg-card-inner)] px-3 py-2 text-xs font-medium text-[var(--color-premium)] hover:opacity-80 transition-opacity"
+                    >
+                      Seja Root para ver os assuntos deste módulo →
+                    </button>
+                  ) : null}
                   <div className="flex justify-end">
                     {module.status === "LOCKED" ? (
                       <span className="text-xs font-fredoka text-[var(--color-text-muted)] italic">
@@ -212,7 +225,11 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                         }}
                         className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-sm font-semibold font-fredoka text-[var(--color-text-secondary)]"
                       >
-                        {module.status === "COMPLETED" ? "REVER" : `COMEÇAR${module.totalXp > 0 ? ` +${module.totalXp}XP` : ""}`}
+                        {module.status === "COMPLETED"
+                          ? "REVER"
+                          : module.emAndamento
+                          ? "CONTINUAR"
+                          : `COMEÇAR${module.totalXp > 0 ? ` +${module.totalXp}XP` : ""}`}
                       </button>
                     )}
                   </div>
