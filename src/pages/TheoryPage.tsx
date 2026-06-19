@@ -49,10 +49,11 @@ export default function TheoryPage() {
     setIsFinishing(true);
     setFinishError(null);
     try {
-      const { firstCompletion } = await learnService.finishTheory(Number(moduloId));
+      const { firstCompletion, completedMissions } = await learnService.finishTheory(Number(moduloId));
       if (firstCompletion) {
         toast.success("Módulo teórico concluído!");
       }
+      completedMissions?.forEach((m) => toast.success(`Missão concluída: ${m}`));
       navigate("/aprender");
     } catch (err) {
       const { formError } = parseApiError(err);

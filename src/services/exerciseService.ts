@@ -36,6 +36,8 @@ export interface ConclusionResponse {
   moduleCompleted: boolean;
   /** true só quando o módulo foi concluído pela primeira vez. */
   firstCompletion: boolean;
+  /** Títulos das missões diárias concluídas nesta sessão. */
+  completedMissions: string[];
 }
 
 export const exerciseService = {
