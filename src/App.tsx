@@ -46,6 +46,7 @@ const AdminTeoricaPage = lazy(() => import("./pages/admin/AdminTeoricaPage"));
 const ExercisePage = lazy(() => import("./pages/ExercisePage"));
 // Esqueleto Práticas (Hyorran)
 const PracticaSessionPage = lazy(() => import("./pages/PracticaSessionPage"));
+const RevisarAssuntoPage = lazy(() => import("./pages/RevisarAssuntoPage"));
 
 // Theory — lazy-loaded (full-screen theoretical content viewer)
 const TheoryPage = lazy(() => import("./pages/TheoryPage"));
@@ -130,6 +131,11 @@ function App() {
           <Route
             path="/praticar/:modo"
             element={<ProtectedRoute><PracticaSessionPage /></ProtectedRoute>}
+          />
+          {/* Revisar erros por assunto (Root) — full screen, outside MainLayout */}
+          <Route
+            path="/revisar/assunto"
+            element={<ProtectedRoute><RevisarAssuntoPage /></ProtectedRoute>}
           />
           {/* Theory — full screen, outside MainLayout */}
           <Route

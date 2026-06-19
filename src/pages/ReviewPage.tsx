@@ -1,4 +1,5 @@
 ﻿import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import RoundedDropdown from "../components/RoundedDropdown";
 import ReviewInfoPanel from "../components/review/ReviewInfoPanel";
 import ReviewPerformanceChart from "../components/review/ReviewPerformanceChart";
@@ -9,6 +10,7 @@ import { useAuthStore } from "../stores/authStore";
 import { useEffect } from "react";
 import { parseApiError } from "../utils/parseApiError";
 import { reviewService } from "../services/reviewService";
+import { isActiveRoot } from "../lib/subscription";
 
 const dayOptions = [
   { label: "7 dias", value: 7 },
@@ -58,10 +60,20 @@ export default function ReviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [reviewData, setReviewData] = useState<Awaited<ReturnType<typeof reviewService.getReview>> | null>(null);
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+  const isRoot = isActiveRoot(user);
 
   useEffect(() => {
     void loadReview(undefined, dayOptions[0].value);
   }, []);
+
+  function handleReviewSubject(assunto: string) {
+    if (isRoot) {
+      navigate("/revisar/assunto", { state: { assunto } });
+    } else {
+      navigate("/seja-root");
+    }
+  }
 
   async function loadReview(trackId?: number, days?: number) {
     setIsLoading(true);
@@ -197,15 +209,18 @@ export default function ReviewPage() {
           <ReviewInfoPanel title="O que revisar agora">
             <div className="flex flex-col gap-3">
               {(reviewData?.reviewNow ?? []).map((item, index) => (
-                <div
+                <button
                   key={item.assunto}
+                  type="button"
+                  onClick={() => handleReviewSubject(item.assunto)}
                   className={[
-                    "rounded-xl border px-4 py-3 text-base",
+                    "flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-base text-left cursor-pointer transition-opacity hover:opacity-80",
                     reviewNowToneClasses[index] ?? reviewNowToneClasses[reviewNowToneClasses.length - 1],
                   ].join(" ")}
                 >
-                  {item.assunto}
-                </div>
+                  <span>{item.assunto}</span>
+                  <span className="shrink-0 text-sm font-semibold">{isRoot ? "Revisar →" : "Root"}</span>
+                </button>
               ))}
             </div>
           </ReviewInfoPanel>

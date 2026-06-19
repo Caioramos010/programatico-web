@@ -49,6 +49,14 @@ export const exerciseService = {
   startPractice: (modo: string) =>
     api.post<StartSessionResponse>(`/api/aprender/pratica/${modo}/iniciar`).then((r) => r.data),
 
+  // Root: pratica os erros do usuário em um assunto específico.
+  startErrorsBySubject: (assunto: string) =>
+    api
+      .post<StartSessionResponse>(`/api/aprender/pratica/erros-assunto/iniciar`, null, {
+        params: { assunto },
+      })
+      .then((r) => r.data),
+
   respond: (sessionId: number, exerciseId: number, answer: string) =>
     api
       .post<AnswerResponse>(`/api/aprender/sessoes/${sessionId}/responder`, {
