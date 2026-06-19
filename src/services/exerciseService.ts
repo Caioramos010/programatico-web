@@ -69,4 +69,13 @@ export const exerciseService = {
 
   conclude: (sessionId: number) =>
     api.post<ConclusionResponse>(`/api/aprender/sessoes/${sessionId}/concluir`).then((r) => r.data),
+
+  // Maestria: exercício de reforço (mesmo assunto) ao errar. Retorna null se não houver.
+  reinforcement: (sessionId: number, exerciseId: number, exclude: number[]): Promise<SessionExercise | null> =>
+    api
+      .get<SessionExercise>(`/api/aprender/sessoes/${sessionId}/reforco`, {
+        params: { exercicioId: exerciseId, excluir: exclude.join(",") },
+      })
+      .then((r) => (r.status === 204 || !r.data ? null : r.data))
+      .catch(() => null),
 };

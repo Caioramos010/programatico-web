@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { X, Heart } from "lucide-react";
 import {
   exerciseService,
@@ -23,8 +23,6 @@ export interface ExerciseSessionFlowProps {
   sessionId: number;
   exercises: SessionExercise[];
   initialLives: number;
-  /** Índice inicial ao retomar uma sessão (default 0). */
-  initialIndex?: number;
   onExit: () => void;
 }
 
@@ -45,12 +43,18 @@ export default function ExerciseSessionFlow({
   sessionId,
   exercises,
   initialLives,
-  initialIndex = 0,
   onExit,
 }: ExerciseSessionFlowProps) {
-  const [currentIndex, setCurrentIndex] = useState(
-    Math.min(initialIndex, Math.max(0, exercises.length - 1)),
-  );
+  // Maestria: a sessão é uma FILA. Os "alvos" são os exercícios originais; errar reenfileira
+  // o alvo e injeta um reforço do mesmo assunto. Conclui quando a fila esvazia (tudo dominado).
+  const targetIds = useMemo(() => new Set(exercises.map((e) => e.id)), [exercises]);
+  const totalTargets = exercises.length;
+  const maxShown = totalTargets + 20; // teto de segurança
+
+  const [queue, setQueue] = useState<SessionExercise[]>(() => [...exercises]);
+  const [shownCount, setShownCount] = useState(1);
+  const shownIdsRef = useRef<Set<number>>(new Set(exercises.map((e) => e.id)));
+
   const [lives, setLives] = useState(initialLives);
   const maxLives = 5;
 
@@ -64,7 +68,7 @@ export default function ExerciseSessionFlow({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const currentExercise: SessionExercise | undefined = exercises[currentIndex];
+  const currentExercise: SessionExercise | undefined = queue[0];
   const isTimedExercise = (currentExercise?.timeLimitSeconds ?? 0) > 0;
 
   const lastPairsCountRef = useRef<number>(0);
@@ -126,7 +130,7 @@ export default function ExerciseSessionFlow({
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [currentIndex, phase, currentExercise?.id, currentExercise?.timeLimitSeconds, isTimedExercise]);
+  }, [phase, currentExercise?.id, currentExercise?.timeLimitSeconds, isTimedExercise]);
 
   useEffect(() => {
     if (
@@ -162,27 +166,50 @@ export default function ExerciseSessionFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnswer, submitting]);
 
+  async function concludeSession() {
+    try {
+      const result = await exerciseService.conclude(sessionId);
+      if (result.firstCompletion) {
+        toast.success("Módulo concluído pela primeira vez!");
+      }
+      result.completedMissions?.forEach((m) => toast.success(`Missão concluída: ${m}`));
+      setConclusion(result);
+      setPhase("conclusion");
+    } catch (err) {
+      const { formError } = parseApiError(err);
+      setSubmitError(formError ?? "Erro ao concluir sessão.");
+    }
+  }
+
   async function handleProceed() {
     if (!currentExercise) return;
     if (phase === "correct-feedback" || phase === "incorrect-feedback") {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex >= exercises.length) {
-        try {
-          const result = await exerciseService.conclude(sessionId);
-          if (result.firstCompletion) {
-            toast.success("Módulo concluído pela primeira vez!");
-          }
-          result.completedMissions?.forEach((m) =>
-            toast.success(`Missão concluída: ${m}`),
-          );
-          setConclusion(result);
-          setPhase("conclusion");
-        } catch (err) {
-          const { formError } = parseApiError(err);
-          setSubmitError(formError ?? "Erro ao concluir sessão.");
+      const wasCorrect = phase === "correct-feedback";
+      const wasTarget = targetIds.has(currentExercise.id);
+
+      let next = queue.slice(1); // tira o atual da frente
+      if (!wasCorrect) {
+        if (wasTarget) {
+          next = [...next, currentExercise]; // alvo errado volta pro fim da fila
         }
+        if (shownCount < maxShown) {
+          const reforco = await exerciseService.reinforcement(
+            sessionId,
+            currentExercise.id,
+            Array.from(shownIdsRef.current),
+          );
+          if (reforco) {
+            shownIdsRef.current.add(reforco.id);
+            next = [reforco, ...next]; // reforço do mesmo assunto entra já em seguida
+          }
+        }
+      }
+
+      if (next.length === 0 || shownCount >= maxShown) {
+        await concludeSession();
       } else {
-        setCurrentIndex(nextIndex);
+        setQueue(next);
+        setShownCount((c) => c + 1);
         setSelectedAnswer("");
         setPhase("exercise");
         setSubmitError(null);
@@ -214,9 +241,9 @@ export default function ExerciseSessionFlow({
     );
   }
 
-  const progressPercent = exercises.length > 0
-    ? Math.round((currentIndex / exercises.length) * 100)
-    : 0;
+  const remainingTargets = queue.filter((e) => targetIds.has(e.id)).length;
+  const masteredCount = totalTargets - remainingTargets;
+  const progressPercent = totalTargets > 0 ? Math.round((masteredCount / totalTargets) * 100) : 0;
   const feedbackOpen = phase === "correct-feedback" || phase === "incorrect-feedback";
   const inputsDisabled = feedbackOpen || submitting || (isTimedExercise && secondsLeft === 0);
   const canProceed = phase !== "exercise" || (selectedAnswer.length > 0 && !submitting);
@@ -226,7 +253,7 @@ export default function ExerciseSessionFlow({
       <header className="relative px-5 pt-4 pb-3 shrink-0">
         <div className="w-full max-w-lg mx-auto flex items-center gap-3 pr-8">
           <span className="font-fredoka text-base text-[var(--color-text-muted)] shrink-0">
-            {currentIndex + 1}/{exercises.length}
+            {masteredCount}/{totalTargets}
           </span>
           <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
             <div
