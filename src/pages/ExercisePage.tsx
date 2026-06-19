@@ -13,6 +13,7 @@ export default function ExercisePage() {
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [exercises, setExercises] = useState<SessionExercise[]>([]);
   const [initialLives, setInitialLives] = useState(5);
+  const [masteredIds, setMasteredIds] = useState<number[]>([]);
 
   useEffect(() => {
     if (!moduleId) return;
@@ -22,6 +23,7 @@ export default function ExercisePage() {
         setSessionId(data.sessionId);
         setExercises(data.exercises);
         setInitialLives(data.initialLives);
+        setMasteredIds(data.masteredIds ?? []);
         setLoading(false);
       })
       .catch((err) => {
@@ -68,6 +70,7 @@ export default function ExercisePage() {
       sessionId={sessionId}
       exercises={exercises}
       initialLives={initialLives}
+      masteredIds={masteredIds}
       onExit={handleExit}
     />
   );

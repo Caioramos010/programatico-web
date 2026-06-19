@@ -1,10 +1,19 @@
 import { Target, Clock, Zap } from "lucide-react";
 import { Excited } from "../mascot";
+import { useAuthStore } from "../../stores/authStore";
+import { isActiveRoot } from "../../lib/subscription";
+
+interface SubjectReviewItem {
+  assunto: string;
+  acertos: number;
+  erros: number;
+}
 
 interface Props {
   xpEarned: number;
   accuracy: number;
   durationSeconds: number;
+  subjectReview?: SubjectReviewItem[];
   onContinue: () => void;
 }
 
@@ -14,10 +23,13 @@ function formatTime(seconds: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, onContinue }: Props) {
+export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, subjectReview, onContinue }: Props) {
+  const isRoot = isActiveRoot(useAuthStore((s) => s.user));
+  const review = isRoot && subjectReview ? [...subjectReview].sort((a, b) => b.erros - a.erros).slice(0, 8) : [];
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
       style={{ background: "var(--color-bg-primary)" }}
     >
       <div className="flex flex-col items-center gap-8 px-8 py-12 max-w-sm w-full text-center">
@@ -51,6 +63,34 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
             </span>
           </div>
         </div>
+
+        {/* Review por assunto (Root) */}
+        {review.length > 0 && (
+          <div className="w-full">
+            <p className="text-sm text-[var(--color-text-muted)] mb-2 text-left">Revisão por assunto</p>
+            <div className="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-1">
+              {review.map((s) => {
+                const total = s.acertos + s.erros;
+                const pct = total > 0 ? (s.acertos / total) * 100 : 0;
+                return (
+                  <div key={s.assunto} className="text-left">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-sm text-[var(--color-text-primary)] truncate">{s.assunto}</span>
+                      <span className="text-xs shrink-0 tabular-nums font-fredoka">
+                        <span className="text-[var(--color-success)]">{s.acertos}</span>
+                        <span className="text-[var(--color-text-muted)]"> / </span>
+                        <span className="text-[var(--color-error-heart)]">{s.erros}</span>
+                      </span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-[var(--color-error-light)] overflow-hidden">
+                      <div className="h-full rounded-full bg-[var(--color-success)]" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Mascote */}
         <div className="w-52 h-52">
