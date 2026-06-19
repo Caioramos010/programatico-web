@@ -167,6 +167,9 @@ export default function ExerciseSessionFlow({
           if (result.firstCompletion) {
             toast.success("Módulo concluído pela primeira vez!");
           }
+          result.completedMissions?.forEach((m) =>
+            toast.success(`Missão concluída: ${m}`),
+          );
           setConclusion(result);
           setPhase("conclusion");
         } catch (err) {

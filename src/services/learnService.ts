@@ -80,6 +80,8 @@ export const learnService = {
 
   finishTheory: (moduleId: number) =>
     api
-      .post<{ firstCompletion: boolean }>(`/api/aprender/modulos/${moduleId}/teorico/concluir`)
+      .post<{ firstCompletion: boolean; completedMissions: string[] }>(
+        `/api/aprender/modulos/${moduleId}/teorico/concluir`,
+      )
       .then((r) => r.data),
 };
