@@ -18,6 +18,8 @@ export interface StartSessionResponse {
   moduleTitle: string;
   initialLives: number;
   totalExercises: number;
+  /** Índice em que retomar (nº de exercícios já respondidos numa sessão reaberta). 0 = nova. */
+  resumedFrom: number;
   exercises: SessionExercise[];
 }
 
