@@ -7,6 +7,7 @@ import {
   type AnswerResponse,
 } from "../../services/exerciseService";
 import { parseApiError } from "../../utils/parseApiError";
+import { toast } from "../toast/toastBus";
 import { Stopwatch } from "../icons";
 import MultipleChoiceExercise from "./AlternativaCorretaExercise";
 import LogicFlowExercise from "./FluxoLogicoExercise";
@@ -163,6 +164,9 @@ export default function ExerciseSessionFlow({
       if (nextIndex >= exercises.length) {
         try {
           const result = await exerciseService.conclude(sessionId);
+          if (result.firstCompletion) {
+            toast.success("Módulo concluído pela primeira vez!");
+          }
           setConclusion(result);
           setPhase("conclusion");
         } catch (err) {
