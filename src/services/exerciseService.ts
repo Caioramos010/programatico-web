@@ -34,6 +34,8 @@ export interface ConclusionResponse {
   durationSeconds: number;
   remainingLives: number;
   moduleCompleted: boolean;
+  /** true só quando o módulo foi concluído pela primeira vez. */
+  firstCompletion: boolean;
 }
 
 export const exerciseService = {
