@@ -18,10 +18,10 @@ const dayOptions = [
 ];
 
 const reviewNowToneClasses = [
-  "border-[#915665] bg-[#4b3343] text-[#ff7d8d]",
-  "border-[#915665] bg-[#4b3343] text-[#ff7d8d]",
-  "border-[#8f7b42] bg-[#454249] text-[#ffe26f]",
-  "border-[#3f7a74] bg-[#274a58] text-[#62ff9a]",
+  "border-[var(--color-error)] bg-[var(--color-error-light)] text-[var(--color-error-heart)]",
+  "border-[var(--color-error)] bg-[var(--color-error-light)] text-[var(--color-error-heart)]",
+  "border-[var(--color-premium-dark)] bg-[var(--color-bg-card-inner)] text-[var(--color-premium)]",
+  "border-[var(--color-success)] bg-[var(--color-success-light)] text-[var(--color-success)]",
 ];
 
 function formatDaysLabel(days: number) {
@@ -34,20 +34,20 @@ function getDaysValue(label: string) {
 
 function getStatValueClassName(title: string) {
   if (title === "Exercicios feitos") {
-    return "text-[#5aa4ff]";
+    return "text-[var(--color-accent-light)]";
   }
   if (title === "Taxa de acertos") {
-    return "text-[#4bf08c]";
+    return "text-[var(--color-success)]";
   }
-  return "text-white";
+  return "text-[var(--color-text-primary)]";
 }
 
 function getMissionStatusClassName(status: string) {
-  return status.startsWith("Concluida") ? "text-[#42ff8d]" : "text-[#ffd84d]";
+  return status.startsWith("Concluida") ? "text-[var(--color-success)]" : "text-[var(--color-premium)]";
 }
 
 function getMissionDotClassName(status: string) {
-  return status.startsWith("Concluida") ? "bg-[#42e886]" : "bg-[#f5c13d]";
+  return status.startsWith("Concluida") ? "bg-[var(--color-success)]" : "bg-[var(--color-premium)]";
 }
 
 export default function ReviewPage() {
@@ -131,7 +131,7 @@ export default function ReviewPage() {
                 value={selectedTrack}
                 options={reviewData?.availableTracks.map((option) => option.title) ?? (selectedTrack ? [selectedTrack] : [])}
                 onChange={(value) => { void handleTrackChange(value); }}
-                buttonClassName="flex max-w-full items-center gap-3 cursor-pointer rounded-2xl border border-[#31466e] bg-[#142748] px-4 py-2 text-3xl font-semibold text-white"
+                buttonClassName="flex max-w-full items-center gap-3 cursor-pointer rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] px-4 py-2 text-3xl font-semibold text-[var(--color-text-primary)]"
               />
             </div>
 
@@ -140,14 +140,14 @@ export default function ReviewPage() {
                 value={selectedDays}
                 options={dayOptions.map((option) => option.label)}
                 onChange={(value) => { void handleDaysChange(value); }}
-                buttonClassName="flex h-11 min-w-32 items-center justify-between gap-3 cursor-pointer rounded-2xl border border-[#31466e] bg-[#142748] px-4 py-2 text-base font-semibold text-white uppercase"
+                buttonClassName="flex h-11 min-w-32 items-center justify-between gap-3 cursor-pointer rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] px-4 py-2 text-base font-semibold text-[var(--color-text-primary)] uppercase"
               />
 
               <button
                 type="button"
                 onClick={handleGeneratePdfReport}
                 disabled={isGeneratingPdf || isLoading || !reviewData}
-                className="h-11 min-w-52 cursor-pointer rounded-xl bg-[#2f67ff] px-4 py-2 text-base font-semibold text-white transition-colors hover:bg-[#4c7cff]"
+                className="h-11 min-w-52 cursor-pointer rounded-xl bg-[var(--color-accent)] px-4 py-2 text-base font-semibold text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-accent-light)]"
               >
                 {isGeneratingPdf ? "Gerando PDF..." : "Gerar Relatório PDF"}
               </button>
@@ -156,7 +156,7 @@ export default function ReviewPage() {
         </header>
 
         {error ? (
-          <section className="mt-4 rounded-xl border border-[#6b3e47] bg-[#3b2630] px-4 py-3 text-base text-[#ffb7c0]">
+          <section className="mt-4 rounded-xl border border-[var(--color-error)] bg-[var(--color-error-light)] px-4 py-3 text-base text-[var(--color-error-heart)]">
             {error}
           </section>
         ) : null}
@@ -184,11 +184,11 @@ export default function ReviewPage() {
 
         <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
           <ReviewInfoPanel title="Erros por assunto">
-            <div className="divide-y divide-[#344264]">
+            <div className="divide-y divide-[var(--color-gray-border)]">
               {(reviewData?.errorsBySubject ?? []).map((item) => (
                 <div key={item.assunto} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                  <p className="text-base text-white">{item.assunto}</p>
-                  <p className="text-base text-[#ff636c]">{item.erros} erros</p>
+                  <p className="text-base text-[var(--color-text-primary)]">{item.assunto}</p>
+                  <p className="text-base text-[var(--color-error-heart)]">{item.erros} erros</p>
                 </div>
               ))}
             </div>
@@ -217,7 +217,7 @@ export default function ReviewPage() {
                   <span
                     className={["h-2.5 w-2.5 rounded-full", getMissionDotClassName(mission.status)].join(" ")}
                   />
-                  <p className="text-base text-white">{mission.label}</p>
+                  <p className="text-base text-[var(--color-text-primary)]">{mission.label}</p>
                   <p className={["text-base", getMissionStatusClassName(mission.status)].join(" ")}>
                     {mission.status}
                   </p>

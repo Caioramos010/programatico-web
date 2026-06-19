@@ -18,13 +18,13 @@ interface ReviewSubjectAccuracyProps {
 
 export default function ReviewSubjectAccuracy({ data }: ReviewSubjectAccuracyProps) {
   return (
-    <article className="h-full rounded-xl border border-[#31466e] bg-[#273153] p-4 md:p-5">
-      <h3 className="text-lg text-white">Taxa de acerto por assunto</h3>
+    <article className="h-full rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-4 md:p-5">
+      <h3 className="text-lg text-[var(--color-text-primary)]">Taxa de acerto por assunto</h3>
 
       <div className="mt-4 flex h-[240px] flex-col justify-center gap-5">
         {data.map((item) => (
           <div key={item.assunto} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] items-center gap-3">
-            <p className="text-base text-white whitespace-nowrap">{item.assunto}</p>
+            <p className="text-base text-[var(--color-text-primary)] whitespace-nowrap">{item.assunto}</p>
 
             <div className="h-4 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -40,14 +40,14 @@ export default function ReviewSubjectAccuracy({ data }: ReviewSubjectAccuracyPro
                     dataKey="percentual"
                     radius={[999, 999, 999, 999]}
                     barSize={8}
-                    background={{ fill: "#3a4665", radius: 999 }}
+                    background={{ fill: "var(--color-gray-border)", radius: 999 }}
                     fill={item.color}
                   />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            <p className="flex h-4 items-center text-base leading-none text-[#8fa3cc]">{item.percentual}%</p>
+            <p className="flex h-4 items-center text-base leading-none text-[var(--color-text-muted)]">{item.percentual}%</p>
           </div>
         ))}
       </div>
