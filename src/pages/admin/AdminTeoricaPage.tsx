@@ -74,13 +74,19 @@ function BlockEditor({
       </div>
 
       {block.layoutType === "TEXT" && (
-        <textarea
-          className="w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
-          rows={4}
-          placeholder="Escreva o texto aqui..."
-          value={block.textContent}
-          onChange={(e) => onChange({ ...block, textContent: e.target.value })}
-        />
+        <div className="flex flex-col gap-1">
+          <textarea
+            className="w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
+            rows={4}
+            maxLength={500}
+            placeholder="Escreva o texto aqui (máx. 500 caracteres para caber na tela)..."
+            value={block.textContent}
+            onChange={(e) => onChange({ ...block, textContent: e.target.value })}
+          />
+          <span className="text-xs text-[var(--color-text-muted)] text-right">
+            {block.textContent.length}/500
+          </span>
+        </div>
       )}
 
       {block.layoutType === "IMAGE" && (
