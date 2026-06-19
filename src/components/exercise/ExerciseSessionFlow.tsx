@@ -23,6 +23,8 @@ export interface ExerciseSessionFlowProps {
   sessionId: number;
   exercises: SessionExercise[];
   initialLives: number;
+  /** Índice inicial ao retomar uma sessão (default 0). */
+  initialIndex?: number;
   onExit: () => void;
 }
 
@@ -43,9 +45,12 @@ export default function ExerciseSessionFlow({
   sessionId,
   exercises,
   initialLives,
+  initialIndex = 0,
   onExit,
 }: ExerciseSessionFlowProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(
+    Math.min(initialIndex, Math.max(0, exercises.length - 1)),
+  );
   const [lives, setLives] = useState(initialLives);
   const maxLives = 5;
 
