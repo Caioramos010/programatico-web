@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import Button from "../components/Button";
+import Input from "../components/Input";
 import NotificationCard, {
   type NotificationItem,
 } from "../components/notifications/NotificationCard";
@@ -12,6 +13,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<NotificationFilter>("todas");
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     notificationService
@@ -29,10 +31,18 @@ export default function NotificationsPage() {
   }, [notifications]);
 
   const filteredNotifications = useMemo(() => {
-    if (activeFilter === "nao-lidas") return notifications.filter((item) => !item.read);
-    if (activeFilter === "lidas") return notifications.filter((item) => item.read);
-    return notifications;
-  }, [activeFilter, notifications]);
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return notifications.filter((item) => {
+      if (activeFilter === "nao-lidas" && item.read) return false;
+      if (activeFilter === "lidas" && !item.read) return false;
+      if (!normalizedSearch) return true;
+
+      return [item.title, item.message].some((value) =>
+        value.toLowerCase().includes(normalizedSearch),
+      );
+    });
+  }, [activeFilter, notifications, searchTerm]);
 
   function markAsRead(id: string) {
     notificationService
@@ -49,6 +59,15 @@ export default function NotificationsPage() {
       .markAllAsRead()
       .then(() => {
         setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+      })
+      .catch(() => undefined);
+  }
+
+  function deleteNotification(id: string) {
+    notificationService
+      .deleteNotification(Number(id))
+      .then(() => {
+        setNotifications((prev) => prev.filter((item) => item.id !== id));
       })
       .catch(() => undefined);
   }
@@ -73,7 +92,7 @@ export default function NotificationsPage() {
           </Button>
         </header>
 
-        <section className="flex items-center gap-2">
+        <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <button
             type="button"
             onClick={() => setActiveFilter("todas")}
@@ -110,6 +129,20 @@ export default function NotificationsPage() {
           >
             LIDAS ({counts.read})
           </button>
+          <div className="relative w-full md:max-w-sm">
+            <Search
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+            />
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Buscar notificação"
+              aria-label="Buscar notificação"
+              className="pl-10 pr-4 py-3"
+            />
+          </div>
         </section>
 
         <section className="flex flex-col gap-4 md:gap-5">
@@ -123,7 +156,12 @@ export default function NotificationsPage() {
             </div>
           ) : (
             filteredNotifications.map((item) => (
-              <NotificationCard key={item.id} item={item} onMarkAsRead={markAsRead} />
+              <NotificationCard
+                key={item.id}
+                item={item}
+                onMarkAsRead={markAsRead}
+                onDelete={deleteNotification}
+              />
             ))
           )}
         </section>
