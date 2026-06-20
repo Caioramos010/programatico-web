@@ -72,9 +72,15 @@ export const notificationService = {
   getNotifications: () =>
     api.get<NotificationResponse[]>("/api/notificacoes").then((r) => r.data),
 
+  getNotificationById: (id: number) =>
+    api.get<NotificationResponse>(`/api/notificacoes/${id}`).then((r) => r.data),
+
   markAsRead: (id: number) =>
     api.patch<NotificationResponse>(`/api/notificacoes/${id}/marcar-como-lida`).then((r) => r.data),
 
   markAllAsRead: () =>
     api.patch<void>("/api/notificacoes/marcar-todas-como-lidas").then((r) => r.data),
+
+  deleteNotification: (id: number) =>
+    api.delete<void>(`/api/notificacoes/${id}`).then((r) => r.data),
 };
