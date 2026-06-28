@@ -60,14 +60,6 @@ const styles = StyleSheet.create({
     padding: 24,
     fontSize: 10,
   },
-  pageWithFooterSpace: {
-    backgroundColor: "#ffffff",
-    color: "#1f2937",
-    padding: 24,
-    paddingBottom: 90,
-    fontSize: 10,
-    position: "relative",
-  },
   header: {
     backgroundColor: "#0f1f3a",
     border: "1 solid #1b3158",
@@ -171,24 +163,6 @@ const styles = StyleSheet.create({
     borderBottom: "1 solid #e7edf8",
     paddingVertical: 4,
   },
-  lastPageFooter: {
-    position: "absolute",
-    left: 24,
-    right: 24,
-    bottom: 24,
-    backgroundColor: "#142748",
-    border: "1 solid #1e3b6b",
-    borderRadius: 8,
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  footerText: { color: "#dce8ff" },
-  footerBrand: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontFamily: "GloriaHallelujah",
-  },
 });
 
 function ProgressBar({ percent, color }: { percent: number; color: string }) {
@@ -206,7 +180,31 @@ function ProgressBar({ percent, color }: { percent: number; color: string }) {
   );
 }
 
+function chunkArray<T>(items: T[], chunkSize: number) {
+  if (items.length === 0) {
+    return [[]];
+  }
+
+  const chunks: T[][] = [];
+  for (let index = 0; index < items.length; index += chunkSize) {
+    chunks.push(items.slice(index, index + chunkSize));
+  }
+
+  return chunks;
+}
+
 export function ReviewReportPdf({ data }: { data: ReviewReportData }) {
+  const subjectAccuracyChunks = chunkArray(data.subjectAccuracy, 18);
+  const errorsBySubjectChunks = chunkArray(data.errorsBySubject, 18);
+  const reviewNowChunks = chunkArray(data.reviewNow, 18);
+  const recentMissionsChunks = chunkArray(data.recentMissions, 18);
+  const detailPageCount = Math.max(
+    subjectAccuracyChunks.length,
+    errorsBySubjectChunks.length,
+    reviewNowChunks.length,
+    recentMissionsChunks.length,
+  );
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -239,7 +237,7 @@ export function ReviewReportPdf({ data }: { data: ReviewReportData }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Desempenho por dia</Text>
+          <Text style={styles.sectionTitle}>Desempenho</Text>
           <View style={styles.tableHeader}>
             <Text style={styles.col1}>Dia</Text>
             <Text style={styles.col2}>Acertos</Text>
@@ -259,56 +257,52 @@ export function ReviewReportPdf({ data }: { data: ReviewReportData }) {
         </View>
       </Page>
 
-      <Page size="A4" style={styles.pageWithFooterSpace}>
-        <View style={styles.row}>
-          <View style={[styles.section, { width: "50%" }]}>
-            <Text style={styles.sectionTitle}>Taxa de acerto por assunto</Text>
-            {data.subjectAccuracy.map((item) => (
-              <View key={item.assunto} style={{ marginBottom: 6 }}>
-                <Text>{item.assunto} - {item.percentual}%</Text>
-                <ProgressBar percent={item.percentual} color={item.color} />
-              </View>
-            ))}
+      {Array.from({ length: detailPageCount }, (_, pageIndex) => (
+        <Page key={`details-${pageIndex + 1}`} size="A4" style={styles.page}>
+          <View style={styles.row}>
+            <View style={[styles.section, { width: "50%" }]}>
+              <Text style={styles.sectionTitle}>Taxa de acerto por assunto</Text>
+              {(subjectAccuracyChunks[pageIndex] ?? []).map((item) => (
+                <View key={`${item.assunto}-${pageIndex}`} style={{ marginBottom: 6 }}>
+                  <Text>{item.assunto} - {item.percentual}%</Text>
+                  <ProgressBar percent={item.percentual} color={item.color} />
+                </View>
+              ))}
+            </View>
+
+            <View style={[styles.section, { width: "50%" }]}>
+              <Text style={styles.sectionTitle}>Erros por assunto</Text>
+              {(errorsBySubjectChunks[pageIndex] ?? []).map((item) => (
+                <View key={`${item.assunto}-${pageIndex}`} style={styles.listItem}>
+                  <Text>{item.assunto}</Text>
+                  <Text style={{ color: "#ff636c" }}>{item.erros} erros</Text>
+                </View>
+              ))}
+            </View>
           </View>
 
-          <View style={[styles.section, { width: "50%" }]}>
-            <Text style={styles.sectionTitle}>Erros por assunto</Text>
-            {data.errorsBySubject.map((item) => (
-              <View key={item.assunto} style={styles.listItem}>
-                <Text>{item.assunto}</Text>
-                <Text style={{ color: "#ff636c" }}>{item.erros} erros</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+          <View style={styles.row}>
+            <View style={[styles.section, { width: "50%" }]}>
+              <Text style={styles.sectionTitle}>O que revisar agora</Text>
+              {(reviewNowChunks[pageIndex] ?? []).map((item) => (
+                <View key={`${item.assunto}-${pageIndex}`} style={styles.listItem}>
+                  <Text>{item.assunto}</Text>
+                </View>
+              ))}
+            </View>
 
-        <View style={styles.row}>
-          <View style={[styles.section, { width: "50%" }]}>
-            <Text style={styles.sectionTitle}>O que revisar agora</Text>
-            {data.reviewNow.map((item) => (
-              <View key={item.assunto} style={styles.listItem}>
-                <Text>{item.assunto}</Text>
-              </View>
-            ))}
+            <View style={[styles.section, { width: "50%" }]}>
+              <Text style={styles.sectionTitle}>Missoes recentes</Text>
+              {(recentMissionsChunks[pageIndex] ?? []).map((item) => (
+                <View key={`${item.label}-${pageIndex}`} style={styles.listItem}>
+                  <Text>{item.label}</Text>
+                  <Text style={styles.muted}>{item.status}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-
-          <View style={[styles.section, { width: "50%" }]}>
-            <Text style={styles.sectionTitle}>Missoes recentes</Text>
-            {data.recentMissions.map((item) => (
-              <View key={item.label} style={styles.listItem}>
-                <Text>{item.label}</Text>
-                <Text style={styles.muted}>{item.status}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.lastPageFooter} fixed>
-          <Text style={styles.footerText}>Programatico | Relatorio academico</Text>
-          <Text style={styles.footerBrand}>Programatico</Text>
-        </View>
-      </Page>
+        </Page>
+      ))}
     </Document>
   );
 }
-
