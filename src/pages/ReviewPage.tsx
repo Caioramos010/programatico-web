@@ -9,6 +9,7 @@ import { downloadReviewReportPdf } from "../reports/downloadReviewReportPdf";
 import { useAuthStore } from "../stores/authStore";
 import { useEffect } from "react";
 import { parseApiError } from "../utils/parseApiError";
+import { formatReviewPerformanceData } from "../utils/reviewPerformance";
 import { reviewService } from "../services/reviewService";
 import { isActiveRoot } from "../lib/subscription";
 
@@ -106,6 +107,10 @@ export default function ReviewPage() {
     await loadReview(trackId, getDaysValue(daysLabel));
   }
 
+  const preparedPerformanceData = reviewData
+    ? formatReviewPerformanceData(reviewData.performanceData, getDaysValue(selectedDays))
+    : [];
+
   const handleGeneratePdfReport = async () => {
     if (!reviewData) {
       return;
@@ -120,7 +125,7 @@ export default function ReviewPage() {
         extractionDate: new Date().toLocaleString("pt-BR"),
         currentXp: reviewData.currentXp,
         stats: reviewData.stats,
-        performanceData: reviewData.performanceData,
+        performanceData: preparedPerformanceData,
         subjectAccuracy: reviewData.subjectAccuracy,
         errorsBySubject: reviewData.errorsBySubject,
         reviewNow: reviewData.reviewNow,
@@ -187,7 +192,7 @@ export default function ReviewPage() {
 
         <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-5">
           <div className="xl:col-span-3">
-            <ReviewPerformanceChart data={reviewData?.performanceData ?? []} />
+            <ReviewPerformanceChart data={preparedPerformanceData} />
           </div>
           <div className="xl:col-span-2">
             <ReviewSubjectAccuracy data={reviewData?.subjectAccuracy ?? []} />
