@@ -29,7 +29,7 @@ function statusLabel(status: PaymentHistoryItem["status"]): string {
     case "PENDING":
       return "Pendente";
     case "FAILED":
-      return "Falhou";
+      return "Falhou / Expirado";
     case "REFUNDED":
       return "Reembolsado";
     default:
