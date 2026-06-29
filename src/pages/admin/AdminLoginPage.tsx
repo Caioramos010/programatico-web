@@ -6,6 +6,7 @@ import AuthLayout from "../../components/auth/AuthLayout";
 import { useFormValidation, rules } from "../../hooks/useFormValidation";
 import { authService } from "../../services/authService";
 import { parseApiError } from "../../utils/parseApiError";
+import { useAdminAuthStore } from "../../stores/adminAuthStore";
 
 const isAdminSubdomain = /^admin[.-]/.test(window.location.hostname);
 const basePath = isAdminSubdomain ? "" : "/admin";
@@ -26,6 +27,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const login = useAdminAuthStore((s) => s.login);
   const { validate, onBlur, onChange, fieldError } = useFormValidation(schema);
 
   const values = { email, password };
@@ -36,10 +38,28 @@ export default function AdminLoginPage() {
     setFormError(null);
     setIsLoading(true);
     try {
-      await authService.iniciarLogin(email, password);
-      navigate(`${basePath}/login/verificacao`, {
-        state: { emailOuUsername: email, senha: password, from },
+      const data = await authService.iniciarLogin(email, password);
+      if (data.requiresVerification) {
+        navigate(`${basePath}/login/verificacao`, {
+          state: { emailOuUsername: email, senha: password, from },
+        });
+        return;
+      }
+      if (!data.token || !data.usuario) {
+        setFormError("Não foi possível concluir o login. Tente novamente.");
+        return;
+      }
+      if (data.usuario.role !== "ADMIN") {
+        setFormError("Acesso restrito a administradores.");
+        return;
+      }
+      login(data.token, {
+        id: data.usuario.id,
+        username: data.usuario.username,
+        email: data.usuario.email,
+        role: data.usuario.role as string,
       });
+      navigate(from ?? `${basePath}/dashboard`, { replace: true });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       setFormError(msg ?? "Erro ao entrar. Tente novamente.");
@@ -81,7 +101,7 @@ export default function AdminLoginPage() {
         )}
 
         <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
-          {isLoading ? "Enviando código..." : "Continuar"}
+          {isLoading ? "Entrando..." : "Continuar"}
         </Button>
 
         <button

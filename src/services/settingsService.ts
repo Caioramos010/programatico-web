@@ -9,6 +9,14 @@ export interface NotificationPreferences {
   disableAllNotifications: boolean;
 }
 
+export interface SecurityPreferences {
+  twoFactorEnabled: boolean;
+}
+
+export const DEFAULT_SECURITY_PREFERENCES: SecurityPreferences = {
+  twoFactorEnabled: true,
+};
+
 export type NotificationPreferenceKey = Exclude<
   keyof NotificationPreferences,
   "disableAllNotifications"
@@ -52,7 +60,7 @@ export const NOTIFICATION_SETTING_OPTIONS: {
   {
     key: "disableEmailNotifications",
     label: "Desativar e-mails informativos",
-    hint: "Lembretes e novidades por e-mail. Códigos de login, ativação e senha sempre são enviados.",
+    hint: "Lembretes e novidades por e-mail. Códigos de ativação e senha sempre são enviados.",
   },
 ];
 
@@ -66,4 +74,10 @@ export const settingsService = {
     api
       .put<NotificationPreferences>("/api/configuracoes/notificacoes", data)
       .then((r) => r.data),
+
+  getSecurityPreferences: () =>
+    api.get<SecurityPreferences>("/api/configuracoes/seguranca").then((r) => r.data),
+
+  updateSecurityPreferences: (data: SecurityPreferences) =>
+    api.put<SecurityPreferences>("/api/configuracoes/seguranca", data).then((r) => r.data),
 };

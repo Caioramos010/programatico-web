@@ -76,7 +76,21 @@ export default function AdminLoginVerificationPage() {
     setIsResending(true);
     try {
       const response = await authService.reenviarCodigoLogin(state.emailOuUsername, state.senha);
-      setResendMessage(response.mensagem);
+      if (!response.requiresVerification && response.token && response.usuario) {
+        if (response.usuario.role !== "ADMIN") {
+          setFormError("Acesso restrito a administradores.");
+          return;
+        }
+        login(response.token, {
+          id: response.usuario.id,
+          username: response.usuario.username,
+          email: response.usuario.email,
+          role: response.usuario.role as string,
+        });
+        navigate(state.from ?? `${basePath}/dashboard`, { replace: true });
+        return;
+      }
+      setResendMessage(response.mensagem ?? "Código reenviado.");
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);

@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import SettingsCheckbox from "../components/SettingsCheckbox";
 import {
   DEFAULT_NOTIFICATION_PREFERENCES,
+  DEFAULT_SECURITY_PREFERENCES,
   NOTIFICATION_SETTING_OPTIONS,
   settingsService,
   type NotificationPreferenceKey,
   type NotificationPreferences,
+  type SecurityPreferences,
 } from "../services/settingsService";
 import { useSettingsStore } from "../stores/settingsStore";
 import { parseApiError } from "../utils/parseApiError";
@@ -24,18 +26,23 @@ function withAllDisabled(disabled: boolean): NotificationPreferences {
 export default function SettingsPage() {
   const setNotifications = useSettingsStore((s) => s.setNotifications);
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
+  const [security, setSecurity] = useState<SecurityPreferences>(DEFAULT_SECURITY_PREFERENCES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingSecurity, setSavingSecurity] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    settingsService
-      .getNotificationPreferences()
-      .then((data) => {
+    Promise.all([
+      settingsService.getNotificationPreferences(),
+      settingsService.getSecurityPreferences(),
+    ])
+      .then(([notificationData, securityData]) => {
         if (cancelled) return;
-        setPrefs(data);
-        setNotifications(data);
+        setPrefs(notificationData);
+        setSecurity(securityData);
+        setNotifications(notificationData);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -81,6 +88,23 @@ export default function SettingsPage() {
     void persist(next);
   };
 
+  const handleTwoFactorToggle = (enabled: boolean) => {
+    const previous = security;
+    const next = { twoFactorEnabled: enabled };
+    setSecurity(next);
+    setSavingSecurity(true);
+    setError(null);
+    settingsService
+      .updateSecurityPreferences(next)
+      .then((saved) => setSecurity(saved))
+      .catch((err) => {
+        const { formError } = parseApiError(err);
+        setError(formError ?? "Não foi possível salvar.");
+        setSecurity(previous);
+      })
+      .finally(() => setSavingSecurity(false));
+  };
+
   return (
     <div className="max-w-3xl px-6 py-8 md:px-10 md:py-10 font-fredoka">
       <h1 className="mb-10 text-3xl font-bold text-white md:text-4xl">Configurações</h1>
@@ -89,7 +113,22 @@ export default function SettingsPage() {
         <p className="text-lg text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <div className="flex flex-col gap-8">
-          <h2 className="text-xl font-semibold text-white md:text-2xl">Notificações</h2>
+          <section className="flex flex-col gap-4">
+            <h2 className="text-xl font-semibold text-white md:text-2xl">Segurança</h2>
+            <SettingsCheckbox
+              id="two-factor-enabled"
+              label="Verificação em duas etapas no login"
+              checked={security.twoFactorEnabled}
+              disabled={savingSecurity}
+              onChange={handleTwoFactorToggle}
+            />
+            <p className="pl-[4.75rem] text-sm text-[var(--color-text-muted)] leading-snug">
+              Quando ativada, enviamos um código por e-mail após a senha. Recomendado para proteger sua conta.
+            </p>
+          </section>
+
+          <section className="flex flex-col gap-8 border-t border-[var(--color-gray-border)] pt-8">
+            <h2 className="text-xl font-semibold text-white md:text-2xl">Notificações</h2>
           {NOTIFICATION_SETTING_OPTIONS.map(({ key, label, hint }) => (
             <div key={key} className="flex flex-col gap-1">
               <SettingsCheckbox
@@ -114,6 +153,7 @@ export default function SettingsPage() {
               onChange={handleDisableAll}
             />
           </div>
+          </section>
         </div>
       )}
 

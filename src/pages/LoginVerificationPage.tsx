@@ -14,6 +14,7 @@ import {
   savePendingLogin,
   type PendingLoginState,
 } from "../lib/pendingLogin";
+import { resolvePostLoginPath } from "../lib/postLoginNavigation";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -58,9 +59,7 @@ export default function LoginVerificationPage() {
       const data = await authService.confirmarLogin(state.emailOuUsername, state.senha, code);
       clearPendingLogin();
       storeLogin(data.token, data.usuario);
-      const fallback = data.usuario.nivelHabilidade ? "/aprender" : "/onboarding";
-      const target = data.usuario.nivelHabilidade && state.from ? state.from : fallback;
-      navigate(target, { replace: true });
+      navigate(resolvePostLoginPath(data.usuario, state.from), { replace: true });
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);
@@ -76,7 +75,13 @@ export default function LoginVerificationPage() {
     setIsResending(true);
     try {
       const response = await authService.reenviarCodigoLogin(state.emailOuUsername, state.senha);
-      setResendMessage(response.mensagem);
+      if (!response.requiresVerification && response.token && response.usuario) {
+        clearPendingLogin();
+        storeLogin(response.token, response.usuario);
+        navigate(resolvePostLoginPath(response.usuario, state.from), { replace: true });
+        return;
+      }
+      setResendMessage(response.mensagem ?? "Código reenviado.");
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);

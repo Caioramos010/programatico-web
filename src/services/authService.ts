@@ -11,9 +11,17 @@ export interface MessageResponse {
   mensagem: string;
 }
 
+export interface LoginIniciarResponse {
+  requiresVerification: boolean;
+  mensagem?: string;
+  token?: string;
+  tipo?: string;
+  usuario?: User;
+}
+
 export const authService = {
   iniciarLogin: (emailOuUsername: string, senha: string) =>
-    api.post<MessageResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
+    api.post<LoginIniciarResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
 
   confirmarLogin: (emailOuUsername: string, senha: string, codigo: string) =>
     api
@@ -21,7 +29,7 @@ export const authService = {
       .then((r) => r.data),
 
   reenviarCodigoLogin: (emailOuUsername: string, senha: string) =>
-    api.post<MessageResponse>("/api/auth/login/reenviar", { emailOuUsername, senha }).then((r) => r.data),
+    api.post<LoginIniciarResponse>("/api/auth/login/reenviar", { emailOuUsername, senha }).then((r) => r.data),
 
   registro: (data: {
     username: string;
