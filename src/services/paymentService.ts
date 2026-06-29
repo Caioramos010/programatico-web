@@ -12,6 +12,9 @@ export const paymentService = {
       .post<User>("/api/payments/sync", billId ? { billId } : {})
       .then((r) => r.data),
 
+  cancelSubscription: () =>
+    api.post<User>("/api/payments/cancelar").then((r) => r.data),
+
   savePendingBillId: (billId: string) => {
     if (billId.trim()) {
       sessionStorage.setItem(PENDING_BILL_KEY, billId.trim());
