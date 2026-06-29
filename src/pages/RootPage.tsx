@@ -8,6 +8,7 @@ import { formatSubscriptionExpiresAt, isActiveRoot } from "../lib/subscription";
 import { paymentService } from "../services/paymentService";
 import { parseApiError } from "../utils/parseApiError";
 import { toast } from "../components/toast/toastBus";
+import PaymentHistorySection from "../components/payments/PaymentHistorySection";
 import { useEffect, useState } from "react";
 
 function FeatureCard({
@@ -151,6 +152,10 @@ export default function RootPage() {
             title="Relatórios & Experiência"
             items={["Relatórios premium", "Sem anúncios", "Vidas infinitas"]}
           />
+        </div>
+
+        <div className="mt-10 w-full">
+          <PaymentHistorySection variant="root" />
         </div>
 
         {!renovacaoCancelada ? (
