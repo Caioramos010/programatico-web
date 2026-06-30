@@ -29,7 +29,7 @@ export default function ResetPasswordCodePage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(values())) return;
-    navigate("/redefinir-senha/nova", { state: { codigo: code } });
+    navigate("/redefinir-senha/nova", { state: { codigo: code, email } });
   };
 
   const handleReenviar = async () => {

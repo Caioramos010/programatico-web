@@ -46,7 +46,7 @@ export default function ActivationPage() {
 
     setSubmitting(true);
     try {
-      await authService.ativar(code);
+      await authService.ativar(code, activationEmail || undefined);
       sessionStorage.removeItem("pendingActivationEmail");
       navigate("/sucesso", {
         replace: true,

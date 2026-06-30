@@ -39,8 +39,10 @@ export const authService = {
   }) =>
     api.post<User>("/api/auth/registro", data).then((r) => r.data),
 
-  ativar: (codigo: string) =>
-    api.post<MessageResponse>("/api/auth/ativar", { codigo }).then((r) => r.data),
+  ativar: (codigo: string, email?: string) =>
+    api
+      .post<MessageResponse>("/api/auth/ativar", { codigo, ...(email ? { email } : {}) })
+      .then((r) => r.data),
 
   solicitarAtivacao: (email: string) =>
     api.post<MessageResponse>("/api/auth/ativar/solicitar", { email }).then((r) => r.data),
@@ -50,9 +52,13 @@ export const authService = {
       .post<MessageResponse>("/api/auth/redefinir-senha/solicitar", { email })
       .then((r) => r.data),
 
-  novaSenha: (codigo: string, novaSenha: string) =>
+  novaSenha: (codigo: string, novaSenha: string, email?: string) =>
     api
-      .post<MessageResponse>("/api/auth/redefinir-senha/nova", { codigo, novaSenha })
+      .post<MessageResponse>("/api/auth/redefinir-senha/nova", {
+        codigo,
+        novaSenha,
+        ...(email ? { email } : {}),
+      })
       .then((r) => r.data),
 
   buscarPerfil: (id: number) =>

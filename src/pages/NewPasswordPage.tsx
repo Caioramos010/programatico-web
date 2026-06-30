@@ -27,6 +27,7 @@ export default function NewPasswordPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const codigo: string = location.state?.codigo ?? "";
+  const email: string = location.state?.email ?? "";
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -41,7 +42,7 @@ export default function NewPasswordPage() {
     if (!validate(values())) return;
 
     try {
-      await authService.novaSenha(codigo, password);
+      await authService.novaSenha(codigo, password, email || undefined);
       navigate("/sucesso", {
         replace: true,
         state: {
