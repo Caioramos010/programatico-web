@@ -9,6 +9,34 @@ export interface NotificationPreferences {
   disableAllNotifications: boolean;
 }
 
+export interface SecurityPreferences {
+  twoFactorEnabled: boolean;
+  totpEnabled: boolean;
+  backupCodesRemaining: number;
+  backupCodes?: string[];
+}
+
+export const DEFAULT_SECURITY_PREFERENCES: SecurityPreferences = {
+  twoFactorEnabled: true,
+  totpEnabled: false,
+  backupCodesRemaining: 0,
+};
+
+export interface TotpStatus {
+  totpEnabled: boolean;
+  setupPendente: boolean;
+}
+
+export interface TotpActivation extends TotpStatus {
+  backupCodes?: string[];
+}
+
+export interface TotpSetup {
+  secret: string;
+  otpauthUrl: string;
+  qrCodeDataUrl: string;
+}
+
 export type NotificationPreferenceKey = Exclude<
   keyof NotificationPreferences,
   "disableAllNotifications"
@@ -52,7 +80,7 @@ export const NOTIFICATION_SETTING_OPTIONS: {
   {
     key: "disableEmailNotifications",
     label: "Desativar e-mails informativos",
-    hint: "Lembretes e novidades por e-mail. Códigos de login, ativação e senha sempre são enviados.",
+    hint: "Lembretes e novidades por e-mail. Códigos de ativação e senha sempre são enviados.",
   },
 ];
 
@@ -66,4 +94,22 @@ export const settingsService = {
     api
       .put<NotificationPreferences>("/api/configuracoes/notificacoes", data)
       .then((r) => r.data),
+
+  getSecurityPreferences: () =>
+    api.get<SecurityPreferences>("/api/configuracoes/seguranca").then((r) => r.data),
+
+  updateSecurityPreferences: (data: Pick<SecurityPreferences, "twoFactorEnabled">) =>
+    api.put<SecurityPreferences>("/api/configuracoes/seguranca", data).then((r) => r.data),
+
+  getTotpStatus: () =>
+    api.get<TotpStatus>("/api/configuracoes/totp").then((r) => r.data),
+
+  setupTotp: () =>
+    api.post<TotpSetup>("/api/configuracoes/totp/setup").then((r) => r.data),
+
+  activateTotp: (codigo: string) =>
+    api.post<TotpActivation>("/api/configuracoes/totp/ativar", { codigo }).then((r) => r.data),
+
+  deactivateTotp: (codigo: string) =>
+    api.post<TotpStatus>("/api/configuracoes/totp/desativar", { codigo }).then((r) => r.data),
 };

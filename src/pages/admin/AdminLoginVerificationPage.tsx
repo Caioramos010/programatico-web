@@ -16,10 +16,15 @@ const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
 const schema = {
-  code: [rules.required("Código"), rules.code(6)],
+  code: [rules.required("Código"), rules.twoFactorCode()],
 };
 
-type LoginVerifyState = { emailOuUsername: string; senha: string; from?: string };
+type LoginVerifyState = {
+  emailOuUsername: string;
+  senha: string;
+  from?: string;
+  verificationMethod?: "EMAIL" | "TOTP";
+};
 
 export default function AdminLoginVerificationPage() {
   const navigate = useNavigate();
@@ -28,6 +33,7 @@ export default function AdminLoginVerificationPage() {
   const login = useAdminAuthStore((s) => s.login);
 
   const [code, setCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -49,7 +55,12 @@ export default function AdminLoginVerificationPage() {
     setIsSubmitting(true);
     setFormError("");
     try {
-      const data = await authService.confirmarLogin(state.emailOuUsername, state.senha, code);
+      const data = await authService.confirmarLogin(
+        state.emailOuUsername,
+        state.senha,
+        code,
+        rememberDevice
+      );
       if (data.usuario.role !== "ADMIN") {
         setFormError("Acesso restrito a administradores.");
         return;
@@ -76,7 +87,21 @@ export default function AdminLoginVerificationPage() {
     setIsResending(true);
     try {
       const response = await authService.reenviarCodigoLogin(state.emailOuUsername, state.senha);
-      setResendMessage(response.mensagem);
+      if (!response.requiresVerification && response.token && response.usuario) {
+        if (response.usuario.role !== "ADMIN") {
+          setFormError("Acesso restrito a administradores.");
+          return;
+        }
+        login(response.token, {
+          id: response.usuario.id,
+          username: response.usuario.username,
+          email: response.usuario.email,
+          role: response.usuario.role as string,
+        });
+        navigate(state.from ?? `${basePath}/dashboard`, { replace: true });
+        return;
+      }
+      setResendMessage(response.mensagem ?? "Código reenviado.");
     } catch (err) {
       const { formError: msg } = parseApiError(err);
       if (msg) setFormError(msg);
@@ -85,6 +110,8 @@ export default function AdminLoginVerificationPage() {
     }
   };
 
+  const isTotp = state?.verificationMethod === "TOTP";
+
   if (!state?.emailOuUsername || !state?.senha) {
     return null;
   }
@@ -92,11 +119,16 @@ export default function AdminLoginVerificationPage() {
   return (
     <AuthLayout
       title="Entrar"
-      subtitle="Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
+      subtitle={
+        isTotp
+          ? "Insira o código de 6 dígitos do seu aplicativo autenticador."
+          : "Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
+      }
       variant="admin"
       adminBadge
       onClose={() => navigate(`${basePath}/login`)}
       footer={
+        isTotp ? undefined : (
         <>
           <OrDivider />
           <Button
@@ -112,12 +144,13 @@ export default function AdminLoginVerificationPage() {
             <p className="mt-2 text-base text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
           )}
         </>
+        )
       }
     >
       <form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder="Insira o código que chegou no seu e-mail"
+          placeholder={isTotp ? "Código do autenticador ou de backup" : "Código do e-mail ou de backup"}
           value={code}
           onChange={(e) => {
             setCode(e.target.value);
@@ -127,6 +160,18 @@ export default function AdminLoginVerificationPage() {
           error={fieldError("code")}
           className={inputClass}
         />
+
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={rememberDevice}
+            onChange={(e) => setRememberDevice(e.target.checked)}
+            className="h-4 w-4 rounded border-[var(--color-login-border)] accent-white"
+          />
+          <span className="text-sm text-[var(--color-text-secondary)]">
+            Lembrar este dispositivo por 30 dias
+          </span>
+        </label>
 
         <Button type="submit" variant="white" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Entrando..." : "Entrar"}

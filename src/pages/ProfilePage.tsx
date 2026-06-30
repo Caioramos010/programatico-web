@@ -7,6 +7,7 @@ import { learnService, type UserStatsResponse } from "../services/learnService";
 import { usuarioService } from "../services/usuarioService";
 import { parseApiError } from "../utils/parseApiError";
 import { DEFAULT_AVATARS, avatarUrl } from "../constants/avatars";
+import PaymentHistorySection from "../components/payments/PaymentHistorySection";
 
 /* ── Stat card ── */
 function StatCard({
@@ -237,6 +238,8 @@ export default function ProfilePage() {
               <StatCard label="Máximo de dias seguidos" value={stats?.maxStreak ?? 0} icon={<FireOff className="w-5 h-5" />} />
             </div>
           </section>
+
+          <PaymentHistorySection variant="profile" />
 
           <Button variant="neutral" onClick={() => setEditing(true)}>
             Editar perfil

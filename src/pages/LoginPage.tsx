@@ -9,6 +9,7 @@ import { parseApiError } from "../utils/parseApiError";
 import { authService } from "../services/authService";
 import { useAuthStore } from "../stores/authStore";
 import { clearPendingLogin, savePendingLogin, type PendingLoginState } from "../lib/pendingLogin";
+import { resolvePostLoginPath } from "../lib/postLoginNavigation";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -22,6 +23,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const logout = useAuthStore((s) => s.logout);
+  const storeLogin = useAuthStore((s) => s.login);
   const from = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,10 +45,25 @@ export default function LoginPage() {
     setIsLoading(true);
     setFormError("");
     try {
-      await authService.iniciarLogin(email, password);
-      const pending: PendingLoginState = { emailOuUsername: email, senha: password, from };
-      savePendingLogin(pending);
-      navigate("/login/verificacao", { state: pending });
+      const data = await authService.iniciarLogin(email, password);
+      if (data.requiresVerification) {
+        const pending: PendingLoginState = {
+          emailOuUsername: email,
+          senha: password,
+          from,
+          verificationMethod: data.verificationMethod ?? "EMAIL",
+        };
+        savePendingLogin(pending);
+        navigate("/login/verificacao", { state: pending });
+        return;
+      }
+      if (!data.token || !data.usuario) {
+        setFormError("Não foi possível concluir o login. Tente novamente.");
+        return;
+      }
+      clearPendingLogin();
+      storeLogin(data.token, data.usuario);
+      navigate(resolvePostLoginPath(data.usuario, from), { replace: true });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);
@@ -104,7 +121,7 @@ export default function LoginPage() {
         />
 
         <Button type="submit" variant="white" className="w-full" disabled={isLoading}>
-          {isLoading ? "Enviando código..." : "Continuar"}
+          {isLoading ? "Entrando..." : "Continuar"}
         </Button>
 
         {formError && (

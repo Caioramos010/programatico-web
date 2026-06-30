@@ -17,6 +17,7 @@ export interface User {
   nivelHabilidade?: NivelHabilidade | null;
   subscriptionType?: SubscriptionType;
   subscriptionExpiresAt?: string | null;
+  subscriptionAutoRenew?: boolean;
 }
 
 interface AuthState {

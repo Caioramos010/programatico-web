@@ -2,9 +2,14 @@ import { useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
 import { Clock, Activity, X } from "lucide-react";
 import { Crown } from "../components/icons";
+import Button from "../components/Button";
 import { useAuthStore } from "../stores/authStore";
 import { formatSubscriptionExpiresAt, isActiveRoot } from "../lib/subscription";
-import { useEffect } from "react";
+import { paymentService } from "../services/paymentService";
+import { parseApiError } from "../utils/parseApiError";
+import { toast } from "../components/toast/toastBus";
+import PaymentHistorySection from "../components/payments/PaymentHistorySection";
+import { useEffect, useState } from "react";
 
 function FeatureCard({
   icon,
@@ -43,6 +48,8 @@ function FeatureCard({
 export default function RootPage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const updateUser = useAuthStore((s) => s.updateUser);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   useEffect(() => {
     if (!isActiveRoot(user)) {
@@ -55,6 +62,28 @@ export default function RootPage() {
   }
 
   const expiresLabel = formatSubscriptionExpiresAt(user?.subscriptionExpiresAt);
+  const renovacaoCancelada = user?.subscriptionAutoRenew === false;
+
+  const handleCancelarAssinatura = async () => {
+    const mensagem = expiresLabel
+      ? `Sua assinatura Root continuará ativa até ${expiresLabel}, mas não será renovada automaticamente. Deseja cancelar a renovação?`
+      : "Sua assinatura Root continuará ativa até o fim do período atual, mas não será renovada automaticamente. Deseja cancelar a renovação?";
+
+    if (!window.confirm(mensagem)) {
+      return;
+    }
+
+    setCancelLoading(true);
+    try {
+      const updated = await paymentService.cancelSubscription();
+      updateUser(updated);
+      toast.success("Renovação automática cancelada. Você continua Root até o fim do período.");
+    } catch (error) {
+      toast.error(parseApiError(error).formError ?? "Não foi possível cancelar a assinatura.");
+    } finally {
+      setCancelLoading(false);
+    }
+  };
 
   return (
     <div
@@ -93,6 +122,11 @@ export default function RootPage() {
                 até {expiresLabel}
               </p>
             ) : null}
+            {renovacaoCancelada ? (
+              <p className="text-base text-white/80 md:text-lg">
+                Renovação automática cancelada
+              </p>
+            ) : null}
           </div>
         </header>
 
@@ -119,6 +153,24 @@ export default function RootPage() {
             items={["Relatórios premium", "Sem anúncios", "Vidas infinitas"]}
           />
         </div>
+
+        <div className="mt-10 w-full">
+          <PaymentHistorySection variant="root" />
+        </div>
+
+        {!renovacaoCancelada ? (
+          <div className="mt-10 w-full">
+            <Button
+              type="button"
+              variant="neutral"
+              disabled={cancelLoading}
+              onClick={handleCancelarAssinatura}
+              className="w-full normal-case tracking-normal text-base py-3 border-b-2 rounded-xl bg-black/30 border-white/20 hover:bg-black/45"
+            >
+              {cancelLoading ? "Cancelando..." : "Cancelar assinatura"}
+            </Button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
