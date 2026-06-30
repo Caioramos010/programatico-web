@@ -24,9 +24,19 @@ export const authService = {
   iniciarLogin: (emailOuUsername: string, senha: string) =>
     api.post<LoginIniciarResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
 
-  confirmarLogin: (emailOuUsername: string, senha: string, codigo: string) =>
+  confirmarLogin: (
+    emailOuUsername: string,
+    senha: string,
+    codigo: string,
+    lembrarDispositivo?: boolean
+  ) =>
     api
-      .post<LoginResponse>("/api/auth/login/confirmar", { emailOuUsername, senha, codigo })
+      .post<LoginResponse>("/api/auth/login/confirmar", {
+        emailOuUsername,
+        senha,
+        codigo,
+        lembrarDispositivo: lembrarDispositivo ?? false,
+      })
       .then((r) => r.data),
 
   reenviarCodigoLogin: (emailOuUsername: string, senha: string) =>

@@ -33,6 +33,7 @@ export default function AdminLoginVerificationPage() {
   const login = useAdminAuthStore((s) => s.login);
 
   const [code, setCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(false);
   const [resendMessage, setResendMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
@@ -54,7 +55,12 @@ export default function AdminLoginVerificationPage() {
     setIsSubmitting(true);
     setFormError("");
     try {
-      const data = await authService.confirmarLogin(state.emailOuUsername, state.senha, code);
+      const data = await authService.confirmarLogin(
+        state.emailOuUsername,
+        state.senha,
+        code,
+        rememberDevice
+      );
       if (data.usuario.role !== "ADMIN") {
         setFormError("Acesso restrito a administradores.");
         return;
@@ -154,6 +160,18 @@ export default function AdminLoginVerificationPage() {
           error={fieldError("code")}
           className={inputClass}
         />
+
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={rememberDevice}
+            onChange={(e) => setRememberDevice(e.target.checked)}
+            className="h-4 w-4 rounded border-[var(--color-login-border)] accent-white"
+          />
+          <span className="text-sm text-[var(--color-text-secondary)]">
+            Lembrar este dispositivo por 30 dias
+          </span>
+        </label>
 
         <Button type="submit" variant="white" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? "Entrando..." : "Entrar"}
