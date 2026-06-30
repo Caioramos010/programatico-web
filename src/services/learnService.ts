@@ -8,6 +8,10 @@ export interface ModuleWithProgress {
   status: "LOCKED" | "UNLOCKED" | "COMPLETED";
   description: string | null;
   totalXp: number;
+  /** Assuntos mais frequentes do módulo (só preenchido para usuários Root). */
+  topAssuntos: string[];
+  /** true se há sessão aberta deste módulo (botão "Continuar"). */
+  emAndamento: boolean;
 }
 
 export interface TrackResponse {
@@ -79,5 +83,9 @@ export const learnService = {
     api.get<TheoryResponse>(`/api/aprender/modulos/${moduleId}/teorico`).then((r) => r.data),
 
   finishTheory: (moduleId: number) =>
-    api.post<void>(`/api/aprender/modulos/${moduleId}/teorico/concluir`).then((r) => r.data),
+    api
+      .post<{ firstCompletion: boolean; completedMissions: string[] }>(
+        `/api/aprender/modulos/${moduleId}/teorico/concluir`,
+      )
+      .then((r) => r.data),
 };

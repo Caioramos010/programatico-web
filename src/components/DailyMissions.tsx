@@ -9,18 +9,22 @@ interface Props {
 
 function getMissionIcon(type: string) {
   const t = type?.toUpperCase() ?? "";
-  if (t.includes("TEORICA") || t.includes("STUDY")) {
-    return <Book className="w-5 h-5 shrink-0" />;
-  }
+  if (t.includes("READ_PAGES")) return <Book className="w-5 h-5 shrink-0" />;
+  if (t.includes("EARN_XP")) return <Xp className="w-5 h-5 shrink-0" />;
   return <Zap size={20} className="shrink-0" strokeWidth={2.5} />;
 }
 
 function MissionItem({ mission }: { mission: MissionResponse }) {
+  const done = mission.completed;
+  const pct = Math.min(mission.currentProgress / mission.goal, 1) * 100;
   return (
     <div className="flex flex-col gap-1.5">
       {/* Title row: icon + name | XP */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-[var(--color-text-secondary)] min-w-0">
+        <div
+          className="flex items-center gap-2 min-w-0"
+          style={{ color: done ? "var(--color-success)" : "var(--color-text-secondary)" }}
+        >
           {getMissionIcon(mission.type)}
           <span className="text-base font-fredoka font-medium truncate">{mission.title}</span>
         </div>
@@ -34,11 +38,14 @@ function MissionItem({ mission }: { mission: MissionResponse }) {
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1.5 rounded-full bg-[var(--color-bg-card-inner)] overflow-hidden">
           <div
-            className="h-full rounded-full bg-[var(--color-accent)] transition-all duration-300"
-            style={{ width: `${Math.min(mission.currentProgress / mission.goal, 1) * 100}%` }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{ width: `${pct}%`, background: done ? "var(--color-success)" : "var(--color-accent)" }}
           />
         </div>
-        <span className="text-base text-[var(--color-text-muted)] font-fredoka shrink-0 tabular-nums">
+        <span
+          className="text-base font-fredoka shrink-0 tabular-nums"
+          style={{ color: done ? "var(--color-success)" : "var(--color-text-muted)" }}
+        >
           {mission.currentProgress}/{mission.goal}
         </span>
       </div>

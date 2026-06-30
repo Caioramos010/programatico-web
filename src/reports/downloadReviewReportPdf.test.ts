@@ -51,7 +51,7 @@ describe("downloadReviewReportPdf", () => {
     expect(toBlob).toHaveBeenCalled();
     expect(createObjectURL).toHaveBeenCalled();
     expect(click).toHaveBeenCalled();
-    expect(link.download).toMatch(/^relatorio-review-\d{4}-\d{2}-\d{2}\.pdf$/);
+    expect(link.download).toBe("DesempenhoProgramatico.pdf");
     expect(revokeObjectURL).toHaveBeenCalledWith("blob:mock");
     expect(appendChild).toHaveBeenCalledWith(link);
     expect(removeChild).toHaveBeenCalledWith(link);

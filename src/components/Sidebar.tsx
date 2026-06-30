@@ -161,14 +161,14 @@ export default function Sidebar() {
                   key={path}
                   to={path}
                   className={[
-                    "flex flex-col items-center gap-0.5 px-2 py-1 cursor-pointer min-w-[4.5rem]",
+                    "flex flex-1 min-w-0 flex-col items-center gap-0.5 px-1 py-1 cursor-pointer",
                     "transition-colors duration-200",
                     isActive ? "text-[var(--color-premium)]" : "text-[#d4a843] hover:text-[#fde68a]",
                   ].join(" ")}
                 >
-                  {!rootMember ? <Icon className="w-6 h-6 fill-current" /> : null}
+                  {!rootMember ? <Icon className="w-5 h-5 fill-current" /> : null}
                   <span className={[
-                    "text-base font-medium",
+                    "text-[10px] leading-tight text-center font-medium",
                     rootMember ? "font-bold uppercase tracking-wide" : "",
                   ].join(" ")}>
                     {label}
@@ -181,15 +181,15 @@ export default function Sidebar() {
                 key={path}
                 to={path}
                 className={[
-                  "flex flex-col items-center gap-0.5 px-2 py-1 cursor-pointer",
+                  "flex flex-1 min-w-0 flex-col items-center gap-0.5 px-1 py-1 cursor-pointer",
                   "transition-colors duration-200",
                   isActive
                     ? "text-[var(--color-accent)]"
                     : "text-[var(--color-text-muted)] hover:text-white",
                 ].join(" ")}
               >
-                <Icon className="w-6 h-6 fill-current" />
-                <span className="text-base font-medium">{label}</span>
+                <Icon className="w-5 h-5 fill-current" />
+                <span className="text-[10px] leading-tight font-medium">{label}</span>
               </NavLink>
             );
           })}

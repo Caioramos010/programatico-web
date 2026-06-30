@@ -28,7 +28,7 @@ describe("ReviewPerformanceChart", () => {
       />,
     );
 
-    expect(screen.getByText("Desempenho por dia")).toBeInTheDocument();
+    expect(screen.getByText("Desempenho")).toBeInTheDocument();
     expect(screen.getByTestId("line-chart")).toBeInTheDocument();
   });
 });

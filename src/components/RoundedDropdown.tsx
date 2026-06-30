@@ -41,7 +41,7 @@ export default function RoundedDropdown({
       {open ? (
         <div
           className={[
-            "absolute left-0 top-[calc(100%+8px)] z-20 w-full min-w-max rounded-2xl border border-[#31466e] bg-[#142748] p-1 shadow-lg",
+            "absolute left-0 top-[calc(100%+8px)] z-20 w-full min-w-max rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-1 shadow-lg",
             menuClassName,
           ].join(" ")}
         >
@@ -57,8 +57,8 @@ export default function RoundedDropdown({
                   setOpen(false);
                 }}
                 className={[
-                  "flex w-full items-center rounded-xl px-3 py-2 text-left text-white transition-colors hover:bg-[#1f3a67]",
-                  isActive ? "bg-[#1f3a67]" : "",
+                  "flex w-full items-center rounded-xl px-3 py-2 text-left text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-bg-card-inner)]",
+                  isActive ? "bg-[var(--color-bg-card-inner)]" : "",
                   optionClassName,
                 ].join(" ")}
               >

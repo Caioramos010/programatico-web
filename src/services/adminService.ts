@@ -111,12 +111,14 @@ export interface ContentBlock {
   paginaId: number | null;
   layoutType: "TEXT" | "IMAGE" | "CARDS";
   textContent: string | null;
+  imageUrl: string | null;
   displayOrder: number;
 }
 
 export interface ContentBlockRequest {
   layoutType: "TEXT" | "IMAGE" | "CARDS";
   textContent?: string;
+  imageUrl?: string;
   displayOrder: number;
 }
 

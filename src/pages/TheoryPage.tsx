@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { learnService } from "../services/learnService";
 import type { TheoryResponse, TheoryBlock } from "../services/learnService";
 import { parseApiError } from "../utils/parseApiError";
+import { toast } from "../components/toast/toastBus";
 
 export default function TheoryPage() {
   const { moduloId } = useParams<{ moduloId: string }>();
@@ -48,7 +49,11 @@ export default function TheoryPage() {
     setIsFinishing(true);
     setFinishError(null);
     try {
-      await learnService.finishTheory(Number(moduloId));
+      const { firstCompletion, completedMissions } = await learnService.finishTheory(Number(moduloId));
+      if (firstCompletion) {
+        toast.success("Módulo teórico concluído!");
+      }
+      completedMissions?.forEach((m) => toast.success(`Missão concluída: ${m}`));
       navigate("/aprender");
     } catch (err) {
       const { formError } = parseApiError(err);
@@ -140,19 +145,19 @@ export default function TheoryPage() {
         </button>
       </header>
 
-      {/* Scrollable content */}
-      <main className="flex-1 overflow-y-auto">
-        <div className="w-full max-w-2xl mx-auto px-6 py-8">
+      {/* Conteúdo: centralizado e do tamanho da tela; rola só se exceder (raro). */}
+      <main className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+        <div className="w-full max-w-2xl mx-auto px-6 py-5 my-auto">
           <h2 className="font-fredoka font-bold text-2xl text-[var(--color-text-primary)] mb-2">
             {currentPage.title}
           </h2>
           {currentPage.description && (
-            <p className="font-fredoka text-[var(--color-text-muted)] text-base mb-6 leading-snug">
+            <p className="font-fredoka text-[var(--color-text-muted)] text-base mb-5 leading-snug">
               {currentPage.description}
             </p>
           )}
 
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-5">
             {sortedBlocks.map((block) => (
               <TheoryBlockView key={block.id} block={block} />
             ))}
@@ -194,8 +199,8 @@ function TheoryBlockView({ block }: { block: TheoryBlock }) {
         <img
           src={block.imageUrl}
           alt=""
-          className="max-w-full h-auto rounded-xl"
-          style={{ maxHeight: "60vh" }}
+          className="max-w-full w-auto rounded-xl object-contain"
+          style={{ maxHeight: "min(34vh, 300px)" }}
         />
       </div>
     );

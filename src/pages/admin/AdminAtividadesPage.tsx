@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Zap, Plus, Pencil, Trash2, X, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, Zap, Plus, Pencil, Trash2, X, Image as ImageIcon } from "lucide-react";
 import { adminService, type Exercise, type ExerciseRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
 import { toast } from "../../components/toast/toastBus";
+import AdminEditorShell from "../../components/admin/AdminEditorShell";
+import PoolImagePicker from "../../components/admin/PoolImagePicker";
 
 type ExType = "PAIRS" | "DRAG_DROP" | "MULTIPLE_CHOICE";
 
@@ -36,6 +38,9 @@ interface FormStep2 {
   dragItems: string[];
   mcOptions: McOption[];
 }
+
+/** Alvo do PoolImagePicker: imagem principal (step1) ou uma das alternativas (mc). */
+type PickerTarget = { kind: "main" } | { kind: "mc"; index: number };
 
 const defaultPairs = (): Pair[] => Array.from({ length: 4 }, () => ({ left: "", right: "" }));
 const defaultDragItems = (): string[] => ["", "", ""];
@@ -91,6 +96,7 @@ export default function AdminAtividadesPage() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
+  const [pickerTarget, setPickerTarget] = useState<PickerTarget | null>(null);
 
   const [step1, setStep1] = useState<FormStep1>({
     exerciseType: "PAIRS",
@@ -105,14 +111,6 @@ export default function AdminAtividadesPage() {
     dragItems: defaultDragItems(),
     mcOptions: defaultMcOptions(),
   });
-
-  const imageRef = useRef<HTMLInputElement>(null);
-  const mcImageRefs = [
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-    useRef<HTMLInputElement>(null),
-  ];
 
   const carregar = async () => {
     if (!moduloId) return;
@@ -150,15 +148,15 @@ export default function AdminAtividadesPage() {
 
   const fecharModal = () => { setShowModal(false); setFormError(null); };
 
-  const avancarStep1 = (e: React.FormEvent) => {
-    e.preventDefault();
+  const avancarStep1 = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!step1.statement.trim()) { setFormError("Preencha o enunciado."); return; }
     setFormError(null);
     setStep(2);
   };
 
-  const salvar = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const salvar = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setFormError(null);
 
     // Validações de conteúdo por tipo
@@ -228,12 +226,301 @@ export default function AdminAtividadesPage() {
     }
   };
 
-  const handleImageFile = (file: File, onResult: (data: string) => void) => {
-    const reader = new FileReader();
-    reader.onload = () => onResult(reader.result as string);
-    reader.readAsDataURL(file);
+  const aplicarImagem = (path: string) => {
+    if (!pickerTarget) return;
+    if (pickerTarget.kind === "main") {
+      setStep1((s) => ({ ...s, imageData: path }));
+    } else {
+      const idx = pickerTarget.index;
+      setStep2((s) => {
+        const o = [...s.mcOptions];
+        o[idx] = { ...o[idx], image: path };
+        return { ...s, mcOptions: o };
+      });
+    }
   };
 
+  const pickerCurrent =
+    pickerTarget?.kind === "main"
+      ? step1.imageData
+      : pickerTarget?.kind === "mc"
+        ? step2.mcOptions[pickerTarget.index]?.image
+        : undefined;
+
+  // ── Editor full-screen (cria/edita) ─────────────────────────
+  if (showModal) {
+    const breadcrumb = trackTitle ? `${trackTitle} / ${moduloTitle}` : moduloTitle;
+    const footer =
+      step === 1 ? (
+        <>
+          <button type="button" onClick={fecharModal}
+            className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+            Cancelar
+          </button>
+          <button type="button" onClick={() => avancarStep1()}
+            className="px-6 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
+            Próximo →
+          </button>
+        </>
+      ) : (
+        <>
+          <button type="button" onClick={() => setStep(1)}
+            className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+            ← Voltar
+          </button>
+          <button type="button" onClick={() => salvar()} disabled={isSaving}
+            className="px-6 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
+            {isSaving ? "Salvando..." : editingId !== null ? "Salvar" : "Criar"}
+          </button>
+        </>
+      );
+
+    return (
+      <AdminEditorShell
+        breadcrumb={breadcrumb}
+        onBack={fecharModal}
+        title={editingId !== null ? "Editar Atividade" : "Nova Atividade"}
+        subtitle={step === 1 ? "Configuração geral" : "Dados da atividade"}
+        stepLabel={`${step}/2`}
+        error={formError}
+        footer={footer}
+      >
+        {step === 1 ? (
+          <div className="flex flex-col gap-4">
+            {/* Tipo */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Tipo de atividade</label>
+              <div className="flex gap-2 flex-wrap">
+                {(Object.keys(EX_TYPE_LABEL) as ExType[]).map((t) => (
+                  <button key={t} type="button"
+                    onClick={() => setStep1((s) => ({ ...s, exerciseType: t }))}
+                    className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
+                      step1.exerciseType === t
+                        ? "bg-[var(--color-accent)] text-white border-transparent"
+                        : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
+                    }`}>
+                    {EX_TYPE_LABEL[t]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Enunciado */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Enunciado *</label>
+              <textarea
+                className={inputCls + " resize-none"}
+                rows={4}
+                placeholder="O que o aluno deve fazer?"
+                value={step1.statement}
+                onChange={(e) => setStep1((s) => ({ ...s, statement: e.target.value }))}
+                autoFocus
+              />
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Assuntos relacionados</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {step1.tags.map((tag, i) => (
+                  <span key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-base font-medium bg-[var(--color-accent)]/15 text-[var(--color-accent-light)]">
+                    {tag}
+                    <button type="button" onClick={() => setStep1((s) => ({ ...s, tags: s.tags.filter((_, j) => j !== i) }))}>
+                      <X size={10} />
+                    </button>
+                  </span>
+                ))}
+                <div className="flex items-center gap-1">
+                  <input
+                    className="px-2.5 py-1 rounded-lg text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none w-28 focus:border-[var(--color-accent-light)]"
+                    placeholder="Tag..."
+                    value={step1.tagInput}
+                    onChange={(e) => setStep1((s) => ({ ...s, tagInput: e.target.value }))}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = step1.tagInput.trim().toUpperCase();
+                        if (val) setStep1((s) => ({ ...s, tags: [...s.tags, val], tagInput: "" }));
+                      }
+                    }}
+                  />
+                  <button type="button"
+                    onClick={() => {
+                      const val = step1.tagInput.trim().toUpperCase();
+                      if (val) setStep1((s) => ({ ...s, tags: [...s.tags, val], tagInput: "" }));
+                    }}
+                    className="p-1.5 rounded-lg bg-[var(--color-gray-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-accent)] hover:text-white transition-colors">
+                    <Plus size={12} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Imagem */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Imagem (opcional)</label>
+              {step1.imageData ? (
+                <div className="flex items-center gap-3">
+                  <img src={step1.imageData} alt="Preview" className="w-24 h-24 rounded-xl object-contain bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]" />
+                  <button type="button" onClick={() => setPickerTarget({ kind: "main" })}
+                    className="px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] hover:border-[var(--color-accent-light)] transition-colors">
+                    Trocar
+                  </button>
+                  <button type="button" onClick={() => setStep1((s) => ({ ...s, imageData: "" }))}
+                    className="flex items-center gap-1 text-base text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
+                    <X size={12} /> Remover
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setPickerTarget({ kind: "main" })}
+                  className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] hover:border-[var(--color-accent-light)] transition-colors">
+                  <ImageIcon size={14} />
+                  Selecionar imagem
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {/* XP */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Recompensa de XP</label>
+              <div className="flex gap-2">
+                {[3, 5, 7].map((xp) => (
+                  <button key={xp} type="button"
+                    onClick={() => setStep2((s) => ({ ...s, xpReward: xp }))}
+                    className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
+                      step2.xpReward === xp
+                        ? "bg-yellow-500/15 text-yellow-400 border-yellow-400/30"
+                        : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
+                    }`}>
+                    ✦ +{xp} XP
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Type-specific editor */}
+            <div>
+              <label className="block text-base font-medium text-[var(--color-text-muted)] mb-2">Conteúdo da atividade</label>
+              <p className="text-base text-[var(--color-text-primary)] mb-3 px-3 py-2 rounded-lg bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]">
+                {step1.statement}
+              </p>
+
+              {step1.exerciseType === "PAIRS" && (
+                <div className="flex flex-col gap-2">
+                  {step2.pairs.map((pair, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                        placeholder={`Esquerda ${i + 1}`}
+                        value={pair.left}
+                        onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], left: e.target.value }; return { ...s, pairs: p }; })}
+                      />
+                      <input
+                        className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                        placeholder={`Direita ${i + 1}`}
+                        value={pair.right}
+                        onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], right: e.target.value }; return { ...s, pairs: p }; })}
+                      />
+                      {step2.pairs.length > 2 && (
+                        <button type="button"
+                          onClick={() => setStep2((s) => ({ ...s, pairs: s.pairs.filter((_, j) => j !== i) }))}
+                          className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button"
+                    onClick={() => setStep2((s) => ({ ...s, pairs: [...s.pairs, { left: "", right: "" }] }))}
+                    className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
+                    <Plus size={12} /> Adicionar par
+                  </button>
+                </div>
+              )}
+
+              {step1.exerciseType === "DRAG_DROP" && (
+                <div className="flex flex-col gap-2">
+                  {step2.dragItems.map((item, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                        placeholder={`Passo ${i + 1}`}
+                        value={item}
+                        onChange={(e) => setStep2((s) => { const it = [...s.dragItems]; it[i] = e.target.value; return { ...s, dragItems: it }; })}
+                      />
+                      {step2.dragItems.length > 2 && (
+                        <button type="button"
+                          onClick={() => setStep2((s) => ({ ...s, dragItems: s.dragItems.filter((_, j) => j !== i) }))}
+                          className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button type="button"
+                    onClick={() => setStep2((s) => ({ ...s, dragItems: [...s.dragItems, ""] }))}
+                    className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
+                    <Plus size={12} /> Adicionar passo
+                  </button>
+                </div>
+              )}
+
+              {step1.exerciseType === "MULTIPLE_CHOICE" && (
+                <div>
+                  <p className="text-lg text-[var(--color-text-secondary)] mb-2 leading-relaxed">Duplo clique para marcar a alternativa correta</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {step2.mcOptions.map((opt, i) => (
+                      <div
+                        key={i}
+                        onDoubleClick={() => setStep2((s) => ({ ...s, mcOptions: s.mcOptions.map((o, j) => ({ ...o, correct: j === i })) }))}
+                        className={`rounded-xl p-3 flex flex-col gap-2 cursor-pointer border transition-colors ${
+                          opt.correct ? "border-[var(--color-accent)]" : "border-[var(--color-gray-border)]"
+                        } bg-[var(--color-bg-card-inner)]`}>
+                        {opt.image ? (
+                          <div className="relative">
+                            <img src={opt.image} alt="" className="w-full h-20 object-contain rounded-lg bg-[var(--color-bg-card)]" />
+                            <button type="button"
+                              onClick={(e) => { e.stopPropagation(); setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], image: "" }; return { ...s, mcOptions: o }; }); }}
+                              className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5 text-white hover:bg-[var(--color-error)] transition-colors">
+                              <X size={10} />
+                            </button>
+                          </div>
+                        ) : (
+                          <button type="button"
+                            onClick={(e) => { e.stopPropagation(); setPickerTarget({ kind: "mc", index: i }); }}
+                            className="flex items-center justify-center gap-2 h-20 rounded-lg border border-dashed border-[var(--color-gray-border)] text-base text-[var(--color-text-muted)] hover:border-[var(--color-accent-light)] transition-colors">
+                            <ImageIcon size={12} /> Imagem
+                          </button>
+                        )}
+                        <input
+                          className="w-full rounded-lg px-2 py-1.5 text-base bg-transparent text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
+                          placeholder="Descrição"
+                          value={opt.description}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], description: e.target.value }; return { ...s, mcOptions: o }; })}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <PoolImagePicker
+          open={pickerTarget !== null}
+          current={pickerCurrent}
+          onClose={() => setPickerTarget(null)}
+          onPick={aplicarImagem}
+        />
+      </AdminEditorShell>
+    );
+  }
+
+  // ── Lista ─────────────────────────────────────────────────
   return (
     <div>
       {/* Breadcrumb */}
@@ -334,280 +621,6 @@ export default function AdminAtividadesPage() {
               <ChevronRight size={16} className="text-[var(--color-text-muted)]/30 shrink-0" />
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Create / Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-          <div className="w-full max-w-lg rounded-2xl p-6 flex flex-col gap-5 my-auto"
-            style={{ background: "var(--color-bg-card)", border: "1px solid var(--color-gray-border)" }}>
-
-            {/* Header with step indicator */}
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
-                  {editingId !== null ? "Editar Atividade" : "Nova Atividade"}
-                </h2>
-                <p className="text-base text-[var(--color-text-muted)] mt-0.5">
-                  Passo {step} de 2 — {step === 1 ? "Configuração geral" : "Dados da atividade"}
-                </p>
-              </div>
-              <div className="flex gap-1.5">
-                <div className={`w-8 h-1.5 rounded-full ${step >= 1 ? "bg-[var(--color-accent)]" : "bg-[var(--color-gray-border)]"}`} />
-                <div className={`w-8 h-1.5 rounded-full ${step >= 2 ? "bg-[var(--color-accent)]" : "bg-[var(--color-gray-border)]"}`} />
-              </div>
-            </div>
-
-            {step === 1 ? (
-              <form onSubmit={avancarStep1} className="flex flex-col gap-4">
-                {/* Tipo */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Tipo de atividade</label>
-                  <div className="flex gap-2 flex-wrap">
-                    {(Object.keys(EX_TYPE_LABEL) as ExType[]).map((t) => (
-                      <button key={t} type="button"
-                        onClick={() => setStep1((s) => ({ ...s, exerciseType: t }))}
-                        className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
-                          step1.exerciseType === t
-                            ? "bg-[var(--color-accent)] text-white border-transparent"
-                            : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
-                        }`}>
-                        {EX_TYPE_LABEL[t]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Enunciado */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Enunciado *</label>
-                  <textarea
-                    className={inputCls + " resize-none"}
-                    rows={4}
-                    placeholder="O que o aluno deve fazer?"
-                    value={step1.statement}
-                    onChange={(e) => setStep1((s) => ({ ...s, statement: e.target.value }))}
-                    autoFocus
-                  />
-                </div>
-
-                {/* Tags */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Assuntos relacionados</label>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {step1.tags.map((tag, i) => (
-                      <span key={i} className="flex items-center gap-1 px-2.5 py-1 rounded-full text-base font-medium bg-[var(--color-accent)]/15 text-[var(--color-accent-light)]">
-                        {tag}
-                        <button type="button" onClick={() => setStep1((s) => ({ ...s, tags: s.tags.filter((_, j) => j !== i) }))}>
-                          <X size={10} />
-                        </button>
-                      </span>
-                    ))}
-                    <div className="flex items-center gap-1">
-                      <input
-                        className="px-2.5 py-1 rounded-lg text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none w-28 focus:border-[var(--color-accent-light)]"
-                        placeholder="Tag..."
-                        value={step1.tagInput}
-                        onChange={(e) => setStep1((s) => ({ ...s, tagInput: e.target.value }))}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            const val = step1.tagInput.trim().toUpperCase();
-                            if (val) setStep1((s) => ({ ...s, tags: [...s.tags, val], tagInput: "" }));
-                          }
-                        }}
-                      />
-                      <button type="button"
-                        onClick={() => {
-                          const val = step1.tagInput.trim().toUpperCase();
-                          if (val) setStep1((s) => ({ ...s, tags: [...s.tags, val], tagInput: "" }));
-                        }}
-                        className="p-1.5 rounded-lg bg-[var(--color-gray-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-accent)] hover:text-white transition-colors">
-                        <Plus size={12} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Imagem */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Imagem (opcional)</label>
-                  {step1.imageData ? (
-                    <div className="flex items-center gap-3">
-                      <img src={step1.imageData} alt="Preview" className="w-16 h-16 rounded-xl object-cover" />
-                      <button type="button"
-                        onClick={() => { setStep1((s) => ({ ...s, imageData: "" })); if (imageRef.current) imageRef.current.value = ""; }}
-                        className="flex items-center gap-1 text-base text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
-                        <X size={12} /> Remover
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
-                      <Upload size={14} />
-                      Selecionar imagem
-                      <input ref={imageRef} type="file" accept="image/*" className="hidden"
-                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f, (d) => setStep1((s) => ({ ...s, imageData: d }))); }} />
-                    </label>
-                  )}
-                </div>
-
-                {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
-
-                <div className="flex items-center justify-end gap-2 pt-1">
-                  <button type="button" onClick={fecharModal}
-                    className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
-                    Cancelar
-                  </button>
-                  <button type="submit"
-                    className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] transition-colors">
-                    Próximo →
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <form onSubmit={salvar} className="flex flex-col gap-4">
-                {/* XP */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-1.5">Recompensa de XP</label>
-                  <div className="flex gap-2">
-                    {[3, 5, 7].map((xp) => (
-                      <button key={xp} type="button"
-                        onClick={() => setStep2((s) => ({ ...s, xpReward: xp }))}
-                        className={`flex-1 py-2.5 rounded-xl text-base font-semibold transition-colors border ${
-                          step2.xpReward === xp
-                            ? "bg-yellow-500/15 text-yellow-400 border-yellow-400/30"
-                            : "bg-transparent text-[var(--color-text-muted)] border-[var(--color-gray-border)] hover:border-[var(--color-text-muted)]"
-                        }`}>
-                        ✦ +{xp} XP
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Type-specific editor */}
-                <div>
-                  <label className="block text-base font-medium text-[var(--color-text-muted)] mb-2">Conteúdo da atividade</label>
-                  <p className="text-base text-[var(--color-text-primary)] mb-3 px-3 py-2 rounded-lg bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]">
-                    {step1.statement}
-                  </p>
-
-                  {step1.exerciseType === "PAIRS" && (
-                    <div className="flex flex-col gap-2">
-                      {step2.pairs.map((pair, i) => (
-                        <div key={i} className="flex gap-2">
-                          <input
-                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
-                            placeholder={`Esquerda ${i + 1}`}
-                            value={pair.left}
-                            onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], left: e.target.value }; return { ...s, pairs: p }; })}
-                          />
-                          <input
-                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
-                            placeholder={`Direita ${i + 1}`}
-                            value={pair.right}
-                            onChange={(e) => setStep2((s) => { const p = [...s.pairs]; p[i] = { ...p[i], right: e.target.value }; return { ...s, pairs: p }; })}
-                          />
-                          {step2.pairs.length > 2 && (
-                            <button type="button"
-                              onClick={() => setStep2((s) => ({ ...s, pairs: s.pairs.filter((_, j) => j !== i) }))}
-                              className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
-                              <X size={14} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button type="button"
-                        onClick={() => setStep2((s) => ({ ...s, pairs: [...s.pairs, { left: "", right: "" }] }))}
-                        className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
-                        <Plus size={12} /> Adicionar par
-                      </button>
-                    </div>
-                  )}
-
-                  {step1.exerciseType === "DRAG_DROP" && (
-                    <div className="flex flex-col gap-2">
-                      {step2.dragItems.map((item, i) => (
-                        <div key={i} className="flex gap-2">
-                          <input
-                            className="flex-1 rounded-lg px-3 py-2 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
-                            placeholder={`Passo ${i + 1}`}
-                            value={item}
-                            onChange={(e) => setStep2((s) => { const it = [...s.dragItems]; it[i] = e.target.value; return { ...s, dragItems: it }; })}
-                          />
-                          {step2.dragItems.length > 2 && (
-                            <button type="button"
-                              onClick={() => setStep2((s) => ({ ...s, dragItems: s.dragItems.filter((_, j) => j !== i) }))}
-                              className="text-[var(--color-text-muted)] hover:text-[var(--color-error-heart)] transition-colors">
-                              <X size={14} />
-                            </button>
-                          )}
-                        </div>
-                      ))}
-                      <button type="button"
-                        onClick={() => setStep2((s) => ({ ...s, dragItems: [...s.dragItems, ""] }))}
-                        className="flex items-center gap-1 text-base text-[var(--color-text-secondary)] hover:text-[var(--color-accent)] transition-colors mt-1">
-                        <Plus size={12} /> Adicionar passo
-                      </button>
-                    </div>
-                  )}
-
-                  {step1.exerciseType === "MULTIPLE_CHOICE" && (
-                    <div>
-                      <p className="text-lg text-[var(--color-text-secondary)] mb-2 leading-relaxed">Duplo clique para marcar a alternativa correta</p>
-                      <div className="grid grid-cols-2 gap-3">
-                        {step2.mcOptions.map((opt, i) => (
-                          <div
-                            key={i}
-                            onDoubleClick={() => setStep2((s) => ({ ...s, mcOptions: s.mcOptions.map((o, j) => ({ ...o, correct: j === i })) }))}
-                            className={`rounded-xl p-3 flex flex-col gap-2 cursor-pointer border transition-colors ${
-                              opt.correct ? "border-[var(--color-accent)]" : "border-[var(--color-gray-border)]"
-                            } bg-[var(--color-bg-card-inner)]`}>
-                            {opt.image ? (
-                              <div className="relative">
-                                <img src={opt.image} alt="" className="w-full h-20 object-cover rounded-lg" />
-                                <button type="button"
-                                  onClick={(e) => { e.stopPropagation(); setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], image: "" }; return { ...s, mcOptions: o }; }); if (mcImageRefs[i].current) mcImageRefs[i].current!.value = ""; }}
-                                  className="absolute top-1 right-1 bg-black/50 rounded-full p-0.5 text-white hover:bg-[var(--color-error)] transition-colors">
-                                  <X size={10} />
-                                </button>
-                              </div>
-                            ) : (
-                              <label className="flex items-center justify-center gap-2 h-20 rounded-lg border border-dashed border-[var(--color-gray-border)] text-base text-[var(--color-text-muted)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
-                                <Upload size={12} /> Imagem
-                                <input ref={mcImageRefs[i]} type="file" accept="image/*" className="hidden"
-                                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleImageFile(f, (d) => { setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], image: d }; return { ...s, mcOptions: o }; }); }); }} />
-                              </label>
-                            )}
-                            <input
-                              className="w-full rounded-lg px-2 py-1.5 text-base bg-transparent text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)]"
-                              placeholder="Descrição"
-                              value={opt.description}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={(e) => setStep2((s) => { const o = [...s.mcOptions]; o[i] = { ...o[i], description: e.target.value }; return { ...s, mcOptions: o }; })}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {formError && <p className="text-base text-[var(--color-error-heart)]">{formError}</p>}
-
-                <div className="flex items-center justify-end gap-2 pt-1">
-                  <button type="button" onClick={() => setStep(1)}
-                    className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
-                    ← Voltar
-                  </button>
-                  <button type="submit" disabled={isSaving}
-                    className="px-6 py-2 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors">
-                    {isSaving ? "Salvando..." : editingId !== null ? "Salvar" : "Criar"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
         </div>
       )}
 

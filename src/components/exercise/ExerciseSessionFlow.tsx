@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { X, Heart } from "lucide-react";
 import {
   exerciseService,
@@ -7,6 +7,7 @@ import {
   type AnswerResponse,
 } from "../../services/exerciseService";
 import { parseApiError } from "../../utils/parseApiError";
+import { toast } from "../toast/toastBus";
 import { Stopwatch } from "../icons";
 import MultipleChoiceExercise from "./AlternativaCorretaExercise";
 import LogicFlowExercise from "./FluxoLogicoExercise";
@@ -22,6 +23,8 @@ export interface ExerciseSessionFlowProps {
   sessionId: number;
   exercises: SessionExercise[];
   initialLives: number;
+  /** Ids de alvos já dominados (retomada): ficam no total, mas fora da fila inicial. */
+  masteredIds?: number[];
   onExit: () => void;
 }
 
@@ -42,9 +45,22 @@ export default function ExerciseSessionFlow({
   sessionId,
   exercises,
   initialLives,
+  masteredIds = [],
   onExit,
 }: ExerciseSessionFlowProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // Maestria: a sessão é uma FILA. Os "alvos" são os exercícios originais; errar reenfileira
+  // o alvo e injeta um reforço do mesmo assunto. Conclui quando a fila esvazia (tudo dominado).
+  // Na retomada, os já dominados ficam no TOTAL mas fora da fila inicial.
+  const targetIds = useMemo(() => new Set(exercises.map((e) => e.id)), [exercises]);
+  const totalTargets = exercises.length;
+  const maxShown = totalTargets + 20; // teto de segurança
+
+  const [queue, setQueue] = useState<SessionExercise[]>(
+    () => exercises.filter((e) => !masteredIds.includes(e.id)),
+  );
+  const [shownCount, setShownCount] = useState(1);
+  const shownIdsRef = useRef<Set<number>>(new Set(exercises.map((e) => e.id)));
+
   const [lives, setLives] = useState(initialLives);
   const maxLives = 5;
 
@@ -58,11 +74,21 @@ export default function ExerciseSessionFlow({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const currentExercise: SessionExercise | undefined = exercises[currentIndex];
+  const currentExercise: SessionExercise | undefined = queue[0];
   const isTimedExercise = (currentExercise?.timeLimitSeconds ?? 0) > 0;
 
   const lastPairsCountRef = useRef<number>(0);
   const timeoutHandledRef = useRef(false);
+
+  // Pré-carrega as imagens da sessão para renderizarem junto do exercício (sem atraso).
+  useEffect(() => {
+    exercises.forEach((ex) => {
+      if (ex.imageData) {
+        const img = new Image();
+        img.src = ex.imageData;
+      }
+    });
+  }, [exercises]);
 
   const applyRespondResult = useCallback((result: AnswerResponse, exercise: SessionExercise) => {
     setLives(result.remainingLives);
@@ -110,7 +136,7 @@ export default function ExerciseSessionFlow({
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [currentIndex, phase, currentExercise?.id, currentExercise?.timeLimitSeconds, isTimedExercise]);
+  }, [phase, currentExercise?.id, currentExercise?.timeLimitSeconds, isTimedExercise]);
 
   useEffect(() => {
     if (
@@ -146,21 +172,50 @@ export default function ExerciseSessionFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnswer, submitting]);
 
+  async function concludeSession() {
+    try {
+      const result = await exerciseService.conclude(sessionId);
+      if (result.firstCompletion) {
+        toast.success("Módulo concluído pela primeira vez!");
+      }
+      result.completedMissions?.forEach((m) => toast.success(`Missão concluída: ${m}`));
+      setConclusion(result);
+      setPhase("conclusion");
+    } catch (err) {
+      const { formError } = parseApiError(err);
+      setSubmitError(formError ?? "Erro ao concluir sessão.");
+    }
+  }
+
   async function handleProceed() {
     if (!currentExercise) return;
     if (phase === "correct-feedback" || phase === "incorrect-feedback") {
-      const nextIndex = currentIndex + 1;
-      if (nextIndex >= exercises.length) {
-        try {
-          const result = await exerciseService.conclude(sessionId);
-          setConclusion(result);
-          setPhase("conclusion");
-        } catch (err) {
-          const { formError } = parseApiError(err);
-          setSubmitError(formError ?? "Erro ao concluir sessão.");
+      const wasCorrect = phase === "correct-feedback";
+      const wasTarget = targetIds.has(currentExercise.id);
+
+      let next = queue.slice(1); // tira o atual da frente
+      if (!wasCorrect) {
+        if (wasTarget) {
+          next = [...next, currentExercise]; // alvo errado volta pro fim da fila
         }
+        if (shownCount < maxShown) {
+          const reforco = await exerciseService.reinforcement(
+            sessionId,
+            currentExercise.id,
+            Array.from(shownIdsRef.current),
+          );
+          if (reforco) {
+            shownIdsRef.current.add(reforco.id);
+            next = [reforco, ...next]; // reforço do mesmo assunto entra já em seguida
+          }
+        }
+      }
+
+      if (next.length === 0 || shownCount >= maxShown) {
+        await concludeSession();
       } else {
-        setCurrentIndex(nextIndex);
+        setQueue(next);
+        setShownCount((c) => c + 1);
         setSelectedAnswer("");
         setPhase("exercise");
         setSubmitError(null);
@@ -187,14 +242,15 @@ export default function ExerciseSessionFlow({
         xpEarned={conclusion.xpEarned}
         accuracy={conclusion.accuracy}
         durationSeconds={conclusion.durationSeconds}
+        subjectReview={conclusion.subjectReview}
         onContinue={onExit}
       />
     );
   }
 
-  const progressPercent = exercises.length > 0
-    ? Math.round((currentIndex / exercises.length) * 100)
-    : 0;
+  const remainingTargets = queue.filter((e) => targetIds.has(e.id)).length;
+  const masteredCount = totalTargets - remainingTargets;
+  const progressPercent = totalTargets > 0 ? Math.round((masteredCount / totalTargets) * 100) : 0;
   const feedbackOpen = phase === "correct-feedback" || phase === "incorrect-feedback";
   const inputsDisabled = feedbackOpen || submitting || (isTimedExercise && secondsLeft === 0);
   const canProceed = phase !== "exercise" || (selectedAnswer.length > 0 && !submitting);
@@ -204,7 +260,7 @@ export default function ExerciseSessionFlow({
       <header className="relative px-5 pt-4 pb-3 shrink-0">
         <div className="w-full max-w-lg mx-auto flex items-center gap-3 pr-8">
           <span className="font-fredoka text-base text-[var(--color-text-muted)] shrink-0">
-            {currentIndex + 1}/{exercises.length}
+            {masteredCount}/{totalTargets}
           </span>
           <div className="flex-1 h-3 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.12)" }}>
             <div
@@ -291,11 +347,19 @@ export default function ExerciseSessionFlow({
         {feedbackOpen && (
           <aside
             className={[
-              "absolute inset-y-0 right-0 z-10 w-80 xl:w-96 flex flex-col p-6 pt-16 shadow-2xl overflow-y-auto",
+              "absolute inset-y-0 right-0 z-10 w-full sm:w-80 xl:w-96 flex flex-col p-6 pt-16 shadow-2xl overflow-y-auto",
               phase === "correct-feedback"
-                ? "bg-[var(--color-success-light)] border-l-4 border-[var(--color-success)]"
-                : "bg-[var(--color-error-light)] border-l-4 border-[var(--color-error-heart)]/60",
+                ? "border-l-4 border-[var(--color-success)]"
+                : "border-l-4 border-[var(--color-error-heart)]/60",
             ].join(" ")}
+            style={{
+              // Tint translúcido (40%) composto sobre o bg opaco — senão o exercício
+              // aparece por baixo do feedback (no mobile o painel ocupa a tela toda).
+              background:
+                phase === "correct-feedback"
+                  ? "linear-gradient(var(--color-success-light), var(--color-success-light)), var(--color-bg-primary)"
+                  : "linear-gradient(var(--color-error-light), var(--color-error-light)), var(--color-bg-primary)",
+            }}
           >
             {phase === "correct-feedback" && (
               <CorrectFeedback

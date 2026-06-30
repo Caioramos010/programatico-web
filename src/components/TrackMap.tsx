@@ -1,6 +1,9 @@
 import { useMemo, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Zap, BookOpen } from "lucide-react";
 import type { ModuleWithProgress } from "../services/learnService";
+import { useAuthStore } from "../stores/authStore";
+import { isActiveRoot } from "../lib/subscription";
 import ModuleNode from "./ModuleNode";
 import ConnectorLine from "./ConnectorLine";
 
@@ -24,6 +27,8 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerW, setContainerW] = useState(640);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const isRoot = isActiveRoot(useAuthStore((s) => s.user));
 
   useEffect(() => {
     const el = containerRef.current;
@@ -128,11 +133,17 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
           const cy = getY(i);
           const isSelected = selectedIndex === i;
 
-          // Popover position: prefer right side, fallback to left when near right edge.
-          // Popover width is w-64 (256px); add some margin to keep it within the container.
-          const popoverLeft = cx + nodeR + 12;
-          const popoverRight = containerW - (cx - nodeR - 12);
-          const showRight = popoverLeft + 256 <= containerW;
+          // Popover: prefer right of node, then left; if it fits on neither side
+          // (narrow/mobile screens) clamp it inside the container so it never
+          // runs off-screen.
+          const popMargin = 12;
+          const popWidth = Math.min(256, containerW - popMargin * 2);
+          let popoverX = cx + nodeR + popMargin;
+          if (popoverX + popWidth > containerW - popMargin) {
+            const leftCandidate = cx - nodeR - popMargin - popWidth;
+            popoverX = leftCandidate >= popMargin ? leftCandidate : cx - popWidth / 2;
+          }
+          popoverX = Math.max(popMargin, Math.min(popoverX, containerW - popWidth - popMargin));
 
           return (
             <div key={module.id}>
@@ -149,12 +160,8 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
 
               {isSelected && (
                 <div
-                  className="absolute z-10 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
-                  style={
-                    showRight
-                      ? { left: popoverLeft, top: cy - nodeR }
-                      : { right: popoverRight, top: cy - nodeR }
-                  }
+                  className="absolute z-10 rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
+                  style={{ left: popoverX, top: cy - nodeR, width: popWidth }}
                 >
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="flex items-center gap-1.5 flex-wrap">
@@ -183,6 +190,29 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                       {module.description}
                     </p>
                   )}
+                  {module.topAssuntos && module.topAssuntos.length > 0 ? (
+                    <div className="mb-3">
+                      <p className="text-xs text-[var(--color-text-muted)] mb-1">Assuntos principais</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {module.topAssuntos.map((assunto) => (
+                          <span
+                            key={assunto}
+                            className="rounded-full bg-[var(--color-bg-card-inner)] px-2 py-0.5 text-xs font-medium text-[var(--color-premium)]"
+                          >
+                            {assunto}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ) : !isRoot ? (
+                    <button
+                      type="button"
+                      onClick={() => navigate("/seja-root")}
+                      className="mb-3 w-full text-left rounded-lg border border-[var(--color-premium-dark)] bg-[var(--color-bg-card-inner)] px-3 py-2 text-xs font-medium text-[var(--color-premium)] hover:opacity-80 transition-opacity"
+                    >
+                      Seja Root para ver os assuntos deste módulo →
+                    </button>
+                  ) : null}
                   <div className="flex justify-end">
                     {module.status === "LOCKED" ? (
                       <span className="text-xs font-fredoka text-[var(--color-text-muted)] italic">
@@ -197,7 +227,11 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                         }}
                         className="rounded-lg bg-[var(--color-bg-card-inner)] hover:bg-[var(--color-gray-border)] transition-colors px-3 py-1 text-sm font-semibold font-fredoka text-[var(--color-text-secondary)]"
                       >
-                        {module.status === "COMPLETED" ? "REVER" : `COMEÇAR${module.totalXp > 0 ? ` +${module.totalXp}XP` : ""}`}
+                        {module.status === "COMPLETED"
+                          ? "REVER"
+                          : module.emAndamento
+                          ? "CONTINUAR"
+                          : `COMEÇAR${module.totalXp > 0 ? ` +${module.totalXp}XP` : ""}`}
                       </button>
                     )}
                   </div>

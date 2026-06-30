@@ -18,15 +18,41 @@ interface ReviewSubjectAccuracyProps {
 
 export default function ReviewSubjectAccuracy({ data }: ReviewSubjectAccuracyProps) {
   return (
-    <article className="h-full rounded-xl border border-[#31466e] bg-[#273153] p-4 md:p-5">
-      <h3 className="text-lg text-white">Taxa de acerto por assunto</h3>
+    <article className="h-full rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-4 md:p-5">
+      <h3 className="text-lg text-[var(--color-text-primary)]">Taxa de acerto por assunto</h3>
 
-      <div className="mt-4 flex h-[240px] flex-col justify-center gap-5">
+      <div
+        className={[
+          "mt-4 flex max-h-[280px] flex-col gap-4 overflow-y-auto pr-2",
+          "[&::-webkit-scrollbar]:w-1.5",
+          "[&::-webkit-scrollbar-track]:rounded-full",
+          "[&::-webkit-scrollbar-track]:bg-[#182132]",
+          "[&::-webkit-scrollbar-thumb]:rounded-full",
+          "[&::-webkit-scrollbar-thumb]:bg-[#31425f]",
+          "[&::-webkit-scrollbar-thumb:hover]:bg-[#3b4f72]",
+        ].join(" ")}
+        style={{
+          scrollbarWidth: "thin",
+          scrollbarColor: "#31425f #182132",
+        }}
+      >
+        {data.length === 0 && (
+          <p className="text-base text-[var(--color-text-muted)]">Sem dados ainda.</p>
+        )}
         {data.map((item) => (
-          <div key={item.assunto} className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_auto] items-center gap-3">
-            <p className="text-base text-white whitespace-nowrap">{item.assunto}</p>
+          <div
+            key={item.assunto}
+            className="grid grid-cols-[minmax(120px,220px)_minmax(0,1fr)_48px] items-center gap-3"
+          >
+            <p
+              className="min-w-0 truncate text-base text-[var(--color-text-primary)]"
+              title={item.assunto}
+            >
+              {item.assunto}
+            </p>
 
-            <div className="h-4 w-full">
+            <div className="min-w-0">
+              <div className="h-4 w-full overflow-hidden">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[item]}
@@ -40,14 +66,17 @@ export default function ReviewSubjectAccuracy({ data }: ReviewSubjectAccuracyPro
                     dataKey="percentual"
                     radius={[999, 999, 999, 999]}
                     barSize={8}
-                    background={{ fill: "#3a4665", radius: 999 }}
+                    background={{ fill: "var(--color-gray-border)", radius: 999 }}
                     fill={item.color}
                   />
                 </BarChart>
               </ResponsiveContainer>
+              </div>
             </div>
 
-            <p className="flex h-4 items-center text-base leading-none text-[#8fa3cc]">{item.percentual}%</p>
+            <p className="text-right text-base leading-none text-[var(--color-text-muted)]">
+              {item.percentual}%
+            </p>
           </div>
         ))}
       </div>

@@ -18,6 +18,10 @@ export interface StartSessionResponse {
   moduleTitle: string;
   initialLives: number;
   totalExercises: number;
+  /** Índice em que retomar (nº de exercícios já respondidos numa sessão reaberta). 0 = nova. */
+  resumedFrom: number;
+  /** Ids dos alvos já dominados (na retomada) — ficam no total mas fora da fila. */
+  masteredIds: number[];
   exercises: SessionExercise[];
 }
 
@@ -34,6 +38,12 @@ export interface ConclusionResponse {
   durationSeconds: number;
   remainingLives: number;
   moduleCompleted: boolean;
+  /** true só quando o módulo foi concluído pela primeira vez. */
+  firstCompletion: boolean;
+  /** Títulos das missões diárias concluídas nesta sessão. */
+  completedMissions: string[];
+  /** Desempenho por assunto (acertos/erros por tag) — review Root ao final. */
+  subjectReview: { assunto: string; acertos: number; erros: number }[];
 }
 
 export const exerciseService = {
@@ -45,6 +55,14 @@ export const exerciseService = {
   startPractice: (modo: string) =>
     api.post<StartSessionResponse>(`/api/aprender/pratica/${modo}/iniciar`).then((r) => r.data),
 
+  // Root: pratica os erros do usuário em um assunto específico.
+  startErrorsBySubject: (assunto: string) =>
+    api
+      .post<StartSessionResponse>(`/api/aprender/pratica/erros-assunto/iniciar`, null, {
+        params: { assunto },
+      })
+      .then((r) => r.data),
+
   respond: (sessionId: number, exerciseId: number, answer: string) =>
     api
       .post<AnswerResponse>(`/api/aprender/sessoes/${sessionId}/responder`, {
@@ -55,4 +73,13 @@ export const exerciseService = {
 
   conclude: (sessionId: number) =>
     api.post<ConclusionResponse>(`/api/aprender/sessoes/${sessionId}/concluir`).then((r) => r.data),
+
+  // Maestria: exercício de reforço (mesmo assunto) ao errar. Retorna null se não houver.
+  reinforcement: (sessionId: number, exerciseId: number, exclude: number[]): Promise<SessionExercise | null> =>
+    api
+      .get<SessionExercise>(`/api/aprender/sessoes/${sessionId}/reforco`, {
+        params: { exercicioId: exerciseId, excluir: exclude.join(",") },
+      })
+      .then((r) => (r.status === 204 || !r.data ? null : r.data))
+      .catch(() => null),
 };

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import TrackMap from "./TrackMap";
 
 const modules = [
@@ -26,7 +27,11 @@ const modules = [
 describe("TrackMap", () => {
   it("abre popover e dispara onModuleClick ao começar", () => {
     const onModuleClick = vi.fn();
-    render(<TrackMap modules={modules} onModuleClick={onModuleClick} />);
+    render(
+      <MemoryRouter>
+        <TrackMap modules={modules} onModuleClick={onModuleClick} />
+      </MemoryRouter>,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: /intro/i }));
     expect(screen.getByText("Intro")).toBeInTheDocument();

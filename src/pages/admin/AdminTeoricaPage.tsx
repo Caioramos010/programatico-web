@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { ChevronLeft, Plus, Trash2, X, Upload, FileText, Image, LayoutGrid, Layers } from "lucide-react";
+import { Plus, Trash2, X, Image as ImageIcon, FileText, LayoutGrid, Layers } from "lucide-react";
 import { adminService, type ContentBlockRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
+import AdminEditorShell from "../../components/admin/AdminEditorShell";
+import PoolImagePicker from "../../components/admin/PoolImagePicker";
 
 type LayoutType = "TEXT" | "IMAGE" | "CARDS";
 
@@ -10,6 +12,8 @@ interface BlockDraft {
   id?: number;
   layoutType: LayoutType;
   textContent: string;
+  /** Caminho da imagem escolhida do pool (blocos IMAGE). */
+  imageUrl?: string;
   displayOrder: number;
   isNew?: boolean;
 }
@@ -50,19 +54,13 @@ function BlockEditor({
   block,
   onChange,
   onDelete,
+  onPickImage,
 }: {
   block: BlockDraft;
   onChange: (b: BlockDraft) => void;
   onDelete: () => void;
+  onPickImage: () => void;
 }) {
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const handleFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => onChange({ ...block, textContent: reader.result as string });
-    reader.readAsDataURL(file);
-  };
-
   return (
     <div className="rounded-2xl p-5 flex flex-col gap-4 border border-[var(--color-gray-border)] bg-[var(--color-bg-card)]">
       <div className="flex items-center justify-between">
@@ -76,33 +74,56 @@ function BlockEditor({
       </div>
 
       {block.layoutType === "TEXT" && (
-        <textarea
-          className="w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
-          rows={4}
-          placeholder="Escreva o texto aqui..."
-          value={block.textContent}
-          onChange={(e) => onChange({ ...block, textContent: e.target.value })}
-        />
+        <div className="flex flex-col gap-1">
+          <textarea
+            className="w-full rounded-xl px-4 py-3 text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-primary)] border border-[var(--color-gray-border)] outline-none focus:border-[var(--color-accent-light)] resize-none transition-colors placeholder:text-[var(--color-text-muted)]"
+            rows={4}
+            maxLength={500}
+            placeholder="Escreva o texto aqui (máx. 500 caracteres para caber na tela)..."
+            value={block.textContent}
+            onChange={(e) => onChange({ ...block, textContent: e.target.value })}
+          />
+          <span className="text-xs text-[var(--color-text-muted)] text-right">
+            {block.textContent.length}/500
+          </span>
+        </div>
       )}
 
       {block.layoutType === "IMAGE" && (
-        <div className="flex flex-col gap-2">
-          {block.textContent ? (
-            <div className="relative w-fit">
-              <img src={block.textContent} alt="" className="max-h-48 rounded-xl object-contain" />
-              <button type="button"
-                onClick={() => { onChange({ ...block, textContent: "" }); if (fileRef.current) fileRef.current.value = ""; }}
-                className="absolute top-2 right-2 bg-black/60 rounded-full p-1 text-white hover:bg-[var(--color-error)] transition-colors">
-                <X size={12} />
+        <div className="flex items-center gap-4">
+          {block.imageUrl ? (
+            <>
+              <div className="relative shrink-0">
+                <img
+                  src={block.imageUrl}
+                  alt=""
+                  className="w-24 h-24 rounded-xl object-contain bg-[var(--color-bg-card-inner)] border border-[var(--color-gray-border)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...block, imageUrl: "" })}
+                  className="absolute -top-2 -right-2 bg-black/70 rounded-full p-1 text-white hover:bg-[var(--color-error)] transition-colors"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+              <button
+                type="button"
+                onClick={onPickImage}
+                className="px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] hover:border-[var(--color-accent-light)] transition-colors"
+              >
+                Trocar
               </button>
-            </div>
+            </>
           ) : (
-            <label className="flex items-center gap-2 w-fit px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] cursor-pointer hover:border-[var(--color-accent-light)] transition-colors">
-              <Upload size={14} />
-              Selecionar imagem (500×500)
-              <input ref={fileRef} type="file" accept="image/*" className="hidden"
-                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-            </label>
+            <button
+              type="button"
+              onClick={onPickImage}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-base bg-[var(--color-bg-card-inner)] text-[var(--color-text-secondary)] border border-[var(--color-gray-border)] hover:border-[var(--color-accent-light)] transition-colors"
+            >
+              <ImageIcon size={14} />
+              Selecionar imagem
+            </button>
           )}
         </div>
       )}
@@ -119,7 +140,7 @@ function BlockEditor({
 
 const addMenuItems: { type: LayoutType; label: string; Icon: React.FC<{ size?: number }> }[] = [
   { type: "TEXT", label: "Texto", Icon: FileText },
-  { type: "IMAGE", label: "Imagem", Icon: Image },
+  { type: "IMAGE", label: "Imagem", Icon: ImageIcon },
   { type: "CARDS", label: "Cards", Icon: LayoutGrid },
 ];
 
@@ -136,6 +157,7 @@ export default function AdminTeoricaPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [pageError, setPageError] = useState<string | null>(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
+  const [pickerIdx, setPickerIdx] = useState<number | null>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -156,6 +178,7 @@ export default function AdminTeoricaPage() {
         id: cb.id,
         layoutType: cb.layoutType,
         textContent: cb.textContent ?? "",
+        imageUrl: cb.imageUrl ?? undefined,
         displayOrder: cb.displayOrder,
       })));
     } catch {
@@ -193,8 +216,8 @@ export default function AdminTeoricaPage() {
     setBlocks((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const salvar = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const salvar = async (e?: React.FormEvent) => {
+    e?.preventDefault();
     setPageError(null);
     setIsSaving(true);
     try {
@@ -202,15 +225,16 @@ export default function AdminTeoricaPage() {
       for (const block of blocks) {
         const payload: ContentBlockRequest = {
           layoutType: block.layoutType,
-          textContent: block.textContent || undefined,
+          textContent: block.layoutType === "IMAGE" ? undefined : block.textContent || undefined,
+          imageUrl: block.layoutType === "IMAGE" ? block.imageUrl || undefined : undefined,
           displayOrder: block.displayOrder,
         };
         if (block.id) {
           const updated = await adminService.atualizarContentBlock(block.id, payload);
-          saved.push({ id: updated.id, layoutType: updated.layoutType, textContent: updated.textContent ?? "", displayOrder: updated.displayOrder });
+          saved.push({ id: updated.id, layoutType: updated.layoutType, textContent: updated.textContent ?? "", imageUrl: updated.imageUrl ?? undefined, displayOrder: updated.displayOrder });
         } else {
           const created = await adminService.criarContentBlockParaPagina(Number(paginaId), payload);
-          saved.push({ id: created.id, layoutType: created.layoutType, textContent: created.textContent ?? "", displayOrder: created.displayOrder });
+          saved.push({ id: created.id, layoutType: created.layoutType, textContent: created.textContent ?? "", imageUrl: created.imageUrl ?? undefined, displayOrder: created.displayOrder });
         }
       }
       setBlocks(saved);
@@ -223,40 +247,45 @@ export default function AdminTeoricaPage() {
   };
 
   const breadcrumb = [trackTitle, moduloTitle, paginaTitle].filter(Boolean).join(" / ");
+  const subtitle = `${blocks.length} ${blocks.length === 1 ? "bloco" : "blocos"}`;
 
-  return (
-    <div>
+  const footer = (
+    <>
       <button
         type="button"
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-base text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors mb-5 group"
+        className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
       >
-        <ChevronLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" />
-        {breadcrumb}
+        Cancelar
       </button>
+      <button
+        type="button"
+        onClick={() => salvar()}
+        disabled={isSaving || isLoading}
+        className="px-6 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
+      >
+        {isSaving ? "Salvando..." : "Salvar"}
+      </button>
+    </>
+  );
 
-      {/* Header */}
-      <div className="flex items-end justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-[var(--color-text-primary)]">Teórica</h1>
-          <p className="text-base text-[var(--color-text-muted)] mt-1">
-            {blocks.length} {blocks.length === 1 ? "bloco" : "blocos"}
-          </p>
-        </div>
-      </div>
-
-      {pageError && (
-        <p className="mb-4 text-base text-[var(--color-error-heart)]">{pageError}</p>
-      )}
-
+  return (
+    <AdminEditorShell
+      breadcrumb={breadcrumb}
+      onBack={() => navigate(-1)}
+      title="Teórica"
+      subtitle={subtitle}
+      error={pageError}
+      footer={footer}
+    >
       {isLoading ? (
-        <div className="flex flex-col gap-3 max-w-2xl">
+        <div className="flex flex-col gap-3">
           {[1, 2].map((i) => (
             <div key={i} className="h-32 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
           ))}
         </div>
       ) : (
-        <form onSubmit={salvar} className="flex flex-col gap-4 max-w-2xl">
+        <div className="flex flex-col gap-4">
           {blocks.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
               <Layers size={40} strokeWidth={1.5} className="mb-3 opacity-40" />
@@ -271,6 +300,7 @@ export default function AdminTeoricaPage() {
               block={block}
               onChange={(b) => updateBlock(idx, b)}
               onDelete={() => deleteBlock(idx)}
+              onPickImage={() => setPickerIdx(idx)}
             />
           ))}
 
@@ -303,25 +333,17 @@ export default function AdminTeoricaPage() {
               </div>
             )}
           </div>
-
-          <div className="flex gap-3 justify-end mt-2">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="px-4 py-2 rounded-xl text-base text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="px-6 py-2.5 rounded-xl text-base font-semibold bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-light)] disabled:opacity-60 transition-colors"
-            >
-              {isSaving ? "Salvando..." : "Salvar"}
-            </button>
-          </div>
-        </form>
+        </div>
       )}
-    </div>
+
+      <PoolImagePicker
+        open={pickerIdx !== null}
+        current={pickerIdx !== null ? blocks[pickerIdx]?.imageUrl : undefined}
+        onClose={() => setPickerIdx(null)}
+        onPick={(path) => {
+          if (pickerIdx !== null) updateBlock(pickerIdx, { ...blocks[pickerIdx], imageUrl: path });
+        }}
+      />
+    </AdminEditorShell>
   );
 }

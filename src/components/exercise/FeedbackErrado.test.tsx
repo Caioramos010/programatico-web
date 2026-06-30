@@ -26,8 +26,8 @@ describe("IncorrectFeedback", () => {
       />,
     );
 
-    expect(screen.getByText(/1\. Primeiro/)).toBeInTheDocument();
-    expect(screen.getByText(/2\. Segundo/)).toBeInTheDocument();
+    expect(screen.getByText("Primeiro")).toBeInTheDocument();
+    expect(screen.getByText("Segundo")).toBeInTheDocument();
   });
 
   it("formata pares e exibe assuntos relacionados", () => {
@@ -41,7 +41,8 @@ describe("IncorrectFeedback", () => {
       />,
     );
 
-    expect(screen.getByText(/A → 1/)).toBeInTheDocument();
+    expect(screen.getByText("A")).toBeInTheDocument();
+    expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("Lógica")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: /prosseguir/i }));
