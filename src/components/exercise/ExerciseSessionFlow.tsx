@@ -347,11 +347,19 @@ export default function ExerciseSessionFlow({
         {feedbackOpen && (
           <aside
             className={[
-              "absolute inset-y-0 right-0 z-10 w-80 xl:w-96 flex flex-col p-6 pt-16 shadow-2xl overflow-y-auto",
+              "absolute inset-y-0 right-0 z-10 w-full sm:w-80 xl:w-96 flex flex-col p-6 pt-16 shadow-2xl overflow-y-auto",
               phase === "correct-feedback"
-                ? "bg-[var(--color-success-light)] border-l-4 border-[var(--color-success)]"
-                : "bg-[var(--color-error-light)] border-l-4 border-[var(--color-error-heart)]/60",
+                ? "border-l-4 border-[var(--color-success)]"
+                : "border-l-4 border-[var(--color-error-heart)]/60",
             ].join(" ")}
+            style={{
+              // Tint translúcido (40%) composto sobre o bg opaco — senão o exercício
+              // aparece por baixo do feedback (no mobile o painel ocupa a tela toda).
+              background:
+                phase === "correct-feedback"
+                  ? "linear-gradient(var(--color-success-light), var(--color-success-light)), var(--color-bg-primary)"
+                  : "linear-gradient(var(--color-error-light), var(--color-error-light)), var(--color-bg-primary)",
+            }}
           >
             {phase === "correct-feedback" && (
               <CorrectFeedback

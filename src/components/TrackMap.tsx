@@ -133,11 +133,17 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
           const cy = getY(i);
           const isSelected = selectedIndex === i;
 
-          // Popover position: prefer right side, fallback to left when near right edge.
-          // Popover width is w-64 (256px); add some margin to keep it within the container.
-          const popoverLeft = cx + nodeR + 12;
-          const popoverRight = containerW - (cx - nodeR - 12);
-          const showRight = popoverLeft + 256 <= containerW;
+          // Popover: prefer right of node, then left; if it fits on neither side
+          // (narrow/mobile screens) clamp it inside the container so it never
+          // runs off-screen.
+          const popMargin = 12;
+          const popWidth = Math.min(256, containerW - popMargin * 2);
+          let popoverX = cx + nodeR + popMargin;
+          if (popoverX + popWidth > containerW - popMargin) {
+            const leftCandidate = cx - nodeR - popMargin - popWidth;
+            popoverX = leftCandidate >= popMargin ? leftCandidate : cx - popWidth / 2;
+          }
+          popoverX = Math.max(popMargin, Math.min(popoverX, containerW - popWidth - popMargin));
 
           return (
             <div key={module.id}>
@@ -154,12 +160,8 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
 
               {isSelected && (
                 <div
-                  className="absolute z-10 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
-                  style={
-                    showRight
-                      ? { left: popoverLeft, top: cy - nodeR }
-                      : { right: popoverRight, top: cy - nodeR }
-                  }
+                  className="absolute z-10 rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
+                  style={{ left: popoverX, top: cy - nodeR, width: popWidth }}
                 >
                   <div className="flex flex-col gap-2 mb-2">
                     <div className="flex items-center gap-1.5 flex-wrap">
