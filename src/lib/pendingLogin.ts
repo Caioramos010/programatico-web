@@ -4,6 +4,7 @@ export type PendingLoginState = {
   emailOuUsername: string;
   senha: string;
   from?: string;
+  verificationMethod?: "EMAIL" | "TOTP";
 };
 
 export function savePendingLogin(state: PendingLoginState) {

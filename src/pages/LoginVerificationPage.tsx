@@ -94,12 +94,19 @@ export default function LoginVerificationPage() {
     return null;
   }
 
+  const isTotp = state?.verificationMethod === "TOTP";
+
   return (
     <AuthLayout
       title="Entrar"
-      subtitle="Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
+      subtitle={
+        isTotp
+          ? "Insira o código de 6 dígitos do seu aplicativo autenticador (Google Authenticator, etc.)."
+          : "Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
+      }
       onClose={() => navigate("/login")}
       footer={
+        isTotp ? undefined : (
         <>
           <OrDivider />
           <Button
@@ -127,6 +134,7 @@ export default function LoginVerificationPage() {
             .
           </p>
         </>
+        )
       }
     >
       <form
@@ -137,7 +145,7 @@ export default function LoginVerificationPage() {
         <Input
           darkBackground={false}
           type="text"
-          placeholder="Insira o código que chegou no seu e-mail"
+          placeholder={isTotp ? "Código do autenticador" : "Insira o código que chegou no seu e-mail"}
           value={code}
           onChange={(e) => {
             setCode(e.target.value);

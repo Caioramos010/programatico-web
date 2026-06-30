@@ -47,7 +47,12 @@ export default function LoginPage() {
     try {
       const data = await authService.iniciarLogin(email, password);
       if (data.requiresVerification) {
-        const pending: PendingLoginState = { emailOuUsername: email, senha: password, from };
+        const pending: PendingLoginState = {
+          emailOuUsername: email,
+          senha: password,
+          from,
+          verificationMethod: data.verificationMethod ?? "EMAIL",
+        };
         savePendingLogin(pending);
         navigate("/login/verificacao", { state: pending });
         return;

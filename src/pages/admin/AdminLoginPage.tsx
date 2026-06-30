@@ -41,7 +41,12 @@ export default function AdminLoginPage() {
       const data = await authService.iniciarLogin(email, password);
       if (data.requiresVerification) {
         navigate(`${basePath}/login/verificacao`, {
-          state: { emailOuUsername: email, senha: password, from },
+          state: {
+            emailOuUsername: email,
+            senha: password,
+            from,
+            verificationMethod: data.verificationMethod ?? "EMAIL",
+          },
         });
         return;
       }

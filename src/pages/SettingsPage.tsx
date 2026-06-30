@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SettingsCheckbox from "../components/SettingsCheckbox";
+import TotpSettingsSection from "../components/TotpSettingsSection";
 import {
   DEFAULT_NOTIFICATION_PREFERENCES,
   DEFAULT_SECURITY_PREFERENCES,
@@ -8,6 +9,7 @@ import {
   type NotificationPreferenceKey,
   type NotificationPreferences,
   type SecurityPreferences,
+  type TotpStatus,
 } from "../services/settingsService";
 import { useSettingsStore } from "../stores/settingsStore";
 import { parseApiError } from "../utils/parseApiError";
@@ -27,6 +29,7 @@ export default function SettingsPage() {
   const setNotifications = useSettingsStore((s) => s.setNotifications);
   const [prefs, setPrefs] = useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
   const [security, setSecurity] = useState<SecurityPreferences>(DEFAULT_SECURITY_PREFERENCES);
+  const [totpStatus, setTotpStatus] = useState<TotpStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savingSecurity, setSavingSecurity] = useState(false);
@@ -37,11 +40,13 @@ export default function SettingsPage() {
     Promise.all([
       settingsService.getNotificationPreferences(),
       settingsService.getSecurityPreferences(),
+      settingsService.getTotpStatus(),
     ])
-      .then(([notificationData, securityData]) => {
+      .then(([notificationData, securityData, totpData]) => {
         if (cancelled) return;
         setPrefs(notificationData);
         setSecurity(securityData);
+        setTotpStatus(totpData);
         setNotifications(notificationData);
       })
       .catch((err) => {
@@ -90,7 +95,7 @@ export default function SettingsPage() {
 
   const handleTwoFactorToggle = (enabled: boolean) => {
     const previous = security;
-    const next = { twoFactorEnabled: enabled };
+    const next = { ...security, twoFactorEnabled: enabled };
     setSecurity(next);
     setSavingSecurity(true);
     setError(null);
@@ -123,8 +128,15 @@ export default function SettingsPage() {
               onChange={handleTwoFactorToggle}
             />
             <p className="pl-[4.75rem] text-sm text-[var(--color-text-muted)] leading-snug">
-              Quando ativada, enviamos um código por e-mail após a senha. Recomendado para proteger sua conta.
+              Quando ativada, exige um segundo fator após a senha (e-mail ou app autenticador).
             </p>
+            <TotpSettingsSection
+              totpStatus={totpStatus}
+              onStatusChange={setTotpStatus}
+              onSecurityRefresh={() => {
+                settingsService.getSecurityPreferences().then(setSecurity).catch(() => {});
+              }}
+            />
           </section>
 
           <section className="flex flex-col gap-8 border-t border-[var(--color-gray-border)] pt-8">
