@@ -20,7 +20,7 @@ const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
 
 const schema = {
-  code: [rules.required("Código"), rules.code(6)],
+  code: [rules.required("Código"), rules.twoFactorCode()],
 };
 
 export default function LoginVerificationPage() {
@@ -145,7 +145,11 @@ export default function LoginVerificationPage() {
         <Input
           darkBackground={false}
           type="text"
-          placeholder={isTotp ? "Código do autenticador" : "Insira o código que chegou no seu e-mail"}
+          placeholder={
+            isTotp
+              ? "Código do autenticador ou de backup"
+              : "Código do e-mail ou de backup"
+          }
           value={code}
           onChange={(e) => {
             setCode(e.target.value);

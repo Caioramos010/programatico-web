@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import BackupCodesModal from "../components/BackupCodesModal";
 import SettingsCheckbox from "../components/SettingsCheckbox";
 import TotpSettingsSection from "../components/TotpSettingsSection";
 import {
@@ -34,6 +35,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [savingSecurity, setSavingSecurity] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [backupCodesToShow, setBackupCodesToShow] = useState<string[] | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -101,7 +103,12 @@ export default function SettingsPage() {
     setError(null);
     settingsService
       .updateSecurityPreferences(next)
-      .then((saved) => setSecurity(saved))
+      .then((saved) => {
+        setSecurity(saved);
+        if (saved.backupCodes?.length) {
+          setBackupCodesToShow(saved.backupCodes);
+        }
+      })
       .catch((err) => {
         const { formError } = parseApiError(err);
         setError(formError ?? "Não foi possível salvar.");
@@ -129,10 +136,14 @@ export default function SettingsPage() {
             />
             <p className="pl-[4.75rem] text-sm text-[var(--color-text-muted)] leading-snug">
               Quando ativada, exige um segundo fator após a senha (e-mail ou app autenticador).
+              {security.backupCodesRemaining > 0 ? (
+                <> Códigos de backup restantes: {security.backupCodesRemaining}.</>
+              ) : null}
             </p>
             <TotpSettingsSection
               totpStatus={totpStatus}
               onStatusChange={setTotpStatus}
+              onBackupCodesGenerated={setBackupCodesToShow}
               onSecurityRefresh={() => {
                 settingsService.getSecurityPreferences().then(setSecurity).catch(() => {});
               }}
@@ -171,6 +182,12 @@ export default function SettingsPage() {
 
       {error ? (
         <p className="mt-6 text-base text-[var(--color-error-heart)]">{error}</p>
+      ) : null}
+      {backupCodesToShow ? (
+        <BackupCodesModal
+          codes={backupCodesToShow}
+          onDismiss={() => setBackupCodesToShow(null)}
+        />
       ) : null}
       {saving ? (
         <p className="mt-4 text-sm text-[var(--color-text-muted)]">Salvando...</p>

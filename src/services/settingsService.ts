@@ -12,16 +12,23 @@ export interface NotificationPreferences {
 export interface SecurityPreferences {
   twoFactorEnabled: boolean;
   totpEnabled: boolean;
+  backupCodesRemaining: number;
+  backupCodes?: string[];
 }
 
 export const DEFAULT_SECURITY_PREFERENCES: SecurityPreferences = {
   twoFactorEnabled: true,
   totpEnabled: false,
+  backupCodesRemaining: 0,
 };
 
 export interface TotpStatus {
   totpEnabled: boolean;
   setupPendente: boolean;
+}
+
+export interface TotpActivation extends TotpStatus {
+  backupCodes?: string[];
 }
 
 export interface TotpSetup {
@@ -101,7 +108,7 @@ export const settingsService = {
     api.post<TotpSetup>("/api/configuracoes/totp/setup").then((r) => r.data),
 
   activateTotp: (codigo: string) =>
-    api.post<TotpStatus>("/api/configuracoes/totp/ativar", { codigo }).then((r) => r.data),
+    api.post<TotpActivation>("/api/configuracoes/totp/ativar", { codigo }).then((r) => r.data),
 
   deactivateTotp: (codigo: string) =>
     api.post<TotpStatus>("/api/configuracoes/totp/desativar", { codigo }).then((r) => r.data),

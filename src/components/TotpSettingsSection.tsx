@@ -12,12 +12,14 @@ interface TotpSettingsSectionProps {
   totpStatus: TotpStatus | null;
   onStatusChange: (status: TotpStatus) => void;
   onSecurityRefresh: () => void;
+  onBackupCodesGenerated?: (codes: string[]) => void;
 }
 
 export default function TotpSettingsSection({
   totpStatus,
   onStatusChange,
   onSecurityRefresh,
+  onBackupCodesGenerated,
 }: TotpSettingsSectionProps) {
   const [setup, setSetup] = useState<TotpSetup | null>(null);
   const [activationCode, setActivationCode] = useState("");
@@ -48,11 +50,14 @@ export default function TotpSettingsSection({
     setError(null);
     setMessage(null);
     try {
-      const status = await settingsService.activateTotp(activationCode.trim());
-      onStatusChange(status);
+      const result = await settingsService.activateTotp(activationCode.trim());
+      onStatusChange(result);
       onSecurityRefresh();
       setSetup(null);
       setActivationCode("");
+      if (result.backupCodes?.length) {
+        onBackupCodesGenerated?.(result.backupCodes);
+      }
       setMessage("Autenticador ativado. No login, use o app em vez do e-mail.");
     } catch (err) {
       const { formError } = parseApiError(err);
