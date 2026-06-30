@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { paymentService, type PaymentHistoryItem } from "../services/paymentService";
-import { parseApiError } from "../utils/parseApiError";
+import { paymentService, type PaymentHistoryItem } from "../../services/paymentService";
+import { parseApiError } from "../../utils/parseApiError";
 
 type Variant = "profile" | "root";
 
