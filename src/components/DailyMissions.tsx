@@ -55,7 +55,7 @@ function MissionItem({ mission }: { mission: MissionResponse }) {
 
 export default function DailyMissions({ missions, loading }: Props) {
   return (
-    <aside className="w-64 xl:w-72 shrink-0 px-4 py-4">
+    <aside className="w-full lg:w-64 xl:w-72 shrink-0 px-4 py-4">
       <div className="rounded-2xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-5 flex flex-col gap-5">
         <h2 className="font-fredoka font-semibold text-lg text-[var(--color-text-primary)] tracking-wide">
           Missões Diárias
