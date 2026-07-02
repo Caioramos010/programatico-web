@@ -80,26 +80,6 @@ export default function Sidebar() {
     const isActive = pathname.startsWith(path);
 
     if (premium) {
-      if (rootMember) {
-        return (
-          <NavLink
-            key={path}
-            to={path}
-            className={[
-              "relative overflow-hidden group",
-              "flex items-center justify-center w-full cursor-pointer",
-              "px-3 py-2.5 rounded-xl",
-              "font-fredoka font-bold text-base tracking-wider uppercase",
-              premiumGradientClasses,
-              isActive ? "ring-2 ring-white/40" : "",
-            ].join(" ")}
-          >
-            {premiumShine}
-            <span className="relative w-full text-center uppercase">{label}</span>
-          </NavLink>
-        );
-      }
-
       return (
         <NavLink
           key={path}
@@ -110,11 +90,14 @@ export default function Sidebar() {
             "px-3 py-2.5 rounded-xl",
             "font-fredoka font-medium text-base",
             premiumGradientClasses,
+            isActive && rootMember ? "ring-2 ring-white/40" : "",
           ].join(" ")}
         >
           {premiumShine}
           <Icon className="w-5 h-5 shrink-0" />
-          <span>{label}</span>
+          <span className={rootMember ? "font-bold uppercase tracking-wider" : undefined}>
+            {label}
+          </span>
         </NavLink>
       );
     }
@@ -170,7 +153,7 @@ export default function Sidebar() {
                     isActive && rootMember ? "ring-2 ring-white/40" : "",
                   ].join(" ")}
                 >
-                  {!rootMember ? <Icon className="w-5 h-5 shrink-0" /> : null}
+                  <Icon className="w-5 h-5 shrink-0" />
                   <span
                     className={[
                       "relative text-[10px] leading-tight text-center",
