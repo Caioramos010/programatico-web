@@ -15,13 +15,11 @@ describe("pendingLogin", () => {
       emailOuUsername: "user@test.com",
       senha: "Senha@123",
       from: "/perfil",
-      verificationMethod: "TOTP",
     });
 
     const loaded = loadPendingLogin();
     expect(loaded?.emailOuUsername).toBe("user@test.com");
     expect(loaded?.from).toBe("/perfil");
-    expect(loaded?.verificationMethod).toBe("TOTP");
   });
 
   it("retorna null quando storage vazio", () => {

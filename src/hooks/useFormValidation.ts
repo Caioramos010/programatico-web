@@ -78,14 +78,10 @@ export const rules = {
     message: `O código deve ter ${length} caracteres.`,
   }),
 
-  /** Código de 6 dígitos (e-mail/TOTP) ou código de backup (8+ caracteres). */
+  /** Código de 6 dígitos enviado por e-mail. */
   twoFactorCode: (): ValidationRule => ({
-    test: (v) => {
-      const trimmed = v.trim();
-      const normalized = trimmed.replace(/[-\s]/g, "");
-      return trimmed.length === 6 || normalized.length >= 8;
-    },
-    message: "Informe o código de 6 dígitos ou um código de backup.",
+    test: (v) => /^\d{6}$/.test(v.trim()),
+    message: "Informe o código de 6 dígitos enviado por e-mail.",
   }),
 };
 

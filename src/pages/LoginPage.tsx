@@ -51,7 +51,6 @@ export default function LoginPage() {
           emailOuUsername: email,
           senha: password,
           from,
-          verificationMethod: data.verificationMethod ?? "EMAIL",
         };
         savePendingLogin(pending);
         navigate("/login/verificacao", { state: pending });

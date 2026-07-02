@@ -13,7 +13,7 @@ export interface MessageResponse {
 
 export interface LoginIniciarResponse {
   requiresVerification: boolean;
-  verificationMethod?: "EMAIL" | "TOTP";
+  verificationMethod?: "EMAIL";
   mensagem?: string;
   token?: string;
   tipo?: string;

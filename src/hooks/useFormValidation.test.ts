@@ -27,10 +27,10 @@ describe("useFormValidation rules", () => {
     expect(rule.test("senhafraca")).toBe(false);
   });
 
-  it("twoFactorCode aceita 6 dígitos ou backup", () => {
+  it("twoFactorCode aceita 6 dígitos numéricos", () => {
     const rule = rules.twoFactorCode();
     expect(rule.test("123456")).toBe(true);
-    expect(rule.test("ABCD-1234")).toBe(true);
+    expect(rule.test("ABCD-1234")).toBe(false);
     expect(rule.test("12")).toBe(false);
   });
 

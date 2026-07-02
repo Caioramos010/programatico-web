@@ -23,6 +23,16 @@ interface NavItem {
   rootMember?: boolean;
 }
 
+const premiumGradientClasses =
+  "bg-gradient-to-r from-[var(--color-premium-dark)] to-[var(--color-premium)] text-white transition-all duration-200 hover:brightness-110";
+
+const premiumShine = (
+  <span
+    aria-hidden
+    className="absolute top-0 left-[-75%] h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none group-hover:animate-shine"
+  />
+);
+
 const baseMainNav: NavItem[] = [
   { label: "APRENDER", icon: Home, path: "/aprender" },
   { label: "PRATICAR", icon: Book, path: "/praticar" },
@@ -79,16 +89,12 @@ export default function Sidebar() {
               "relative overflow-hidden group",
               "flex items-center justify-center w-full cursor-pointer",
               "px-3 py-2.5 rounded-xl",
-              "font-fredoka font-bold text-base tracking-wider",
-              "bg-gradient-to-r from-[var(--color-premium-dark)] to-[var(--color-premium)]",
-              "text-white transition-all duration-200 hover:brightness-110",
+              "font-fredoka font-bold text-base tracking-wider uppercase",
+              premiumGradientClasses,
               isActive ? "ring-2 ring-white/40" : "",
             ].join(" ")}
           >
-            <span
-              aria-hidden
-              className="absolute top-0 left-[-75%] h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none group-hover:animate-shine"
-            />
+            {premiumShine}
             <span className="relative w-full text-center uppercase">{label}</span>
           </NavLink>
         );
@@ -103,14 +109,10 @@ export default function Sidebar() {
             "flex items-center gap-3 w-full cursor-pointer",
             "px-3 py-2.5 rounded-xl",
             "font-fredoka font-medium text-base",
-            "bg-gradient-to-r from-[var(--color-premium-dark)] to-[var(--color-premium)]",
-            "text-white transition-all duration-200 hover:brightness-110",
+            premiumGradientClasses,
           ].join(" ")}
         >
-          <span
-            aria-hidden
-            className="absolute top-0 left-[-75%] h-full w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/40 to-transparent pointer-events-none group-hover:animate-shine"
-          />
+          {premiumShine}
           <Icon className="w-5 h-5 shrink-0" />
           <span>{label}</span>
         </NavLink>
@@ -161,16 +163,20 @@ export default function Sidebar() {
                   key={path}
                   to={path}
                   className={[
-                    "flex flex-1 min-w-0 flex-col items-center gap-0.5 px-1 py-1 cursor-pointer",
-                    "transition-colors duration-200",
-                    isActive ? "text-[var(--color-premium)]" : "text-[#d4a843] hover:text-[#fde68a]",
+                    "relative overflow-hidden group",
+                    "flex flex-1 min-w-0 flex-col items-center justify-center gap-0.5",
+                    "px-2 py-1.5 cursor-pointer rounded-xl",
+                    premiumGradientClasses,
+                    isActive && rootMember ? "ring-2 ring-white/40" : "",
                   ].join(" ")}
                 >
-                  {!rootMember ? <Icon className="w-5 h-5 fill-current" /> : null}
-                  <span className={[
-                    "text-[10px] leading-tight text-center font-medium",
-                    rootMember ? "font-bold uppercase tracking-wide" : "",
-                  ].join(" ")}>
+                  {!rootMember ? <Icon className="w-5 h-5 shrink-0" /> : null}
+                  <span
+                    className={[
+                      "relative text-[10px] leading-tight text-center",
+                      rootMember ? "font-bold uppercase tracking-wide" : "font-medium",
+                    ].join(" ")}
+                  >
                     {label}
                   </span>
                 </NavLink>

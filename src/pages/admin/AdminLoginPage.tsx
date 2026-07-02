@@ -45,7 +45,6 @@ export default function AdminLoginPage() {
             emailOuUsername: email,
             senha: password,
             from,
-            verificationMethod: data.verificationMethod ?? "EMAIL",
           },
         });
         return;
