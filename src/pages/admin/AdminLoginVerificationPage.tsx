@@ -23,7 +23,6 @@ type LoginVerifyState = {
   emailOuUsername: string;
   senha: string;
   from?: string;
-  verificationMethod?: "EMAIL" | "TOTP";
 };
 
 export default function AdminLoginVerificationPage() {
@@ -110,8 +109,6 @@ export default function AdminLoginVerificationPage() {
     }
   };
 
-  const isTotp = state?.verificationMethod === "TOTP";
-
   if (!state?.emailOuUsername || !state?.senha) {
     return null;
   }
@@ -119,16 +116,11 @@ export default function AdminLoginVerificationPage() {
   return (
     <AuthLayout
       title="Entrar"
-      subtitle={
-        isTotp
-          ? "Insira o código de 6 dígitos do seu aplicativo autenticador."
-          : "Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
-      }
+      subtitle="Para a sua segurança pedimos uma verificação de duas etapas ao realizar o login na plataforma."
       variant="admin"
       adminBadge
       onClose={() => navigate(`${basePath}/login`)}
       footer={
-        isTotp ? undefined : (
         <>
           <OrDivider />
           <Button
@@ -144,13 +136,12 @@ export default function AdminLoginVerificationPage() {
             <p className="mt-2 text-base text-[var(--color-text-secondary)] text-center">{resendMessage}</p>
           )}
         </>
-        )
       }
     >
       <form className="flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
         <Input
           type="text"
-          placeholder={isTotp ? "Código do autenticador ou de backup" : "Código do e-mail ou de backup"}
+          placeholder="Código do e-mail"
           value={code}
           onChange={(e) => {
             setCode(e.target.value);

@@ -35,7 +35,6 @@ const sampleUser = {
 const pendingState = {
   emailOuUsername: "user@test.com",
   senha: "Senha@123",
-  verificationMethod: "EMAIL" as const,
 };
 
 function renderPage() {

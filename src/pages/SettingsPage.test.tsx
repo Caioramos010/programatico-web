@@ -4,8 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 import SettingsPage from "./SettingsPage";
 
 const mockGetNotificationPreferences = vi.hoisted(() => vi.fn());
-const mockGetSecurityPreferences = vi.hoisted(() => vi.fn());
-const mockGetTotpStatus = vi.hoisted(() => vi.fn());
 
 vi.mock("../services/settingsService", async () => {
   const actual = await vi.importActual<typeof import("../services/settingsService")>(
@@ -16,10 +14,7 @@ vi.mock("../services/settingsService", async () => {
     settingsService: {
       ...actual.settingsService,
       getNotificationPreferences: mockGetNotificationPreferences,
-      getSecurityPreferences: mockGetSecurityPreferences,
-      getTotpStatus: mockGetTotpStatus,
       updateNotificationPreferences: vi.fn(),
-      updateSecurityPreferences: vi.fn(),
     },
   };
 });
@@ -34,11 +29,6 @@ describe("SettingsPage", () => {
       disableSubscriptionNotifications: false,
       disableUpdateNotifications: false,
     });
-    mockGetSecurityPreferences.mockResolvedValue({
-      twoFactorEnabled: true,
-      totpEnabled: false,
-    });
-    mockGetTotpStatus.mockResolvedValue({ totpEnabled: false, twoFactorEnabled: true });
   });
 
   it("carrega preferências", async () => {
