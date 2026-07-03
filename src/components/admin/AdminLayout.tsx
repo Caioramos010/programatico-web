@@ -15,7 +15,7 @@ export default function AdminLayout() {
   const logout = useAdminAuthStore((s) => s.logout);
 
   return (
-    <div className="min-h-screen flex bg-[var(--color-bg-primary)]">
+    <div className="h-screen flex overflow-hidden bg-[var(--color-bg-primary)]">
       {/* Sidebar */}
       <aside className="w-60 shrink-0 flex flex-col bg-[var(--color-bg-card)] border-r-2 border-[var(--color-premium)]">
         {/* Logo */}
