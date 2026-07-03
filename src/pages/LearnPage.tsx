@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Target, X } from "lucide-react";
 import { learnService } from "../services/learnService";
 import type { TrackResponse, UserStatsResponse, MissionResponse, ModuleWithProgress } from "../services/learnService";
 import { parseApiError } from "../utils/parseApiError";
@@ -17,6 +18,7 @@ export default function LearnPage() {
   const [loading, setLoading] = useState(true);
   const [formError, setFormError] = useState<string | null>(null);
   const [showStreak, setShowStreak] = useState(false);
+  const [missionsOpen, setMissionsOpen] = useState(false);
 
   // Drag-to-scroll
   const mapRef = useRef<HTMLDivElement>(null);
@@ -104,6 +106,40 @@ export default function LearnPage() {
       <div className="hidden lg:flex fixed top-0 right-0 z-30 h-full items-center">
         <DailyMissions missions={missions} loading={loading} />
       </div>
+
+      {/* ── DailyMissions trigger (mobile/tablet) ── */}
+      <button
+        type="button"
+        onClick={() => setMissionsOpen(true)}
+        className="lg:hidden fixed right-3 top-[84px] z-40 flex items-center gap-1.5 rounded-full border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] px-3 py-2 shadow-lg font-fredoka text-sm font-semibold text-[var(--color-text-primary)] active:scale-95"
+      >
+        <Target size={16} className="text-[var(--color-accent-light)]" />
+        Missões
+      </button>
+
+      {/* ── DailyMissions modal/bottom-sheet (mobile/tablet) ── */}
+      {missionsOpen && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setMissionsOpen(false)}
+            aria-hidden
+          />
+          <div className="absolute left-0 right-0 bottom-0 max-h-[80dvh] overflow-y-auto">
+            <div className="relative">
+              <button
+                type="button"
+                aria-label="Fechar"
+                onClick={() => setMissionsOpen(false)}
+                className="absolute right-6 top-7 z-10 p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+              >
+                <X size={20} />
+              </button>
+              <DailyMissions missions={missions} loading={loading} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── UserStatsBar: fixed bottom ── */}
       <div className="fixed bottom-14 left-0 right-0 z-30 md:bottom-0 md:left-60 lg:right-64 xl:right-72">

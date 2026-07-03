@@ -52,7 +52,7 @@ export const NOTIFICATION_SETTING_OPTIONS: {
   {
     key: "disableEmailNotifications",
     label: "Desativar e-mails informativos",
-    hint: "Lembretes e novidades por e-mail. Códigos de login, ativação e senha sempre são enviados.",
+    hint: "Lembretes e novidades por e-mail. Códigos de ativação e senha sempre são enviados.",
   },
 ];
 

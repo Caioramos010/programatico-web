@@ -4,6 +4,7 @@ import { useAuthStore } from "../stores/authStore";
 const apiBase = import.meta.env.VITE_API_URL;
 const api = axios.create({
   baseURL: apiBase && String(apiBase).trim() !== "" ? apiBase : "",
+  withCredentials: true,
 });
 
 // Attach bearer token to every request

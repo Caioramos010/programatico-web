@@ -22,7 +22,7 @@ interface ReviewPerformanceChartProps {
 export default function ReviewPerformanceChart({ data }: ReviewPerformanceChartProps) {
   return (
     <article className="h-full rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-4 md:p-5">
-      <h3 className="text-lg text-[var(--color-text-primary)]">Desempenho por dia</h3>
+      <h3 className="text-lg text-[var(--color-text-primary)]">Desempenho</h3>
 
       <div className="mt-4 h-[240px] w-full">
         <ResponsiveContainer width="100%" height="100%">

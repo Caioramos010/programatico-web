@@ -11,17 +11,36 @@ export interface MessageResponse {
   mensagem: string;
 }
 
+export interface LoginIniciarResponse {
+  requiresVerification: boolean;
+  verificationMethod?: "EMAIL";
+  mensagem?: string;
+  token?: string;
+  tipo?: string;
+  usuario?: User;
+}
+
 export const authService = {
   iniciarLogin: (emailOuUsername: string, senha: string) =>
-    api.post<MessageResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
+    api.post<LoginIniciarResponse>("/api/auth/login/iniciar", { emailOuUsername, senha }).then((r) => r.data),
 
-  confirmarLogin: (emailOuUsername: string, senha: string, codigo: string) =>
+  confirmarLogin: (
+    emailOuUsername: string,
+    senha: string,
+    codigo: string,
+    lembrarDispositivo?: boolean
+  ) =>
     api
-      .post<LoginResponse>("/api/auth/login/confirmar", { emailOuUsername, senha, codigo })
+      .post<LoginResponse>("/api/auth/login/confirmar", {
+        emailOuUsername,
+        senha,
+        codigo,
+        lembrarDispositivo: lembrarDispositivo ?? false,
+      })
       .then((r) => r.data),
 
   reenviarCodigoLogin: (emailOuUsername: string, senha: string) =>
-    api.post<MessageResponse>("/api/auth/login/reenviar", { emailOuUsername, senha }).then((r) => r.data),
+    api.post<LoginIniciarResponse>("/api/auth/login/reenviar", { emailOuUsername, senha }).then((r) => r.data),
 
   registro: (data: {
     username: string;
@@ -31,8 +50,10 @@ export const authService = {
   }) =>
     api.post<User>("/api/auth/registro", data).then((r) => r.data),
 
-  ativar: (codigo: string) =>
-    api.post<MessageResponse>("/api/auth/ativar", { codigo }).then((r) => r.data),
+  ativar: (codigo: string, email?: string) =>
+    api
+      .post<MessageResponse>("/api/auth/ativar", { codigo, ...(email ? { email } : {}) })
+      .then((r) => r.data),
 
   solicitarAtivacao: (email: string) =>
     api.post<MessageResponse>("/api/auth/ativar/solicitar", { email }).then((r) => r.data),
@@ -42,9 +63,13 @@ export const authService = {
       .post<MessageResponse>("/api/auth/redefinir-senha/solicitar", { email })
       .then((r) => r.data),
 
-  novaSenha: (codigo: string, novaSenha: string) =>
+  novaSenha: (codigo: string, novaSenha: string, email?: string) =>
     api
-      .post<MessageResponse>("/api/auth/redefinir-senha/nova", { codigo, novaSenha })
+      .post<MessageResponse>("/api/auth/redefinir-senha/nova", {
+        codigo,
+        novaSenha,
+        ...(email ? { email } : {}),
+      })
       .then((r) => r.data),
 
   buscarPerfil: (id: number) =>

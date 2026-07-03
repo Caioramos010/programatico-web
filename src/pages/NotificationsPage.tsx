@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import Button from "../components/Button";
+import Input from "../components/Input";
 import NotificationCard, {
   type NotificationItem,
 } from "../components/notifications/NotificationCard";
@@ -12,6 +13,7 @@ export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeFilter, setActiveFilter] = useState<NotificationFilter>("todas");
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     notificationService
@@ -29,10 +31,18 @@ export default function NotificationsPage() {
   }, [notifications]);
 
   const filteredNotifications = useMemo(() => {
-    if (activeFilter === "nao-lidas") return notifications.filter((item) => !item.read);
-    if (activeFilter === "lidas") return notifications.filter((item) => item.read);
-    return notifications;
-  }, [activeFilter, notifications]);
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    return notifications.filter((item) => {
+      if (activeFilter === "nao-lidas" && item.read) return false;
+      if (activeFilter === "lidas" && !item.read) return false;
+      if (!normalizedSearch) return true;
+
+      return [item.title, item.message].some((value) =>
+        value.toLowerCase().includes(normalizedSearch),
+      );
+    });
+  }, [activeFilter, notifications, searchTerm]);
 
   function markAsRead(id: string) {
     notificationService
@@ -53,27 +63,37 @@ export default function NotificationsPage() {
       .catch(() => undefined);
   }
 
+  function deleteNotification(id: string) {
+    notificationService
+      .deleteNotification(Number(id))
+      .then(() => {
+        setNotifications((prev) => prev.filter((item) => item.id !== id));
+      })
+      .catch(() => undefined);
+  }
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-primary)] px-4 py-6 md:px-8 md:py-8 font-fredoka">
-      <div className="mx-auto w-full max-w-6xl flex flex-col gap-6 md:gap-8">
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 md:gap-8">
+        <section className="grid gap-4 md:grid-cols-[minmax(0,1fr)_18rem] md:gap-x-10 md:gap-y-6">
+          <header className="flex items-center gap-3">
             <Bell className="w-7 h-7 text-yellow-300 fill-yellow-300" />
             <h1 className="text-3xl font-semibold text-white">{"Notifica\u00e7\u00f5es"}</h1>
-          </div>
+          </header>
 
+          <div className="w-full md:justify-self-end">
           <Button
             type="button"
             variant="neutral"
             onClick={markAllAsRead}
             disabled={counts.unread === 0}
-            className="px-4 py-2 rounded-xl border-b-2 normal-case tracking-normal text-base"
+            className="w-full px-4 py-2 rounded-xl border-b-2 normal-case tracking-normal text-base"
           >
             Marcar todas como lidas
           </Button>
-        </header>
+          </div>
 
-        <section className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 self-start">
           <button
             type="button"
             onClick={() => setActiveFilter("todas")}
@@ -110,6 +130,21 @@ export default function NotificationsPage() {
           >
             LIDAS ({counts.read})
           </button>
+          </div>
+          <div className="relative w-full md:w-72 md:justify-self-end">
+            <Search
+              size={18}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
+            />
+            <Input
+              type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Buscar notificação"
+              aria-label="Buscar notificação"
+              className="py-3 pl-10 pr-4"
+            />
+          </div>
         </section>
 
         <section className="flex flex-col gap-4 md:gap-5">
@@ -123,7 +158,12 @@ export default function NotificationsPage() {
             </div>
           ) : (
             filteredNotifications.map((item) => (
-              <NotificationCard key={item.id} item={item} onMarkAsRead={markAsRead} />
+              <NotificationCard
+                key={item.id}
+                item={item}
+                onMarkAsRead={markAsRead}
+                onDelete={deleteNotification}
+              />
             ))
           )}
         </section>

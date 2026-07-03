@@ -32,10 +32,10 @@ export default function SettingsPage() {
     let cancelled = false;
     settingsService
       .getNotificationPreferences()
-      .then((data) => {
+      .then((notificationData) => {
         if (cancelled) return;
-        setPrefs(data);
-        setNotifications(data);
+        setPrefs(notificationData);
+        setNotifications(notificationData);
       })
       .catch((err) => {
         if (cancelled) return;
@@ -88,7 +88,7 @@ export default function SettingsPage() {
       {loading ? (
         <p className="text-lg text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
-        <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-8">
           <h2 className="text-xl font-semibold text-white md:text-2xl">Notificações</h2>
           {NOTIFICATION_SETTING_OPTIONS.map(({ key, label, hint }) => (
             <div key={key} className="flex flex-col gap-1">
@@ -114,7 +114,7 @@ export default function SettingsPage() {
               onChange={handleDisableAll}
             />
           </div>
-        </div>
+        </section>
       )}
 
       {error ? (

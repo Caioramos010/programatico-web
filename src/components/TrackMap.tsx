@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, BookOpen } from "lucide-react";
+import { Zap, BookOpen, X } from "lucide-react";
 import type { ModuleWithProgress } from "../services/learnService";
 import { useAuthStore } from "../stores/authStore";
 import { isActiveRoot } from "../lib/subscription";
@@ -128,16 +128,31 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
           </div>
         ))}
 
+        {selectedIndex !== null && (
+          <div
+            className="fixed inset-0 z-40 bg-black/40 sm:bg-transparent"
+            onClick={() => setSelectedIndex(null)}
+            aria-hidden
+          />
+        )}
+
         {modules.map((module, i) => {
           const cx = getX(i);
           const cy = getY(i);
           const isSelected = selectedIndex === i;
+          const isNarrow = containerW < 640;
 
-          // Popover position: prefer right side, fallback to left when near right edge.
-          // Popover width is w-64 (256px); add some margin to keep it within the container.
-          const popoverLeft = cx + nodeR + 12;
-          const popoverRight = containerW - (cx - nodeR - 12);
-          const showRight = popoverLeft + 256 <= containerW;
+          // Popover: prefer right of node, then left; if it fits on neither side
+          // (narrow/mobile screens) clamp it inside the container so it never
+          // runs off-screen.
+          const popMargin = 12;
+          const popWidth = Math.min(256, containerW - popMargin * 2);
+          let popoverX = cx + nodeR + popMargin;
+          if (popoverX + popWidth > containerW - popMargin) {
+            const leftCandidate = cx - nodeR - popMargin - popWidth;
+            popoverX = leftCandidate >= popMargin ? leftCandidate : cx - popWidth / 2;
+          }
+          popoverX = Math.max(popMargin, Math.min(popoverX, containerW - popWidth - popMargin));
 
           return (
             <div key={module.id}>
@@ -154,14 +169,23 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
 
               {isSelected && (
                 <div
-                  className="absolute z-10 w-64 max-w-[min(16rem,calc(100vw-2rem))] rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg"
-                  style={
-                    showRight
-                      ? { left: popoverLeft, top: cy - nodeR }
-                      : { right: popoverRight, top: cy - nodeR }
-                  }
+                  className={[
+                    "z-50 rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card)] p-3 shadow-lg",
+                    isNarrow
+                      ? "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100vw-2rem)] max-w-sm"
+                      : "absolute",
+                  ].join(" ")}
+                  style={isNarrow ? undefined : { left: popoverX, top: cy - nodeR, width: popWidth }}
                 >
-                  <div className="flex flex-col gap-2 mb-2">
+                  <button
+                    type="button"
+                    aria-label="Fechar"
+                    onClick={() => setSelectedIndex(null)}
+                    className="absolute right-2 top-2 z-10 p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
+                  <div className="flex flex-col gap-2 mb-2 pr-6">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 ${

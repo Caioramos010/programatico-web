@@ -32,8 +32,12 @@ export default function MatchPairsExercise({
     }
   })();
 
-  const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
-  const [pairs, setPairs] = useState<Map<string, string>>(new Map());
+  // Pairs are tracked by INDEX (position), never by the displayed text. Values
+  // can legitimately repeat (e.g. several patterns map to "ciclo de 3"); keying
+  // by value would light up and block every duplicate at once and produce
+  // duplicate React keys.
+  const [selectedLeft, setSelectedLeft] = useState<number | null>(null);
+  const [pairs, setPairs] = useState<Map<number, number>>(new Map());
 
   useEffect(() => {
     setSelectedLeft(null);
@@ -42,45 +46,53 @@ export default function MatchPairsExercise({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [displayData]);
 
-  function handleLeftClick(left: string) {
+  const usedRights = new Set(pairs.values());
+
+  function handleLeftClick(leftIndex: number) {
     // Already paired items cannot be undone
-    if (disabled || pairs.has(left)) return;
-    setSelectedLeft(left === selectedLeft ? null : left);
+    if (disabled || pairs.has(leftIndex)) return;
+    setSelectedLeft(leftIndex === selectedLeft ? null : leftIndex);
   }
 
-  function handleRightClick(right: string) {
+  function handleRightClick(rightIndex: number) {
     // Already used right cannot be reassigned
-    if (disabled || selectedLeft === null || usedRights.has(right)) return;
+    if (disabled || selectedLeft === null || usedRights.has(rightIndex)) return;
     const newPairs = new Map(pairs);
-    newPairs.set(selectedLeft, right);
+    newPairs.set(selectedLeft, rightIndex);
     setPairs(newPairs);
     setSelectedLeft(null);
-    // Send all pairs formed so far (partial or complete)
-    const answer = Array.from(newPairs.entries()).map(([l, r]) => ({ left: l, right: r }));
+    // Send all pairs formed so far (partial or complete) as values — the backend
+    // validates by value, and duplicate right values are independently valid.
+    const answer = Array.from(newPairs.entries()).map(([li, ri]) => ({
+      left: data.lefts[li],
+      right: data.rights[ri],
+    }));
     onAnswer(JSON.stringify(answer));
   }
-
-  const usedRights = new Set(pairs.values());
 
   const correctPairs: CorrectPair[] = (() => {
     if (!correctAnswer) return [];
     try { return JSON.parse(correctAnswer) as CorrectPair[]; } catch { return []; }
   })();
 
-  function isPairCorrect(left: string): boolean {
-    const chosenRight = pairs.get(left);
-    if (!chosenRight) return false;
+  function isPairCorrect(leftIndex: number): boolean {
+    const rightIndex = pairs.get(leftIndex);
+    if (rightIndex === undefined) return false;
+    const left = data.lefts[leftIndex];
+    const right = data.rights[rightIndex];
     return correctPairs.some(
-      (p) => p.left.toLowerCase() === left.toLowerCase() && p.right.toLowerCase() === chosenRight.toLowerCase()
+      (p) => p.left.toLowerCase() === left.toLowerCase() && p.right.toLowerCase() === right.toLowerCase()
     );
   }
 
-  function isRightCorrect(right: string): boolean {
-    let leftPaired: string | undefined;
-    pairs.forEach((v, k) => { if (v === right) leftPaired = k; });
-    if (!leftPaired) return false;
+  function isRightCorrect(rightIndex: number): boolean {
+    let leftIndex: number | undefined;
+    pairs.forEach((ri, li) => { if (ri === rightIndex) leftIndex = li; });
+    if (leftIndex === undefined) return false;
+    const left = data.lefts[leftIndex];
+    const right = data.rights[rightIndex];
     return correctPairs.some(
-      (p) => p.left.toLowerCase() === leftPaired!.toLowerCase() && p.right.toLowerCase() === right.toLowerCase()
+      (p) => p.left.toLowerCase() === left.toLowerCase() && p.right.toLowerCase() === right.toLowerCase()
     );
   }
 
@@ -89,19 +101,19 @@ export default function MatchPairsExercise({
       <div className="grid grid-cols-2 gap-x-3 gap-y-2 w-full">
         {/* Coluna esquerda — conceitos */}
         <div className="flex flex-col gap-2">
-          {data.lefts.map((left) => {
-            const matched = pairs.has(left);
-            const active = selectedLeft === left;
+          {data.lefts.map((left, i) => {
+            const matched = pairs.has(i);
+            const active = selectedLeft === i;
             return (
               <button
-                key={`left-${left}`}
+                key={`left-${i}`}
                 type="button"
                 disabled={disabled}
-                onClick={() => handleLeftClick(left)}
+                onClick={() => handleLeftClick(i)}
                 className={[
                   "px-3 py-3 rounded-2xl border-2 font-fredoka font-semibold text-base text-center transition-all duration-150 min-h-[52px] leading-tight",
                   matched && correctPairs.length > 0
-                    ? isPairCorrect(left)
+                    ? isPairCorrect(i)
                       ? "border-[var(--color-success)] bg-[var(--color-success)]/20 text-[var(--color-text-primary)]"
                       : "border-[var(--color-error-heart)] bg-[var(--color-error-heart)]/15 text-[var(--color-text-primary)]"
                     : matched
@@ -120,18 +132,18 @@ export default function MatchPairsExercise({
 
         {/* Coluna direita — definições */}
         <div className="flex flex-col gap-2">
-          {data.rights.map((right) => {
-            const matched = usedRights.has(right);
+          {data.rights.map((right, i) => {
+            const matched = usedRights.has(i);
             return (
               <button
-                key={`right-${right}`}
+                key={`right-${i}`}
                 type="button"
                 disabled={disabled}
-                onClick={() => handleRightClick(right)}
+                onClick={() => handleRightClick(i)}
                 className={[
                   "px-3 py-3 rounded-2xl border-2 font-fredoka text-base text-center transition-all duration-150 min-h-[52px] leading-tight",
                   matched && correctPairs.length > 0
-                    ? isRightCorrect(right)
+                    ? isRightCorrect(i)
                       ? "border-[var(--color-success)] bg-[var(--color-success)]/20 text-[var(--color-text-primary)]"
                       : "border-[var(--color-error-heart)] bg-[var(--color-error-heart)]/15 text-[var(--color-text-primary)]"
                     : matched
