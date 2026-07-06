@@ -40,10 +40,10 @@ const features = [
 ];
 
 const stats = [
-  { value: "10k+", label: "Alunos ativos", icon: <Users className="w-6 h-6" /> },
-  { value: "100+", label: "Exercícios", icon: <Code className="w-6 h-6" /> },
-  { value: "20+", label: "Módulos", icon: <Trophy className="w-6 h-6" /> },
-  { value: "90%", label: "Aprovação", icon: <Zap className="w-6 h-6" /> },
+  { value: "400+", label: "Exercícios práticos", icon: <Code className="w-6 h-6" /> },
+  { value: "30", label: "Módulos de lógica", icon: <Trophy className="w-6 h-6" /> },
+  { value: "15", label: "Temas de raciocínio", icon: <Users className="w-6 h-6" /> },
+  { value: "100%", label: "Gratuito pra começar", icon: <Zap className="w-6 h-6" /> },
 ];
 
 const steps = [
@@ -225,14 +225,14 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {[
-              "Lógica de programação",
-              "Variáveis e tipos de dados",
-              "Estruturas condicionais",
+              "Lógica proposicional (verdadeiro ou falso)",
+              "Sequências e padrões",
+              "Condicionais: se… então",
               "Laços de repetição",
-              "Funções e modularização",
-              "Algoritmos e resolução de problemas",
-              "Estruturas de dados básicas",
-              "Pensamento computacional",
+              "Algoritmos passo a passo",
+              "Leitura de fluxogramas",
+              "Decomposição de problemas",
+              "Puzzles e problemas de lógica",
             ].map((item, i) => (
               <motion.div
                 key={item}
@@ -265,8 +265,8 @@ export default function LandingPage() {
           Pronto para começar sua jornada?
         </h2>
         <p className="text-lg md:text-xl text-[var(--color-text-secondary)] text-center max-w-md leading-relaxed">
-          Junte-se a milhares de alunos que já estão aprendendo lógica de
-          programação de forma divertida e gratuita.
+          Crie sua conta gratuita e aprenda lógica de programação de forma
+          divertida — no seu ritmo, com a mascote do seu lado.
         </p>
         <Link to="/registro">
           <Button variant="white" className="px-10! py-4! text-base!">
