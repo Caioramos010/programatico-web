@@ -149,8 +149,8 @@ export default function RootPage() {
                 <Activity className="h-6 w-6 text-white" strokeWidth={2.5} />
               </div>
             }
-            title="Relatórios & Experiência"
-            items={["Relatórios premium", "Sem anúncios", "Vidas infinitas"]}
+            title="Experiência Root"
+            items={["Sem anúncios", "Vidas infinitas"]}
           />
         </div>
 
