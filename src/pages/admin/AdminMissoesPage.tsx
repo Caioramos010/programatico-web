@@ -3,7 +3,22 @@ import { Pencil, Trash2 } from "lucide-react";
 import { adminService, type Missao, type MissaoRequest } from "../../services/adminService";
 import { parseApiError } from "../../utils/parseApiError";
 
-const TIPOS_MISSAO = ["Módulos", "Teóricas", "Atividades", "Práticas", "Fixação", "Erros", "Cronometrado"] as const;
+// Tipos reconhecidos pela engine de missões (MissaoDiariaService) — títulos
+// gerados no mesmo modelo das missões padrão pra manter coerência no card.
+const TIPOS_MISSAO = [
+  { code: "EARN_XP", label: "Ganhar XP", titulo: (q: number) => `Ganhe ${q} XP hoje` },
+  { code: "CORRECT_ANSWERS", label: "Acertar exercícios", titulo: (q: number) => `Acerte ${q} ${q === 1 ? "exercício" : "exercícios"}` },
+  { code: "COMPLETE_MODULES", label: "Concluir módulos", titulo: (q: number) => `Conclua ${q} ${q === 1 ? "módulo" : "módulos"}` },
+  { code: "READ_PAGES", label: "Ler teorias", titulo: (q: number) => `Leia ${q} ${q === 1 ? "teoria" : "teorias"}` },
+  { code: "PRACTICE_ERRORS", label: "Praticar erros", titulo: () => "Pratique seus erros" },
+  { code: "PERFECT_SESSION", label: "Sessão perfeita", titulo: () => "Sessão sem errar" },
+] as const;
+
+type TipoMissao = (typeof TIPOS_MISSAO)[number];
+
+function tipoPorCodigo(code: string): TipoMissao {
+  return TIPOS_MISSAO.find((t) => t.code === code) ?? TIPOS_MISSAO[0];
+}
 
 interface FormState {
   objectiveType: string;
@@ -11,7 +26,7 @@ interface FormState {
   quantity: number;
 }
 
-const emptyForm: FormState = { objectiveType: TIPOS_MISSAO[0], xpReward: 50, quantity: 5 };
+const emptyForm: FormState = { objectiveType: TIPOS_MISSAO[0].code, xpReward: 10, quantity: 5 };
 
 export default function AdminMissoesPage() {
   const [missoes, setMissoes] = useState<Missao[]>([]);
@@ -67,7 +82,7 @@ export default function AdminMissoesPage() {
       return;
     }
     const payload: MissaoRequest = {
-      title: form.objectiveType,
+      title: tipoPorCodigo(form.objectiveType).titulo(form.quantity),
       objectiveType: form.objectiveType,
       xpReward: form.xpReward,
       quantity: form.quantity,
@@ -146,7 +161,12 @@ export default function AdminMissoesPage() {
                 {String(idx + 1).padStart(2, "0")}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[var(--color-text-primary)] truncate">{missao.objectiveType}</p>
+                <p className="font-semibold text-[var(--color-text-primary)] truncate">
+                  {missao.title || missao.objectiveType}
+                </p>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  {tipoPorCodigo(missao.objectiveType).label}
+                </p>
               </div>
               <div className="hidden sm:flex items-center gap-4 text-base text-[var(--color-text-muted)] shrink-0">
                 <span>{missao.quantity} {missao.quantity === 1 ? "item" : "itens"}</span>
@@ -192,12 +212,18 @@ export default function AdminMissoesPage() {
                 <div className="flex flex-wrap gap-2">
                   {TIPOS_MISSAO.map((tipo) => (
                     <button
-                      key={tipo}
+                      key={tipo.code}
                       type="button"
-                      onClick={() => setForm((f) => ({ ...f, objectiveType: tipo }))}
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          objectiveType: tipo.code,
+                          quantity: tipo.code === "EARN_XP" ? 30 : Math.min(f.quantity, 20),
+                        }))
+                      }
                       className="px-3 py-1.5 rounded-lg text-base font-medium transition-colors"
                       style={
-                        form.objectiveType === tipo
+                        form.objectiveType === tipo.code
                           ? { background: "var(--color-accent)", color: "#fff" }
                           : {
                               background: "var(--color-bg-card-inner)",
@@ -206,32 +232,42 @@ export default function AdminMissoesPage() {
                             }
                       }
                     >
-                      {tipo}
+                      {tipo.label}
                     </button>
                   ))}
                 </div>
+                <p className="text-base text-[var(--color-text-muted)]">
+                  A missão aparecerá como:{" "}
+                  <span className="text-[var(--color-text-primary)] font-medium">
+                    "{tipoPorCodigo(form.objectiveType).titulo(form.quantity)}"
+                  </span>
+                </p>
               </div>
 
-              {/* Slider de quantidade */}
+              {/* Slider de quantidade (meta em XP para EARN_XP; contagem nos demais) */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-base font-semibold uppercase tracking-widest text-[var(--color-text-secondary)]">
-                    Quantidade de itens a completar
+                    {form.objectiveType === "EARN_XP" ? "Meta de XP da missão" : "Quantidade a completar"}
                   </span>
                   <span className="text-base font-semibold text-[var(--color-text-primary)]">{form.quantity}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-base text-[var(--color-text-muted)]">1</span>
+                  <span className="text-base text-[var(--color-text-muted)]">
+                    {form.objectiveType === "EARN_XP" ? 5 : 1}
+                  </span>
                   <input
                     type="range"
-                    min={1}
-                    max={20}
-                    step={1}
+                    min={form.objectiveType === "EARN_XP" ? 5 : 1}
+                    max={form.objectiveType === "EARN_XP" ? 100 : 20}
+                    step={form.objectiveType === "EARN_XP" ? 5 : 1}
                     value={form.quantity}
                     onChange={(e) => setForm((f) => ({ ...f, quantity: Number(e.target.value) }))}
                     className="flex-1 accent-[var(--color-accent)]"
                   />
-                  <span className="text-base text-[var(--color-text-muted)]">20</span>
+                  <span className="text-base text-[var(--color-text-muted)]">
+                    {form.objectiveType === "EARN_XP" ? 100 : 20}
+                  </span>
                 </div>
               </div>
 
