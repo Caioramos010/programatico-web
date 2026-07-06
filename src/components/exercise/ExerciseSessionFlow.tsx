@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Heart } from "lucide-react";
 import {
   exerciseService,
@@ -48,6 +49,7 @@ export default function ExerciseSessionFlow({
   masteredIds = [],
   onExit,
 }: ExerciseSessionFlowProps) {
+  const navigate = useNavigate();
   // Maestria: a sessão é uma FILA. Os "alvos" são os exercícios originais; errar reenfileira
   // o alvo e injeta um reforço do mesmo assunto. Conclui quando a fila esvazia (tudo dominado).
   // Na retomada, os já dominados ficam no TOTAL mas fora da fila inicial.
@@ -230,7 +232,7 @@ export default function ExerciseSessionFlow({
   if (phase === "no-lives") {
     return (
       <NoLivesScreen
-        onSubscribe={onExit}
+        onSubscribe={() => navigate("/seja-root")}
         onBack={onExit}
       />
     );

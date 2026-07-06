@@ -7,6 +7,8 @@ import OrDivider from "../components/auth/OrDivider";
 import { useFormValidation, rules } from "../hooks/useFormValidation";
 import { authService } from "../services/authService";
 import { parseApiError } from "../utils/parseApiError";
+import { useAuthStore } from "../stores/authStore";
+import { resolvePostLoginPath } from "../lib/postLoginNavigation";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -46,17 +48,11 @@ export default function ActivationPage() {
 
     setSubmitting(true);
     try {
-      await authService.ativar(code, activationEmail || undefined);
+      const { token, usuario } = await authService.ativar(code, activationEmail || undefined);
       sessionStorage.removeItem("pendingActivationEmail");
-      navigate("/sucesso", {
-        replace: true,
-        state: {
-          title: "Conta ativada",
-          message: "Sua conta foi ativada com sucesso. Faça login para continuar.",
-          ctaLabel: "Ir para o login",
-          ctaTo: "/login",
-        },
-      });
+      // Conta ativada já sai logada — sem pedir outro código no login.
+      useAuthStore.getState().login(token, usuario);
+      navigate(resolvePostLoginPath(usuario), { replace: true });
     } catch (err) {
       const { fieldErrors, formError: msg } = parseApiError(err);
       if (fieldErrors) setServerErrors(fieldErrors);

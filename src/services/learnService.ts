@@ -69,9 +69,19 @@ export interface TheoryResponse {
   pages: TheoryPage[];
 }
 
+export interface NivelamentoResponse {
+  nivelInicial: number;
+  modulosConcluidos: number;
+}
+
 export const learnService = {
   getTrack: () =>
     api.get<TrackResponse>("/api/aprender/trilha").then((r) => r.data),
+
+  aplicarNivelamento: (nivel: "BEGINNER" | "INTERMEDIATE" | "ADVANCED") =>
+    api
+      .post<NivelamentoResponse>("/api/aprender/nivelamento", { nivel })
+      .then((r) => r.data),
 
   getStats: () =>
     api.get<UserStatsResponse>("/api/aprender/stats").then((r) => r.data),
