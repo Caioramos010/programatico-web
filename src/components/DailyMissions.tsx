@@ -26,7 +26,7 @@ function MissionItem({ mission }: { mission: MissionResponse }) {
           style={{ color: done ? "var(--color-success)" : "var(--color-text-secondary)" }}
         >
           {getMissionIcon(mission.type)}
-          <span className="text-base font-fredoka font-medium truncate">{mission.title}</span>
+          <span className="text-base font-fredoka font-medium leading-snug">{mission.title}</span>
         </div>
         <div className="flex items-center gap-0.5 text-base font-fredoka shrink-0">
           <Xp className="w-3.5 h-3.5" />
