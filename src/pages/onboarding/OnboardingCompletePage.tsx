@@ -9,13 +9,28 @@ import {
 import { Excited } from "../../components/mascot";
 import { useAuthStore } from "../../stores/authStore";
 import { useOnboardingStore } from "../../stores/onboardingStore";
-import { authService } from "../../services/authService";
+import { learnService } from "../../services/learnService";
 import type { NivelHabilidade } from "../../stores/authStore";
 
 const LEVEL_MAP: Record<string, NivelHabilidade> = {
   beginner: "BEGINNER",
   intermediate: "INTERMEDIATE",
   advanced: "ADVANCED",
+};
+
+const NIVEL_INICIAL: Record<string, number> = {
+  beginner: 0,
+  intermediate: 10,
+  advanced: 20,
+};
+
+const NIVEL_EXPLICACAO: Record<string, string> = {
+  beginner:
+    "Vamos do comecinho: você aprende os fundamentos um módulo de cada vez, sem pular nada.",
+  intermediate:
+    "Os 10 primeiros módulos já entram como concluídos no seu mapa — você começa direto no módulo 11 e pode revisitar os anteriores quando quiser.",
+  advanced:
+    "Os 20 primeiros módulos já entram como concluídos no seu mapa — você começa direto no módulo 21 e pode revisitar os anteriores quando quiser.",
 };
 
 export default function OnboardingCompletePage() {
@@ -34,8 +49,8 @@ export default function OnboardingCompletePage() {
     setError("");
     try {
       const nivelHabilidade = LEVEL_MAP[level];
-      const updated = await authService.atualizarPerfil(user.id, { nivelHabilidade });
-      updateUser(updated);
+      await learnService.aplicarNivelamento(nivelHabilidade);
+      updateUser({ ...user, nivelHabilidade });
       reset();
       navigate("/aprender");
     } catch {
@@ -56,10 +71,14 @@ export default function OnboardingCompletePage() {
       {/* Texts */}
       <div className="text-center max-w-md">
         <h1 className="text-3xl font-semibold text-[var(--color-text-primary)] mb-3">
-          Pratique agora
+          {level
+            ? `Você vai começar no nível ${NIVEL_INICIAL[level]}!`
+            : "Pratique agora"}
         </h1>
         <p className="text-lg md:text-xl text-[var(--color-text-secondary)] leading-relaxed">
-          É um prazer ter você conosco, comece a estudar agora mesmo!
+          {level
+            ? NIVEL_EXPLICACAO[level]
+            : "É um prazer ter você conosco, comece a estudar agora mesmo!"}
         </p>
       </div>
 

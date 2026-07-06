@@ -50,9 +50,10 @@ export const authService = {
   }) =>
     api.post<User>("/api/auth/registro", data).then((r) => r.data),
 
+  // A ativação prova posse do e-mail, então o backend já devolve a sessão logada.
   ativar: (codigo: string, email?: string) =>
     api
-      .post<MessageResponse>("/api/auth/ativar", { codigo, ...(email ? { email } : {}) })
+      .post<LoginResponse>("/api/auth/ativar", { codigo, ...(email ? { email } : {}) })
       .then((r) => r.data),
 
   solicitarAtivacao: (email: string) =>
