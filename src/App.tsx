@@ -17,6 +17,8 @@ import RootPage from "./pages/RootPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
+import SessionGate from "./components/SessionGate";
+import LoadingScreen from "./components/LoadingScreen";
 import NotFoundPage from "./pages/NotFoundPage";
 import LandingPage from "./pages/LandingPage";
 import AboutPage from "./pages/AboutPage";
@@ -63,7 +65,7 @@ function App() {
   if (isAdmin) {
     return (
       <BrowserRouter>
-        <Suspense>
+        <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route path="/login" element={<AdminLoginPage />} />
             <Route path="/login/verificacao" element={<AdminLoginVerificationPage />} />
@@ -96,9 +98,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Suspense>
-        <Routes>
-          {/* Public routes */}
+      <SessionGate>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/sobre" element={<AboutPage />} />
           <Route path="/termos" element={<TermsPage />} />
@@ -176,8 +179,9 @@ function App() {
           </Route>
           {/* Catch-all */}
           <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </SessionGate>
     </BrowserRouter>
   );
 }

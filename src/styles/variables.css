@@ -39,9 +39,10 @@
   --color-gray-review: #c9c9c94d;
   --color-gray-border: #3b4a6b;
 
-  --color-error: #c17a2e;
-  --color-error-light: #d4a84333;
-  --color-error-heart: #d4a843;
+  /* Erros em vermelho visível (antes reaproveitavam o amarelo premium) */
+  --color-error: #dc2626;
+  --color-error-light: #ef444433;
+  --color-error-heart: #f87171;
 
   --color-success: #578f48;
   --color-success-light: #578f4866;
