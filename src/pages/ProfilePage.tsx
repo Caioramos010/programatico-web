@@ -241,22 +241,13 @@ export default function ProfilePage() {
               Editar perfil
             </Button>
 
-            <section className="rounded-2xl border border-red-500/30 bg-red-500/8 px-4 py-4">
-              <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-semibold text-white">Excluir conta</h3>
-                <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-                  Se quiser encerrar sua conta, inicie a exclusão por aqui. Vamos enviar um código
-                  de confirmação para o seu e-mail.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setDeleteStep("confirm")}
-                  className="w-fit text-base text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold"
-                >
-                  Excluir a minha conta
-                </button>
-              </div>
-            </section>
+            <button
+              type="button"
+              onClick={() => setDeleteStep("confirm")}
+              className="text-base text-[var(--color-premium)] hover:text-[var(--color-premium-dark)] transition-colors cursor-pointer uppercase tracking-wider font-semibold text-center"
+            >
+              Excluir a minha conta
+            </button>
           </div>
         </>
       )}
@@ -351,7 +342,7 @@ export default function ProfilePage() {
                   <strong className="text-white">{user?.email}</strong>.
                 </p>
                 {deleteError && (
-                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-premium)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
@@ -383,13 +374,13 @@ export default function ProfilePage() {
                   className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-white/60 transition-colors"
                 />
                 {deleteError && (
-                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-premium)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
                   onClick={handleConfirmDelete}
                   disabled={deleteLoading || deleteCode.length < 6}
-                  className="bg-red-600 hover:bg-red-500 border-red-600"
+                  className="bg-[var(--color-premium-dark)] hover:bg-[var(--color-premium)] border-[var(--color-premium-dark)]"
                 >
                   {deleteLoading ? "Excluindo..." : "Confirmar exclusão"}
                 </Button>

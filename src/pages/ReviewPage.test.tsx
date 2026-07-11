@@ -63,4 +63,17 @@ describe("ReviewPage", () => {
       expect(screen.getByText("Fundamentos")).toBeInTheDocument();
     });
   });
+  it("exibe mensagem de vazio nos blocos sem informações", async () => {
+    render(
+      <MemoryRouter>
+        <ReviewPage />
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Fundamentos")).toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText("Sem dados ainda.")).toHaveLength(4);
+  });
 });

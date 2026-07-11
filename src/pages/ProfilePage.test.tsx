@@ -63,7 +63,6 @@ describe("ProfilePage", () => {
       </MemoryRouter>,
     );
 
-    expect(await screen.findByText("Excluir conta")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Excluir a minha conta" })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: "Excluir a minha conta" })).toBeInTheDocument();
   });
 });

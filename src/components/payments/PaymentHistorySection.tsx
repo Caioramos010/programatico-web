@@ -79,7 +79,7 @@ export default function PaymentHistorySection({ variant = "profile" }: PaymentHi
           Carregando...
         </p>
       ) : error ? (
-        <p className="text-base text-[var(--color-error-heart)]">{error}</p>
+        <p className="text-base text-[var(--color-premium)]">{error}</p>
       ) : items.length === 0 ? (
         <p className={isRoot ? "text-white/80 text-base" : "text-[var(--color-text-muted)] text-base"}>
           Nenhum pagamento registrado ainda.

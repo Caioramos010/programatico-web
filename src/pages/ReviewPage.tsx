@@ -201,49 +201,61 @@ export default function ReviewPage() {
 
         <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
           <ReviewInfoPanel title="Erros por assunto">
-            <div className="divide-y divide-[var(--color-gray-border)]">
-              {(reviewData?.errorsBySubject ?? []).map((item) => (
-                <div key={item.assunto} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
-                  <p className="text-base text-[var(--color-text-primary)]">{item.assunto}</p>
-                  <p className="text-base text-[var(--color-error-heart)]">{item.erros} erros</p>
-                </div>
-              ))}
-            </div>
+            {(reviewData?.errorsBySubject ?? []).length === 0 ? (
+              <p className="text-base text-[var(--color-text-muted)]">Sem dados ainda.</p>
+            ) : (
+              <div className="divide-y divide-[var(--color-gray-border)]">
+                {(reviewData?.errorsBySubject ?? []).map((item) => (
+                  <div key={item.assunto} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <p className="text-base text-[var(--color-text-primary)]">{item.assunto}</p>
+                    <p className="text-base text-[var(--color-error-heart)]">{item.erros} erros</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </ReviewInfoPanel>
 
           <ReviewInfoPanel title="O que revisar agora">
-            <div className="flex flex-col gap-3">
-              {(reviewData?.reviewNow ?? []).map((item, index) => (
-                <button
-                  key={item.assunto}
-                  type="button"
-                  onClick={() => handleReviewSubject(item.assunto)}
-                  className={[
-                    "flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-base text-left cursor-pointer transition-opacity hover:opacity-80",
-                    reviewNowToneClasses[index] ?? reviewNowToneClasses[reviewNowToneClasses.length - 1],
-                  ].join(" ")}
-                >
-                  <span>{item.assunto}</span>
-                  <span className="shrink-0 text-sm font-semibold">{isRoot ? "Revisar →" : "Root"}</span>
-                </button>
-              ))}
-            </div>
+            {(reviewData?.reviewNow ?? []).length === 0 ? (
+              <p className="text-base text-[var(--color-text-muted)]">Sem dados ainda.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {(reviewData?.reviewNow ?? []).map((item, index) => (
+                  <button
+                    key={item.assunto}
+                    type="button"
+                    onClick={() => handleReviewSubject(item.assunto)}
+                    className={[
+                      "flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-base text-left cursor-pointer transition-opacity hover:opacity-80",
+                      reviewNowToneClasses[index] ?? reviewNowToneClasses[reviewNowToneClasses.length - 1],
+                    ].join(" ")}
+                  >
+                    <span>{item.assunto}</span>
+                    <span className="shrink-0 text-sm font-semibold">{isRoot ? "Revisar →" : "Root"}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </ReviewInfoPanel>
 
           <ReviewInfoPanel title="Missões recentes">
-            <div className="flex flex-col gap-3">
-              {(reviewData?.recentMissions ?? []).map((mission) => (
-                <div key={mission.label} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
-                  <span
-                    className={["h-2.5 w-2.5 rounded-full", getMissionDotClassName(mission.status)].join(" ")}
-                  />
-                  <p className="text-base text-[var(--color-text-primary)]">{mission.label}</p>
-                  <p className={["text-base", getMissionStatusClassName(mission.status)].join(" ")}>
-                    {mission.status}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {(reviewData?.recentMissions ?? []).length === 0 ? (
+              <p className="text-base text-[var(--color-text-muted)]">Sem dados ainda.</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {(reviewData?.recentMissions ?? []).map((mission) => (
+                  <div key={mission.label} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+                    <span
+                      className={["h-2.5 w-2.5 rounded-full", getMissionDotClassName(mission.status)].join(" ")}
+                    />
+                    <p className="text-base text-[var(--color-text-primary)]">{mission.label}</p>
+                    <p className={["text-base", getMissionStatusClassName(mission.status)].join(" ")}>
+                      {mission.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </ReviewInfoPanel>
         </section>
       </div>
