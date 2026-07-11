@@ -1,3 +1,4 @@
+import { SkeletonList } from "../../components/Skeleton";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Plus, Trash2, X, Image as ImageIcon, FileText, LayoutGrid, Layers } from "lucide-react";
@@ -279,11 +280,7 @@ export default function AdminTeoricaPage() {
       footer={footer}
     >
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-32 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
-          ))}
-        </div>
+        <SkeletonList rows={2} rowClassName="h-32 rounded-2xl" />
       ) : (
         <div className="flex flex-col gap-4">
           {blocks.length === 0 && (

@@ -1,3 +1,4 @@
+import { SkeletonList } from "../../components/Skeleton";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2, Upload, X, ChevronRight } from "lucide-react";
@@ -128,11 +129,7 @@ export default function AdminTrilhasPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
-          ))}
-        </div>
+        <SkeletonList rows={3} rowClassName="h-20 rounded-2xl" />
       ) : trilhas.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <p className="text-base font-medium">Nenhuma trilha cadastrada</p>

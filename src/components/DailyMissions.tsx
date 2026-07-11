@@ -1,3 +1,4 @@
+import { Skeleton } from "./Skeleton";
 import { Zap } from "lucide-react";
 import { Book, Xp } from "./icons";
 import type { MissionResponse } from "../services/learnService";
@@ -65,8 +66,8 @@ export default function DailyMissions({ missions, loading }: Props) {
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map((n) => (
               <div key={n} className="flex flex-col gap-2">
-                <div className="h-4 w-full rounded bg-[var(--color-bg-card-inner)] animate-pulse" />
-                <div className="h-2 w-full rounded-full bg-[var(--color-bg-card-inner)] animate-pulse" />
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-2 w-full rounded-full" />
               </div>
             ))}
           </div>
