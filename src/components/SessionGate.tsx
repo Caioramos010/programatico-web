@@ -4,8 +4,8 @@ import { authService } from "../services/authService";
 import { isTokenExpired } from "../lib/session";
 import LoadingScreen from "./LoadingScreen";
 
-/** Duração mínima do splash — casa com a animação da barra (2,4s). */
-export const SPLASH_MIN_MS = 2500;
+/** Duração mínima do splash — casa com a animação da barra (1,4s). */
+export const SPLASH_MIN_MS = 1500;
 
 /**
  * Splash de abertura do app: roda em TODO carregamento inicial por pelo menos
