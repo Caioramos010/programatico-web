@@ -13,8 +13,10 @@ export default function LoadingScreen() {
       role="status"
       aria-label="Carregando"
     >
-      <div className="flex flex-col items-center gap-1 animate-pulse">
-        <span className="font-gloria text-4xl text-white tracking-wide select-none">
+      <div className="flex flex-col items-center animate-pulse">
+        {/* A Gloria Hallelujah desenha abaixo da linha de base; folga extra
+            embaixo pra logo não encostar na tagline. */}
+        <span className="font-gloria text-4xl text-white tracking-wide select-none leading-normal mb-4">
           programático
         </span>
         <span className="font-fredoka text-sm uppercase tracking-[0.35em] text-[var(--color-text-muted)] select-none">

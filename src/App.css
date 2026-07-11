@@ -31,8 +31,8 @@
 
 .loading-bar-fill {
   animation:
-    loading-fill 2.4s ease-out forwards,
-    loading-shine 1.4s linear infinite;
+    loading-fill 1.4s ease-out forwards,
+    loading-shine 1.1s linear infinite;
   background-color: var(--color-accent-light);
   background-image: linear-gradient(
     90deg,
