@@ -18,8 +18,12 @@ interface Props {
 }
 
 function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
+  if (h > 0) {
+    return `${h}h ${String(m).padStart(2, "0")}min`;
+  }
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
@@ -28,11 +32,15 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
   const review = isRoot && subjectReview ? [...subjectReview].sort((a, b) => b.erros - a.erros).slice(0, 8) : [];
 
   return (
+    // overflow no wrapper externo + min-h-full no interno: com conteúdo maior que a
+    // viewport o scroll alcança o topo (items-center direto no container cortava
+    // título e botão sem como rolar até eles).
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
+      className="fixed inset-0 z-50 overflow-y-auto"
       style={{ background: "var(--color-bg-primary)" }}
     >
-      <div className="flex flex-col items-center gap-8 px-8 py-12 max-w-sm w-full text-center">
+      <div className="flex min-h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-6 px-8 py-10 max-w-sm w-full text-center">
         <div className="flex flex-col gap-2">
           <h1 className="font-fredoka font-semibold text-3xl leading-tight text-[var(--color-text-primary)]">
             Você conseguiu!
@@ -93,7 +101,7 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
         )}
 
         {/* Mascote */}
-        <div className="w-52 h-52">
+        <div className="w-36 h-36 md:w-48 md:h-48">
           <Excited className="w-full h-full" aria-label="Gina comemorando" />
         </div>
 
@@ -104,6 +112,7 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
         >
           CONTINUAR
         </button>
+        </div>
       </div>
     </div>
   );
