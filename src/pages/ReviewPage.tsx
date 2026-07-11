@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RoundedDropdown from "../components/RoundedDropdown";
+import { Skeleton } from "../components/Skeleton";
 import ReviewInfoPanel from "../components/review/ReviewInfoPanel";
 import ReviewPerformanceChart from "../components/review/ReviewPerformanceChart";
 import ReviewStatCard from "../components/review/ReviewStatCard";
@@ -178,6 +179,26 @@ export default function ReviewPage() {
           </section>
         ) : null}
 
+        {/* Skeleton com a forma do dashboard enquanto o primeiro fetch roda. */}
+        {isLoading && !reviewData ? (
+          <div role="status" aria-label="Carregando revisão">
+            <section className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-28 rounded-2xl" />
+              ))}
+            </section>
+            <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-5">
+              <Skeleton className="h-80 rounded-2xl xl:col-span-3" />
+              <Skeleton className="h-80 rounded-2xl xl:col-span-2" />
+            </section>
+            <section className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-56 rounded-2xl" />
+              ))}
+            </section>
+          </div>
+        ) : (
+          <>
         <section className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           {(reviewData?.stats ?? []).map((stat) => (
             <ReviewStatCard
@@ -258,6 +279,8 @@ export default function ReviewPage() {
             )}
           </ReviewInfoPanel>
         </section>
+          </>
+        )}
       </div>
     </div>
   );

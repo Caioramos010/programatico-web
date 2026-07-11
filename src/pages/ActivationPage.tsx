@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -104,12 +104,15 @@ export default function ActivationPage() {
 
           <p className="mt-6 text-base text-[var(--color-text-secondary)] text-center leading-relaxed">
             Ao entrar ou se registrar no programático você concorda com todos os{" "}
-            <Link
-              to="/termos"
+            {/* Nova aba: não descarta o código já digitado no formulário. */}
+            <a
+              href="/termos"
+              target="_blank"
+              rel="noreferrer"
               className="underline text-[var(--color-text-primary)] hover:text-white/90 transition-colors"
             >
               termos do site
-            </Link>
+            </a>
             .
           </p>
         </>

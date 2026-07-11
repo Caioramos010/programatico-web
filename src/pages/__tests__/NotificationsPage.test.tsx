@@ -51,7 +51,7 @@ describe("NotificationsPage", () => {
 
     render(<NotificationsPage />);
 
-    expect(screen.getByText(/Carregando/i)).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: /carregando/i })).toBeInTheDocument();
 
     expect(await screen.findByText("Nova trilha desbloqueada")).toBeInTheDocument();
     expect(screen.getByText("Exercicio concluido")).toBeInTheDocument();

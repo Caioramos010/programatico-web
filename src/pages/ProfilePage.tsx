@@ -1,3 +1,4 @@
+import { Skeleton } from "../components/Skeleton";
 import { useEffect, useState, type FormEvent } from "react";
 import { Camera, CheckCircle2, ShieldCheck, X, Check } from "lucide-react";
 import { Xp, FireOn, FireOff } from "../components/icons";
@@ -227,11 +228,20 @@ export default function ProfilePage() {
 
           <section className="flex flex-col gap-3">
             <h3 className="text-lg font-semibold text-white">Estatísticas</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <StatCard label="Experiência" value={`${(stats?.totalXp ?? 0).toLocaleString("pt-BR")} XP`} icon={<Xp className="w-5 h-5" />} full />
-              <StatCard label="Dias seguidos" value={stats?.currentStreak ?? 0} icon={<FireOn className="w-5 h-5" />} />
-              <StatCard label="Máximo de dias seguidos" value={stats?.maxStreak ?? 0} icon={<FireOff className="w-5 h-5" />} />
-            </div>
+            {stats === null ? (
+              // Skeleton no lugar de "0 XP" fantasma enquanto os stats carregam.
+              <div className="grid grid-cols-2 gap-3" role="status" aria-label="Carregando estatísticas">
+                <Skeleton className="col-span-2 h-16" />
+                <Skeleton className="h-16" />
+                <Skeleton className="h-16" />
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <StatCard label="Experiência" value={`${(stats.totalXp ?? 0).toLocaleString("pt-BR")} XP`} icon={<Xp className="w-5 h-5" />} full />
+                <StatCard label="Dias seguidos" value={stats.currentStreak ?? 0} icon={<FireOn className="w-5 h-5" />} />
+                <StatCard label="Máximo de dias seguidos" value={stats.maxStreak ?? 0} icon={<FireOff className="w-5 h-5" />} />
+              </div>
+            )}
           </section>
 
           <PaymentHistorySection variant="profile" />

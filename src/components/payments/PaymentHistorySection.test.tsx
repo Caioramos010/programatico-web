@@ -29,7 +29,7 @@ describe("PaymentHistorySection", () => {
 
     render(<PaymentHistorySection />);
 
-    expect(screen.getByText("Carregando...")).toBeInTheDocument();
+    expect(screen.getByRole("status", { name: /carregando/i })).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText("Pago")).toBeInTheDocument();

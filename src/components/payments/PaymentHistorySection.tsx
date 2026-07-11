@@ -1,3 +1,4 @@
+import { SkeletonList } from "../Skeleton";
 import { useEffect, useState } from "react";
 import { paymentService, type PaymentHistoryItem } from "../../services/paymentService";
 import { parseApiError } from "../../utils/parseApiError";
@@ -75,9 +76,7 @@ export default function PaymentHistorySection({ variant = "profile" }: PaymentHi
       </h3>
 
       {loading ? (
-        <p className={isRoot ? "text-white/80 text-base" : "text-[var(--color-text-muted)] text-base"}>
-          Carregando...
-        </p>
+        <SkeletonList rows={3} rowClassName="h-14 rounded-xl" />
       ) : error ? (
         <p className="text-base text-[var(--color-premium)]">{error}</p>
       ) : items.length === 0 ? (
