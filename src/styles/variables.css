@@ -25,7 +25,7 @@
 
   --color-text-primary: #ffffff;
   --color-text-secondary: #ffffffcc;
-  --color-text-muted: #9ca3af;
+  --color-text-muted: #b3bac6; /* contraste AA sobre bg-primary (feedback da banca: legibilidade) */
 
   --color-btn-light: #ffffff66;
   --color-btn-hover: #ffffff80;

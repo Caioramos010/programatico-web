@@ -76,7 +76,7 @@ export default function ConclusionScreen({ xpEarned, accuracy, durationSeconds, 
                   <div key={s.assunto} className="text-left">
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="text-sm text-[var(--color-text-primary)] truncate">{s.assunto}</span>
-                      <span className="text-xs shrink-0 tabular-nums font-fredoka">
+                      <span className="text-sm shrink-0 tabular-nums font-fredoka">
                         <span className="text-[var(--color-success)]">{s.acertos}</span>
                         <span className="text-[var(--color-text-muted)]"> / </span>
                         <span className="text-[var(--color-error-heart)]">{s.erros}</span>
