@@ -216,11 +216,6 @@ export default function ProfilePage() {
             className="text-base text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Cancelar edição
           </button>
-          <button type="button"
-            onClick={() => setDeleteStep("confirm")}
-            className="text-base text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
-            Excluir a minha conta
-          </button>
         </form>
       ) : (
         <>
@@ -241,9 +236,19 @@ export default function ProfilePage() {
 
           <PaymentHistorySection variant="profile" />
 
-          <Button variant="neutral" onClick={() => setEditing(true)}>
-            Editar perfil
-          </Button>
+          <div className="flex flex-col gap-4">
+            <Button variant="neutral" onClick={() => setEditing(true)}>
+              Editar perfil
+            </Button>
+
+            <button
+              type="button"
+              onClick={() => setDeleteStep("confirm")}
+              className="text-base text-[var(--color-premium)] hover:text-[var(--color-premium-dark)] transition-colors cursor-pointer uppercase tracking-wider font-semibold text-center"
+            >
+              Excluir a minha conta
+            </button>
+          </div>
         </>
       )}
 
@@ -337,7 +342,7 @@ export default function ProfilePage() {
                   <strong className="text-white">{user?.email}</strong>.
                 </p>
                 {deleteError && (
-                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-premium)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
@@ -369,13 +374,13 @@ export default function ProfilePage() {
                   className="w-full rounded-xl border border-[var(--color-gray-border)] bg-transparent px-4 py-3 text-center text-2xl tracking-[0.5em] text-white outline-none focus:border-white/60 transition-colors"
                 />
                 {deleteError && (
-                  <p className="text-base text-[var(--color-error-heart)]">{deleteError}</p>
+                  <p className="text-base text-[var(--color-premium)]">{deleteError}</p>
                 )}
                 <Button
                   variant="neutral"
                   onClick={handleConfirmDelete}
                   disabled={deleteLoading || deleteCode.length < 6}
-                  className="bg-red-600 hover:bg-red-500 border-red-600"
+                  className="bg-[var(--color-premium-dark)] hover:bg-[var(--color-premium)] border-[var(--color-premium-dark)]"
                 >
                   {deleteLoading ? "Excluindo..." : "Confirmar exclusão"}
                 </Button>

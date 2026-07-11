@@ -56,4 +56,13 @@ describe("ProfilePage", () => {
       expect(screen.getByText("@maria")).toBeInTheDocument();
     });
   });
+  it("exibe exclusão de conta na tela principal do perfil", async () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole("button", { name: "Excluir a minha conta" })).toBeInTheDocument();
+  });
 });

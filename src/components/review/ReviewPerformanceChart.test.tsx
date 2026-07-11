@@ -31,4 +31,10 @@ describe("ReviewPerformanceChart", () => {
     expect(screen.getByText("Desempenho")).toBeInTheDocument();
     expect(screen.getByTestId("line-chart")).toBeInTheDocument();
   });
+  it("exibe mensagem quando não há dados", () => {
+    render(<ReviewPerformanceChart data={[]} />);
+
+    expect(screen.getByText("Desempenho")).toBeInTheDocument();
+    expect(screen.getByText("Sem dados ainda.")).toBeInTheDocument();
+  });
 });
