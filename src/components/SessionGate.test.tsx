@@ -25,6 +25,14 @@ function tokenComExp(expEpochSeconds: number): string {
   return `header.${payload}.assinatura`;
 }
 
+function renderGate() {
+  render(
+    <SessionGate minDurationMs={0}>
+      <p>conteúdo</p>
+    </SessionGate>,
+  );
+}
+
 describe("isTokenExpired", () => {
   it("expira token vencido, malformado ou nulo e aceita token válido", () => {
     expect(isTokenExpired(null)).toBe(true);
@@ -40,41 +48,49 @@ describe("SessionGate", () => {
     useAuthStore.getState().logout();
   });
 
-  it("renderiza direto quando não há sessão", () => {
+  it("mostra o splash no boot mesmo sem sessão e depois renderiza", async () => {
+    renderGate();
+
+    expect(screen.getByRole("status", { name: /carregando/i })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    });
+    expect(mockBuscarPerfil).not.toHaveBeenCalled();
+  });
+
+  it("respeita a duração mínima do splash", async () => {
     render(
-      <SessionGate>
+      <SessionGate minDurationMs={150}>
         <p>conteúdo</p>
       </SessionGate>,
     );
-    expect(screen.getByText("conteúdo")).toBeInTheDocument();
-    expect(mockBuscarPerfil).not.toHaveBeenCalled();
+
+    expect(screen.getByRole("status", { name: /carregando/i })).toBeInTheDocument();
+    expect(screen.queryByText("conteúdo")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    });
   });
 
   it("limpa a sessão persistida quando o token está expirado (sem flash)", async () => {
     useAuthStore.getState().login(tokenComExp(Math.floor(Date.now() / 1000) - 60), user);
 
-    render(
-      <SessionGate>
-        <p>conteúdo</p>
-      </SessionGate>,
-    );
+    renderGate();
 
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
     });
-    expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    });
     expect(mockBuscarPerfil).not.toHaveBeenCalled();
   });
 
-  it("mostra carregamento e valida na API quando o token ainda vale", async () => {
+  it("valida na API quando o token ainda vale e atualiza o perfil", async () => {
     useAuthStore.getState().login(tokenComExp(Math.floor(Date.now() / 1000) + 3600), user);
     mockBuscarPerfil.mockResolvedValue({ ...user, username: "user-atualizado" });
 
-    render(
-      <SessionGate>
-        <p>conteúdo</p>
-      </SessionGate>,
-    );
+    renderGate();
 
     expect(screen.getByRole("status", { name: /carregando/i })).toBeInTheDocument();
     await waitFor(() => {
@@ -87,15 +103,13 @@ describe("SessionGate", () => {
     useAuthStore.getState().login(tokenComExp(Math.floor(Date.now() / 1000) + 3600), user);
     mockBuscarPerfil.mockRejectedValue(new Error("401"));
 
-    render(
-      <SessionGate>
-        <p>conteúdo</p>
-      </SessionGate>,
-    );
+    renderGate();
 
     await waitFor(() => {
       expect(useAuthStore.getState().isAuthenticated).toBe(false);
     });
-    expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("conteúdo")).toBeInTheDocument();
+    });
   });
 });
