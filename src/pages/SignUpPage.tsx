@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import AuthLayout from "../components/auth/AuthLayout";
@@ -7,6 +7,9 @@ import OrDivider from "../components/auth/OrDivider";
 import { useFormValidation, rules } from "../hooks/useFormValidation";
 import { authService } from "../services/authService";
 import { parseApiError } from "../utils/parseApiError";
+import { useFormDraftStore } from "../stores/formDraftStore";
+
+const DRAFT_KEY = "signup";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -20,12 +23,19 @@ const schema = {
 
 export default function SignUpPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [age, setAge] = useState("");
+  // Restaura o rascunho (contexto em memória): quem abre os termos no meio do
+  // cadastro volta com os campos exatamente como deixou.
+  const draft = useFormDraftStore.getState().drafts[DRAFT_KEY];
+  const [username, setUsername] = useState(draft?.username ?? "");
+  const [email, setEmail] = useState(draft?.email ?? "");
+  const [password, setPassword] = useState(draft?.password ?? "");
+  const [age, setAge] = useState(draft?.age ?? "");
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    useFormDraftStore.getState().saveDraft(DRAFT_KEY, { username, email, password, age });
+  }, [username, email, password, age]);
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
 
@@ -44,6 +54,7 @@ export default function SignUpPage() {
         senha: password,
         idade: Number(age),
       });
+      useFormDraftStore.getState().clearDraft(DRAFT_KEY);
       sessionStorage.setItem("pendingActivationEmail", email.trim());
       navigate("/ativacao", { state: { email: email.trim() } });
     } catch (err) {
@@ -134,25 +145,33 @@ export default function SignUpPage() {
           className={inputClass}
         />
 
-        <label className="flex items-start gap-3 cursor-pointer text-base text-[var(--color-text-primary)] leading-relaxed">
+        {/* O link fica FORA do <label>: dentro dele, clicar em "termos" também
+            alternava o checkbox (aceite acidental) além de navegar. Nova aba
+            preserva o formulário preenchido. */}
+        <div className="flex items-start gap-3 text-base text-[var(--color-text-primary)] leading-relaxed">
           <input
+            id="aceite-termos"
             type="checkbox"
             checked={acceptTerms}
             onChange={(e) => setAcceptTerms(e.target.checked)}
-            className="mt-0.5 rounded border-white/60 bg-white/10 text-white focus:ring-white/40 focus:ring-2"
+            className="mt-0.5 rounded border-white/60 bg-white/10 text-white focus:ring-white/40 focus:ring-2 cursor-pointer"
           />
           <span>
-            Ao entrar ou se registrar no programático você concorda com todos
-            os{" "}
-            <Link
-              to="/termos"
+            <label htmlFor="aceite-termos" className="cursor-pointer">
+              Ao entrar ou se registrar no programático você concorda com todos
+              os{" "}
+            </label>
+            <a
+              href="/termos"
+              target="_blank"
+              rel="noreferrer"
               className="underline hover:text-white/90 transition-colors"
             >
               termos do site
-            </Link>
-            .
+            </a>
+            <label htmlFor="aceite-termos" className="cursor-pointer">.</label>
           </span>
-        </label>
+        </div>
 
         <Button type="submit" variant="white" disabled={!acceptTerms || submitting} className="w-full">
           {submitting ? "Criando..." : "Criar conta"}

@@ -10,6 +10,9 @@ import { authService } from "../services/authService";
 import { useAuthStore } from "../stores/authStore";
 import { clearPendingLogin, savePendingLogin, type PendingLoginState } from "../lib/pendingLogin";
 import { resolvePostLoginPath } from "../lib/postLoginNavigation";
+import { useFormDraftStore } from "../stores/formDraftStore";
+
+const DRAFT_KEY = "login";
 
 const inputClass =
   "!bg-white/20 !text-[var(--color-text-primary)] !placeholder:text-white/80 !border-[var(--color-login-border)]";
@@ -25,8 +28,10 @@ export default function LoginPage() {
   const logout = useAuthStore((s) => s.logout);
   const storeLogin = useAuthStore((s) => s.login);
   const from = (location.state as { from?: string } | null)?.from;
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Rascunho em memória: navegar (termos, cadastro) e voltar não zera o form.
+  const draft = useFormDraftStore.getState().drafts[DRAFT_KEY];
+  const [email, setEmail] = useState(draft?.email ?? "");
+  const [password, setPassword] = useState(draft?.password ?? "");
 
   const { validate, onBlur, onChange, fieldError, formError, setFormError, setServerErrors } = useFormValidation(schema);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +40,10 @@ export default function LoginPage() {
     logout();
     clearPendingLogin();
   }, [logout]);
+
+  useEffect(() => {
+    useFormDraftStore.getState().saveDraft(DRAFT_KEY, { email, password });
+  }, [email, password]);
 
   const values = () => ({ email, password });
 
@@ -53,6 +62,7 @@ export default function LoginPage() {
           from,
         };
         savePendingLogin(pending);
+        useFormDraftStore.getState().clearDraft(DRAFT_KEY);
         navigate("/login/verificacao", { state: pending });
         return;
       }
@@ -61,6 +71,7 @@ export default function LoginPage() {
         return;
       }
       clearPendingLogin();
+      useFormDraftStore.getState().clearDraft(DRAFT_KEY);
       storeLogin(data.token, data.usuario);
       navigate(resolvePostLoginPath(data.usuario, from), { replace: true });
     } catch (err) {

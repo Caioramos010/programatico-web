@@ -168,12 +168,16 @@ export default function LearnPage() {
             </p>
           </div>
         ) : loading ? (
-          <div className="flex justify-center py-12 px-4">
-            <div className="flex flex-col items-center gap-6 w-full max-w-sm">
-              {[1, 2, 3].map((n) => (
+          // Skeleton com a forma do mapa: nós alternando os lados como a trilha real.
+          <div className="flex justify-center py-12 px-4" role="status" aria-label="Carregando trilha">
+            <div className="flex flex-col gap-6 w-full max-w-sm">
+              {[0, 1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="w-[72px] h-[72px] rounded-full bg-[var(--color-bg-card-inner)] animate-pulse"
+                  className={[
+                    "w-[72px] h-[72px] rounded-full bg-[var(--color-bg-card-inner)] animate-pulse",
+                    n % 2 === 0 ? "self-center" : n % 4 === 1 ? "self-start ml-12" : "self-end mr-12",
+                  ].join(" ")}
                 />
               ))}
             </div>

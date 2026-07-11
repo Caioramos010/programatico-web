@@ -1,3 +1,4 @@
+import { SkeletonList } from "../components/Skeleton";
 import { useEffect, useMemo, useState } from "react";
 import { Bell, Search } from "lucide-react";
 import Button from "../components/Button";
@@ -149,9 +150,7 @@ export default function NotificationsPage() {
 
         <section className="flex flex-col gap-4 md:gap-5">
           {isLoading ? (
-            <div className="rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card-inner)] px-6 py-8 text-center text-[var(--color-text-muted)]">
-              Carregando notificações...
-            </div>
+            <SkeletonList rows={4} rowClassName="h-24 rounded-xl" />
           ) : filteredNotifications.length === 0 ? (
             <div className="rounded-xl border border-[var(--color-gray-border)] bg-[var(--color-bg-card-inner)] px-6 py-8 text-center text-[var(--color-text-muted)]">
               {"Nenhuma notifica\u00e7\u00e3o nesta aba."}
