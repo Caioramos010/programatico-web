@@ -214,7 +214,7 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                   )}
                   {module.topAssuntos && module.topAssuntos.length > 0 ? (
                     <div className="mb-3">
-                      <p className="text-xs text-[var(--color-text-muted)] mb-1">Assuntos principais</p>
+                      <p className="text-sm text-[var(--color-text-muted)] mb-1">Assuntos principais</p>
                       <div className="flex flex-wrap gap-1.5">
                         {module.topAssuntos.map((assunto) => (
                           <span
@@ -237,7 +237,7 @@ export default function TrackMap({ modules, onModuleClick }: Props) {
                   ) : null}
                   <div className="flex justify-end">
                     {module.status === "LOCKED" ? (
-                      <span className="text-xs font-fredoka text-[var(--color-text-muted)] italic">
+                      <span className="text-sm font-fredoka text-[var(--color-text-muted)] italic">
                         Conclua os módulos anteriores
                       </span>
                     ) : (

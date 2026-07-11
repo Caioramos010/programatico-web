@@ -35,7 +35,7 @@ export default function WeekStreakScreen({ streak, onContinue }: Props) {
               <div className="w-9 h-9 rounded-full bg-orange-500/90 flex items-center justify-center text-base shadow-[0_0_12px_rgba(249,115,22,0.4)]">
                 🔥
               </div>
-              <span className="font-fredoka text-xs text-[var(--color-text-muted)]">{d}</span>
+              <span className="font-fredoka text-sm text-[var(--color-text-muted)]">{d}</span>
             </div>
           ))}
         </div>

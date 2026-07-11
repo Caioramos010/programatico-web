@@ -78,10 +78,10 @@ export const rules = {
     message: `O código deve ter ${length} caracteres.`,
   }),
 
-  /** Código de 6 dígitos enviado por e-mail. */
+  /** Código de 6 caracteres (letras e números) enviado por e-mail. */
   twoFactorCode: (): ValidationRule => ({
-    test: (v) => /^\d{6}$/.test(v.trim()),
-    message: "Informe o código de 6 dígitos enviado por e-mail.",
+    test: (v) => /^[A-Za-z0-9]{6}$/.test(v.trim()),
+    message: "Informe o código de 6 caracteres enviado por e-mail.",
   }),
 };
 

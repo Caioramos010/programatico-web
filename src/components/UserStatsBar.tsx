@@ -107,7 +107,7 @@ function LivesStat({ stats }: Props) {
         className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-xl bg-zinc-900/95 px-3 py-2 text-center shadow-lg group-hover:block group-focus-within:block"
       >
         <p className="font-fredoka text-sm font-semibold text-white">{tooltipTitle}</p>
-        <p className="font-fredoka text-xs text-white/70">{tooltipHint}</p>
+        <p className="font-fredoka text-sm text-white/80">{tooltipHint}</p>
         <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900/95" aria-hidden />
       </div>
     </div>
