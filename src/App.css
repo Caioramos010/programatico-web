@@ -2,3 +2,44 @@
 #root {
   min-height: 100vh;
 }
+
+/* Barra da tela de carregamento: preenche rápido e desacelera perto do fim
+   (progresso indeterminado com sensação de avanço), com brilho deslizante. */
+@keyframes loading-fill {
+  0% {
+    width: 0%;
+  }
+  45% {
+    width: 60%;
+  }
+  75% {
+    width: 84%;
+  }
+  100% {
+    width: 94%;
+  }
+}
+
+@keyframes loading-shine {
+  0% {
+    background-position: -12rem 0;
+  }
+  100% {
+    background-position: 12rem 0;
+  }
+}
+
+.loading-bar-fill {
+  animation:
+    loading-fill 2.4s ease-out forwards,
+    loading-shine 1.4s linear infinite;
+  background-color: var(--color-accent-light);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 6rem 100%;
+}
