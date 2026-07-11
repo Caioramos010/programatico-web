@@ -1,3 +1,4 @@
+import { SkeletonList } from "../../components/Skeleton";
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { adminService, type Missao, type MissaoRequest } from "../../services/adminService";
@@ -134,11 +135,7 @@ export default function AdminMissoesPage() {
       )}
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />
-          ))}
-        </div>
+        <SkeletonList rows={3} rowClassName="h-20 rounded-2xl" />
       ) : missoes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <p className="text-base font-medium">Nenhuma missão cadastrada</p>

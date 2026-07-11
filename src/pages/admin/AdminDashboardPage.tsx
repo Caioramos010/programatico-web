@@ -1,3 +1,4 @@
+import { Skeleton } from "../../components/Skeleton";
 import { useEffect, useState } from "react";
 import { Users, Activity, BookOpen, TrendingUp } from "lucide-react";
 import { adminService, type DashboardMetrics } from "../../services/adminService";
@@ -80,11 +81,13 @@ export default function AdminDashboardPage() {
               <Icon size={22} style={{ color }} />
             </div>
             <div>
-              <p
-                className={`text-2xl font-semibold text-[var(--color-text-primary)] ${!metrics && !error ? "animate-pulse" : ""}`}
-              >
-                {value}
-              </p>
+              {!metrics && !error ? (
+                <Skeleton className="h-8 w-16 rounded-lg" />
+              ) : (
+                <p className="text-2xl font-semibold text-[var(--color-text-primary)]">
+                  {value}
+                </p>
+              )}
               <p className="text-base text-[var(--color-text-muted)] mt-0.5">
                 {label}
               </p>

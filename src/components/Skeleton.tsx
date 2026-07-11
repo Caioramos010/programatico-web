@@ -3,10 +3,13 @@
  * conteúdo enquanto os dados carregam, no lugar de spinners/textos genéricos.
  */
 export function Skeleton({ className = "" }: { className?: string }) {
+  // rounded-xl só como default: quem passa outro rounded (ex.: rounded-full
+  // nos nós do mapa) não ganha classes conflitantes.
+  const rounded = className.includes("rounded") ? "" : "rounded-xl";
   return (
     <div
       aria-hidden
-      className={`animate-pulse rounded-xl bg-[var(--color-bg-card-inner)] ${className}`}
+      className={`animate-pulse bg-[var(--color-bg-card-inner)] ${rounded} ${className}`}
     />
   );
 }

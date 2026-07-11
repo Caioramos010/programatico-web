@@ -1,3 +1,4 @@
+import { SkeletonList } from "../../components/Skeleton";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Pencil, Trash2, ChevronLeft, BookOpen, Zap, ChevronRight, GripVertical } from "lucide-react";
@@ -185,9 +186,7 @@ export default function AdminModulosPage() {
       {formError && !showModal && <p className="mb-4 text-base text-[var(--color-error-heart)]">{formError}</p>}
 
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[1,2,3].map((i) => <div key={i} className="h-20 rounded-2xl bg-[var(--color-bg-card)] animate-pulse border border-[var(--color-gray-border)]" />)}
-        </div>
+        <SkeletonList rows={3} rowClassName="h-20 rounded-2xl" />
       ) : modulos.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 rounded-2xl border border-dashed border-[var(--color-gray-border)] text-[var(--color-text-muted)]">
           <BookOpen size={36} className="mb-3 opacity-40" />

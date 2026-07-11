@@ -1,3 +1,4 @@
+import { Skeleton } from "../components/Skeleton";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Target, X } from "lucide-react";
@@ -172,10 +173,10 @@ export default function LearnPage() {
           <div className="flex justify-center py-12 px-4" role="status" aria-label="Carregando trilha">
             <div className="flex flex-col gap-6 w-full max-w-sm">
               {[0, 1, 2, 3, 4].map((n) => (
-                <div
+                <Skeleton
                   key={n}
                   className={[
-                    "w-[72px] h-[72px] rounded-full bg-[var(--color-bg-card-inner)] animate-pulse",
+                    "w-[72px] h-[72px] rounded-full",
                     n % 2 === 0 ? "self-center" : n % 4 === 1 ? "self-start ml-12" : "self-end mr-12",
                   ].join(" ")}
                 />
