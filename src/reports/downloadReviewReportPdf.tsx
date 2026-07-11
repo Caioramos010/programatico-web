@@ -6,7 +6,10 @@ export async function downloadReviewReportPdf(data: ReviewReportData) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "DesempenhoProgramatico.pdf";
+  // Data no nome: vários relatórios não se sobrescrevem na pasta de downloads.
+  const hoje = new Date();
+  const dataArquivo = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+  link.download = `relatorio-programatico-${dataArquivo}.pdf`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
