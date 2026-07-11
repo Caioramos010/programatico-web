@@ -4,37 +4,73 @@ import { authService } from "../services/authService";
 import { isTokenExpired } from "../lib/session";
 import LoadingScreen from "./LoadingScreen";
 
+/** Duração mínima do splash — casa com a animação da barra (2,4s). */
+export const SPLASH_MIN_MS = 2500;
+
 /**
- * Valida a sessão persistida no localStorage ANTES de renderizar as rotas.
- * Sem isso, um token velho/expirado deixava `isAuthenticated: true` e o
- * GuestRoute redirecionava por um instante para a tela logada ("flash") até a
- * API responder 401. Sessão inválida é limpa na hora; enquanto a validação
- * roda, mostra a tela de carregamento.
+ * Splash de abertura do app: roda em TODO carregamento inicial por pelo menos
+ * {@link SPLASH_MIN_MS}, enquanto (1) limpa caches transientes do navegador e
+ * (2) valida a sessão persistida (exp local do JWT + confirmação na API).
+ * Sessão inválida é limpa do localStorage antes de qualquer rota renderizar —
+ * elimina o flash de tela logada com token vencido.
  */
-export default function SessionGate({ children }: { children: React.ReactNode }) {
-  const [checking, setChecking] = useState(() => useAuthStore.getState().isAuthenticated);
+export default function SessionGate({
+  children,
+  minDurationMs = SPLASH_MIN_MS,
+}: {
+  children: React.ReactNode;
+  minDurationMs?: number;
+}) {
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    const inicio = Date.now();
+    let timeoutId: number | undefined;
+    const finalizar = () => {
+      const restante = Math.max(0, minDurationMs - (Date.now() - inicio));
+      timeoutId = window.setTimeout(() => setChecking(false), restante);
+    };
+
+    void limparCachesTransientes();
+
     const { token, user, isAuthenticated, logout, updateUser } = useAuthStore.getState();
     if (!isAuthenticated) {
-      return;
-    }
-    if (!user || isTokenExpired(token)) {
+      finalizar();
+    } else if (!user || isTokenExpired(token)) {
       logout();
-      setChecking(false);
-      return;
+      finalizar();
+    } else {
+      // Token dentro da validade: confirma com a API (pega revogação/usuário
+      // removido) e aproveita para atualizar o perfil em cache.
+      authService
+        .buscarPerfil(user.id)
+        .then((atualizado) => updateUser(atualizado))
+        .catch(() => useAuthStore.getState().logout())
+        .finally(finalizar);
     }
-    // Token dentro da validade: confirma com a API (pega revogação/usuário
-    // removido) e aproveita para atualizar o perfil em cache.
-    authService
-      .buscarPerfil(user.id)
-      .then((atualizado) => updateUser(atualizado))
-      .catch(() => useAuthStore.getState().logout())
-      .finally(() => setChecking(false));
+
+    return () => window.clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (checking) {
     return <LoadingScreen />;
   }
   return <>{children}</>;
+}
+
+/**
+ * Limpeza de melhor esforço dos caches do navegador (Cache API) — garante que
+ * um deploy novo não conviva com respostas velhas em cache. A sessão válida no
+ * localStorage NÃO é tocada aqui; sessão inválida é tratada pela validação.
+ */
+async function limparCachesTransientes(): Promise<void> {
+  try {
+    if ("caches" in window) {
+      const chaves = await window.caches.keys();
+      await Promise.all(chaves.map((chave) => window.caches.delete(chave)));
+    }
+  } catch {
+    // Sem suporte ou bloqueado — segue sem limpar.
+  }
 }
