@@ -216,11 +216,6 @@ export default function ProfilePage() {
             className="text-base text-[var(--color-text-muted)] hover:text-white transition-colors cursor-pointer uppercase tracking-wider font-semibold">
             Cancelar edição
           </button>
-          <button type="button"
-            onClick={() => setDeleteStep("confirm")}
-            className="text-base text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold">
-            Excluir a minha conta
-          </button>
         </form>
       ) : (
         <>
@@ -241,9 +236,28 @@ export default function ProfilePage() {
 
           <PaymentHistorySection variant="profile" />
 
-          <Button variant="neutral" onClick={() => setEditing(true)}>
-            Editar perfil
-          </Button>
+          <div className="flex flex-col gap-4">
+            <Button variant="neutral" onClick={() => setEditing(true)}>
+              Editar perfil
+            </Button>
+
+            <section className="rounded-2xl border border-red-500/30 bg-red-500/8 px-4 py-4">
+              <div className="flex flex-col gap-2">
+                <h3 className="text-lg font-semibold text-white">Excluir conta</h3>
+                <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
+                  Se quiser encerrar sua conta, inicie a exclusão por aqui. Vamos enviar um código
+                  de confirmação para o seu e-mail.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setDeleteStep("confirm")}
+                  className="w-fit text-base text-[var(--color-error-heart)] hover:text-red-400 transition-colors cursor-pointer uppercase tracking-wider font-semibold"
+                >
+                  Excluir a minha conta
+                </button>
+              </div>
+            </section>
+          </div>
         </>
       )}
 
